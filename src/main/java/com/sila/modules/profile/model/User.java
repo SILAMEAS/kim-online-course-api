@@ -22,9 +22,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String fullName;
-    private String profile;
+    @Column(name = "first_name", nullable = false)
+    private String fistName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+    @Column(name = "password", nullable = false)
     private String password;
     @Builder.Default
     private ROLE role = ROLE.STUDENT;

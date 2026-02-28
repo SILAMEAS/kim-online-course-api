@@ -50,7 +50,8 @@ public class AuthImp implements AuthService {
 
         User newUser = new User();
         newUser.setEmail(request.getEmail());
-        newUser.setFullName(request.getFullName());
+        newUser.setFistName(request.getFirstName());
+        newUser.setLastName(request.getLastName());
         newUser.setRole(request.getRole());
 
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));

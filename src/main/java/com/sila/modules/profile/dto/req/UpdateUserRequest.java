@@ -8,8 +8,10 @@ import lombok.Data;
 @Data
 public class UpdateUserRequest {
 
-    @NotBlank
-    private String fullName;
+    @NotBlank(message = "frist name is required")
+    private String fistName;
+    @NotBlank(message = "last name is required")
+    private String lastName;
 
     @NotNull
     private ROLE role;

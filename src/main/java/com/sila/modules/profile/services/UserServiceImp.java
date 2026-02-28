@@ -71,12 +71,12 @@ public class UserServiceImp implements UserService {
 
     @Override
     public String updateUser(Long Id, UpdateUserRequest request) {
-        var userExit = userRepository.findById(Id).orElseThrow(() -> new BadRequestException("User not found"));
+        User user = userRepository.findById(Id).orElseThrow(() -> new BadRequestException("User not found"));
 
-        userExit.setRole(request.getRole());
-        userExit.setFullName(request.getFullName());
-
-        userRepository.save(userExit);
+        user.setRole(request.getRole());
+        user.setFistName(request.getFistName());
+        user.setFistName(request.getFistName());
+        userRepository.save(this.modelMapper.map(user, User.class));
 
         return "User updated successfully";
     }
@@ -92,9 +92,8 @@ public class UserServiceImp implements UserService {
     public UserResponse update(UserRequest userReq) {
         var user = UserContext.getUser();
 
-        Utils.setValueSafe(userReq.getProfile(), user::setProfile);
-        Utils.setValueSafe(userReq.getFullName(), user::setFullName);
-
+        Utils.setValueSafe(userReq.getFirstName(), user::setFistName);
+        Utils.setValueSafe(userReq.getLastName(), user::setLastName);
 
         return this.modelMapper.map(userRepository.save(user), UserResponse.class);
     }

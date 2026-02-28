@@ -16,7 +16,10 @@ public class SignUpRequest {
     private String password;
 
     @NotBlank
-    private String fullName;
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
 
     @NotNull
     private ROLE role;
