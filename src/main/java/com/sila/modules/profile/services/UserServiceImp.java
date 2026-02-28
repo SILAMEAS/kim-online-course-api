@@ -93,7 +93,6 @@ public class UserServiceImp implements UserService {
         var user = UserContext.getUser();
 
         Utils.setValueSafe(userReq.getProfile(), user::setProfile);
-        Utils.setValueSafe(userReq.getAddresses(), user::setAddresses);
         Utils.setValueSafe(userReq.getFullName(), user::setFullName);
 
 
@@ -104,7 +103,7 @@ public class UserServiceImp implements UserService {
     @Override
     public UserResponse getProfile() throws Exception {
         User userFromContext = UserContext.getUser(); // JWT-based context
-        User user = userRepository.findByIdWithFavorites(userFromContext.getId())
+        User user = userRepository.findById(userFromContext.getId())
                 .orElseThrow(() -> new Exception("User not found"));
         return this.modelMapper.map(user, UserResponse.class);
     }

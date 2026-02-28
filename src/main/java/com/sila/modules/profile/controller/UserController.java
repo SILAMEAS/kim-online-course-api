@@ -1,7 +1,6 @@
 package com.sila.modules.profile.controller;
 
-import com.sila.modules.address.dto.AddressResponse;
-import com.sila.modules.address.services.AddressService;
+
 import com.sila.modules.profile.dto.req.SignUpRequest;
 import com.sila.modules.profile.dto.req.UpdateUserRequest;
 import com.sila.modules.profile.dto.req.UserRequest;
@@ -21,15 +20,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "Profile Controller", description = "Operations related to Profile")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final AddressService addressService;
     private final AuthService authService;
 
     @GetMapping("/profile")
@@ -57,22 +53,6 @@ public class UserController {
             @RequestBody @Valid SignUpRequest request
     ) {
         return authService.signUp(request);
-    }
-
-
-    @PreAuthorization({ROLE.OWNER})
-    @GetMapping("/{restaurantId}/user-orders")
-    public ResponseEntity<EntityResponseHandler<UserResponse.UserResponseCustom>> listUsersHasOrderInRestaurant(
-            @PathVariable Long restaurantId,
-            @ModelAttribute PaginationRequest request
-    ) {
-        Pageable pageable = PageableUtil.fromRequest(request);
-        return new ResponseEntity<>(userService.getUsersWhoOrderedFromRestaurant(restaurantId, pageable), HttpStatus.OK);
-    }
-
-    @GetMapping("/address")
-    public ResponseEntity<List<AddressResponse>> getMyAddress() {
-        return new ResponseEntity<>(addressService.getByUser(), HttpStatus.OK);
     }
 
 

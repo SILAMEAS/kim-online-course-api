@@ -1,6 +1,5 @@
 package com.sila.modules.profile.model;
 
-import com.sila.modules.address.model.Address;
 import com.sila.share.enums.ROLE;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,8 +11,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -29,11 +26,9 @@ public class User {
     private String profile;
     private String email;
     private String password;
-    private ROLE role = ROLE.USER;
+    @Builder.Default
+    private ROLE role = ROLE.STUDENT;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-    private List<Address> addresses = new ArrayList<>();
-    
     @CreationTimestamp
     private LocalDateTime createdAt = LocalDateTime.now();
 

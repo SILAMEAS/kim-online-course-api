@@ -28,7 +28,7 @@ public class AuthController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<String> signUp(@RequestBody @Valid SignUpRequest request) {
-        if (request.getRole().equals(ROLE.USER)) {
+        if (request.getRole().equals(ROLE.STUDENT)) {
             return authService.signUp(request);
         } else {
             throw new AccessDeniedException("Only users can sign up");

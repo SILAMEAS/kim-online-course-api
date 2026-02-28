@@ -14,10 +14,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing // 👈 enable auditing
 @EnableConfigurationProperties({CorsProperties.class, ApplicationProperties.class})
 @ConfigurationPropertiesScan
-public class OnlineFoodApplication {
+public class OnlineCourseApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(OnlineFoodApplication.class, args);
+        SpringApplication.run(OnlineCourseApplication.class, args);
     }
 
 }

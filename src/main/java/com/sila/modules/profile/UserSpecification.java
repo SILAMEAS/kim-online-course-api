@@ -1,7 +1,6 @@
 package com.sila.modules.profile;
 
 
-import com.sila.modules.address.model.Address_;
 import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.model.User_;
 import jakarta.persistence.criteria.Join;
@@ -18,8 +17,7 @@ public class UserSpecification {
         }
         return (root, query, criteriaBuilder) -> criteriaBuilder.or(
                 criteriaBuilder.like(root.get(User_.fullName), search + "%"),
-                criteriaBuilder.like(root.get(User_.email), search + "%"),
-                criteriaBuilder.like(root.get(User_.ADDRESSES).get(Address_.STREET), search + "%")
+                criteriaBuilder.like(root.get(User_.email), search + "%")
         );
 
     }
