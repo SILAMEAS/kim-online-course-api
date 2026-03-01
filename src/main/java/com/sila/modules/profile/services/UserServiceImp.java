@@ -74,8 +74,8 @@ public class UserServiceImp implements UserService {
         User user = userRepository.findById(Id).orElseThrow(() -> new BadRequestException("User not found"));
 
         user.setRole(request.getRole());
-        user.setFistName(request.getFistName());
-        user.setFistName(request.getFistName());
+        user.setFirstName(request.getFistName());
+        user.setLastName(request.getLastName());
         userRepository.save(this.modelMapper.map(user, User.class));
 
         return "User updated successfully";
@@ -92,7 +92,7 @@ public class UserServiceImp implements UserService {
     public UserResponse update(UserRequest userReq) {
         var user = UserContext.getUser();
 
-        Utils.setValueSafe(userReq.getFirstName(), user::setFistName);
+        Utils.setValueSafe(userReq.getFirstName(), user::setFirstName);
         Utils.setValueSafe(userReq.getLastName(), user::setLastName);
 
         return this.modelMapper.map(userRepository.save(user), UserResponse.class);

@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 public class UserResponse implements Serializable {
     private Long id;
-    private String profile;
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private String email;
     private ROLE role;
 
@@ -24,7 +24,7 @@ public class UserResponse implements Serializable {
         return UserResponseCustom.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .firstName(user.getFistName())
+                .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
@@ -37,7 +37,6 @@ public class UserResponse implements Serializable {
     @Builder
     public static class UserResponseCustom {
         private Long id;
-        private String profile;
         private String firstName;
         private String lastName;
         private String email;

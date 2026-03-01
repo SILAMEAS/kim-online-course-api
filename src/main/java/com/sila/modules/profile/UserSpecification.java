@@ -1,6 +1,5 @@
 package com.sila.modules.profile;
 
-
 import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.model.User_;
 import jakarta.persistence.criteria.Join;
@@ -11,26 +10,24 @@ import org.springframework.data.jpa.domain.Specification;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserSpecification {
-    public static Specification<User> search(String search) {
-        if (search == null) {
-            return null;
-        }
-        return (root, query, criteriaBuilder) -> criteriaBuilder.or(
-                criteriaBuilder.like(root.get(User_.FIST_NAME), search + "%"),
-                criteriaBuilder.like(root.get(User_.LAST_NAME), search + "%"),
-                criteriaBuilder.like(root.get(User_.email), search + "%")
-        );
-
+  public static Specification<User> search(String search) {
+    if (search == null) {
+      return null;
     }
+    return (root, query, criteriaBuilder) ->
+        criteriaBuilder.or(
+            criteriaBuilder.like(root.get(User_.FIRST_NAME), search + "%"),
+            criteriaBuilder.like(root.get(User_.LAST_NAME), search + "%"),
+            criteriaBuilder.like(root.get(User_.email), search + "%"));
+  }
 
-    public static Specification<User> hasOrderedFromRestaurant(Long restaurantId) {
-        return (root, query, cb) -> {
-            query.distinct(true); // prevent duplicate users
+  public static Specification<User> hasOrderedFromRestaurant(Long restaurantId) {
+    return (var root, var query, var cb) -> {
 
-            Join<?, ?> orders = root.join("orders", JoinType.INNER);
-            return cb.equal(orders.get("restaurant").get("id"), restaurantId);
-        };
-    }
+      query.distinct(true);
 
-
+      Join<?, ?> orders = root.join("orders", JoinType.INNER);
+      return cb.equal(orders.get("restaurant").get("id"), restaurantId);
+    };
+  }
 }
