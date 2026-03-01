@@ -1,4 +1,4 @@
-package com.sila.modules.profile.services;
+package com.sila.modules.profile.service;
 
 import com.sila.config.custom.CustomUserDetails;
 import com.sila.config.custom.CustomerUserDetailsService;

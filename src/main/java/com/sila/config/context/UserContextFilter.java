@@ -1,7 +1,7 @@
 package com.sila.config.context;
 
 import com.sila.modules.profile.model.User;
-import com.sila.modules.profile.services.UserService;
+import com.sila.modules.profile.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

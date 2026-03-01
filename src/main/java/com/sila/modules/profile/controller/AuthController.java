@@ -4,7 +4,7 @@ import com.sila.config.exception.AccessDeniedException;
 import com.sila.modules.profile.dto.req.LoginRequest;
 import com.sila.modules.profile.dto.req.SignUpRequest;
 import com.sila.modules.profile.dto.res.LoginResponse;
-import com.sila.modules.profile.services.AuthService;
+import com.sila.modules.profile.service.AuthService;
 import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,7 +31,7 @@ public class AuthController {
         if (request.getRole().equals(ROLE.STUDENT)) {
             return authService.signUp(request);
         } else {
-            throw new AccessDeniedException("Only users can sign up");
+            throw new AccessDeniedException("Only student can sign up");
         }
     }
 

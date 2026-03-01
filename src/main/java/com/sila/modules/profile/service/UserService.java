@@ -1,4 +1,4 @@
-package com.sila.modules.profile.services;
+package com.sila.modules.profile.service;
 
 import com.sila.modules.profile.dto.req.UpdateUserRequest;
 import com.sila.modules.profile.dto.req.UserRequest;
