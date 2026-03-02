@@ -20,26 +20,32 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(
+        name = "course",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_course_title", columnNames = "title")
+        }
+)
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title",nullable = false)
+    @Column(name = "title", nullable = false, unique = true)
     private String title;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private Double price;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private CourseStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "instructor_id")
+    @JoinColumn(name = "instructor_id", nullable = false)
     private User instructor;
 
     @OneToMany(mappedBy = "course")
@@ -50,5 +56,12 @@ public class Course {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+
+    @PrePersist
+    public void prePersist() {
+        this.setSections(List.of());
+        this.setStatus(CourseStatus.DRAFT);
+    }
 
 }

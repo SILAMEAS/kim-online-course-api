@@ -19,6 +19,13 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Setter
 @Getter
+//@Table(
+//        name = "users",
+//        uniqueConstraints = {
+//                @UniqueConstraint(name = "uk_user_email", columnNames = "email"),
+//                @UniqueConstraint(name = "uk_user_username", columnNames = "username")
+//        }
+//)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

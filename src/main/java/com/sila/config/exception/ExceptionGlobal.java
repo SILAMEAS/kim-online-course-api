@@ -1,6 +1,7 @@
 package com.sila.config.exception;
 
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -12,6 +13,66 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 public class ExceptionGlobal {
+
+    /**
+     * ✅ Handle ALL database constraint violations (GENERIC)
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<MessageResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+
+        String rootMsg = ex.getRootCause() != null ? ex.getRootCause().getMessage() : "";
+
+        String message = "Database constraint violation";
+
+        // ✅ MySQL duplicate entry
+        if (rootMsg.contains("Duplicate entry")) {
+
+            String field = extractFieldFromConstraint(rootMsg);
+
+            if (field != null) {
+                message = field + " already exists";
+            } else {
+                message = "Duplicate value already exists";
+            }
+        }
+
+        return new ResponseEntity<>(
+                MessageResponse.builder()
+                        .status(HttpStatus.CONFLICT.value())
+                        .message(message)
+                        .build(),
+                HttpStatus.CONFLICT
+        );
+    }
+
+    /**
+     * ✅ Extract field name from constraint name
+     * Works ONLY if you name constraints properly
+     * Example: uk_user_email → email
+     */
+    private String extractFieldFromConstraint(String message) {
+        try {
+            // Find: for key 'constraint_name'
+            int keyIndex = message.indexOf("for key '");
+            if (keyIndex == -1) return null;
+
+            String constraint = message.substring(keyIndex + 9, message.length() - 1);
+
+            // Example:
+            // uk_user_email → email
+            // uk_course_title → title
+
+            if (constraint.contains("_")) {
+                String[] parts = constraint.split("_");
+                return parts[parts.length - 1];
+            }
+
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
     /**
      * Handle FileValidationException
