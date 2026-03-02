@@ -8,26 +8,32 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Locale;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserSpecification {
-  public static Specification<User> search(String search) {
-    if (search == null) {
-      return null;
+
+    public static Specification<User> search(String search) {
+        if (search == null || search.isBlank()) {
+            return (var root, var query, var cb) -> cb.conjunction();
+        }
+
+        final var like = "%" + search.toLowerCase(Locale.ENGLISH).trim() + "%";
+
+        return (var root, var query, var cb) ->
+                cb.or(
+                        cb.like(cb.lower(root.get(User_.FIRST_NAME)), like),
+                        cb.like(cb.lower(root.get(User_.LAST_NAME)), like),
+                        cb.like(cb.lower(root.get(User_.EMAIL)), like));
     }
-    return (root, query, criteriaBuilder) ->
-        criteriaBuilder.or(
-            criteriaBuilder.like(root.get(User_.FIRST_NAME), search + "%"),
-            criteriaBuilder.like(root.get(User_.LAST_NAME), search + "%"),
-            criteriaBuilder.like(root.get(User_.email), search + "%"));
-  }
 
-  public static Specification<User> hasOrderedFromRestaurant(Long restaurantId) {
-    return (var root, var query, var cb) -> {
+    public static Specification<User> hasOrderedFromRestaurant(Long restaurantId) {
+        return (var root, var query, var cb) -> {
 
-      query.distinct(true);
+            query.distinct(true);
 
-      Join<?, ?> orders = root.join("orders", JoinType.INNER);
-      return cb.equal(orders.get("restaurant").get("id"), restaurantId);
-    };
-  }
+            Join<?, ?> orders = root.join("orders", JoinType.INNER);
+            return cb.equal(orders.get("restaurant").get("id"), restaurantId);
+        };
+    }
 }
