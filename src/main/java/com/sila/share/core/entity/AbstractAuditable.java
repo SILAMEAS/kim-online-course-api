@@ -7,7 +7,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.metamodel.StaticMetamodel;
 import java.time.Instant;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,11 +36,11 @@ public abstract class AbstractAuditable implements PreOperationInterface {
 
   @CreatedBy
   @Column(name = "created_by", updatable = false)
-  private UUID createdBy;
+  private Long createdBy;
 
   @LastModifiedBy
   @Column(name = "updated_by")
-  private UUID updatedBy;
+  private Long updatedBy;
 
   @PrePersist
   public void onCreated() {

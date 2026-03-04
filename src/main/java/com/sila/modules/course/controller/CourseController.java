@@ -38,13 +38,13 @@ public class CourseController {
     return new ResponseEntity<>(this.courseService.createCourse(request), HttpStatus.OK);
   }
 
-  @GetMapping("/courses/{courseId}/videos")
+  @GetMapping("/{courseId}/videos")
   public ResponseEntity<?> getVideos(@PathVariable Long courseId) {
 
     return ResponseEntity.ok(videoService.getVideos(courseId));
   }
 
-  @GetMapping("/course/{courseId}")
+  @GetMapping("/{courseId}")
   public ResponseEntity<?> getCourseVideos(@PathVariable Long courseId) {
 
     return ResponseEntity.ok(videoService.getVideosForStudent(courseId));

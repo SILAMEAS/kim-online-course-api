@@ -1,9 +1,11 @@
 package com.sila.modules.video.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sila.modules.course.model.Course;
 import com.sila.share.core.entity.AbstractAuditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "videos")
@@ -23,6 +26,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Video extends AbstractAuditable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,5 +47,6 @@ public class Video extends AbstractAuditable {
       referencedColumnName = "id",
       nullable = false,
       foreignKey = @ForeignKey(name = "fk_videos_course"))
+  @JsonIgnore
   private Course course;
 }

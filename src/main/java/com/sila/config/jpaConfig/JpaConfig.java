@@ -1,0 +1,8 @@
+package com.sila.config.jpaConfig;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
+@EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
+@Configuration
+public class JpaConfig {}

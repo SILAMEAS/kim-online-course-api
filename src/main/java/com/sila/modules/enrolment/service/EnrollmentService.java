@@ -1,5 +1,6 @@
 package com.sila.modules.enrolment.service;
 
+import com.sila.modules.enrolment.Enum.EnrollmentStatus;
 import com.sila.modules.enrolment.model.Enrollment;
 import com.sila.modules.enrolment.repository.EnrollmentRepository;
 import com.sila.share.core.crud.AbstractCrudCommon;
@@ -13,6 +14,6 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
   }
 
   public boolean canAccess(Long userId, Long courseId) {
-    return this.baseRepository.existsByUserIdAndCourseIdAndStatus(userId, courseId, "ACTIVE");
+    return this.baseRepository.existsByUserIdAndCourseIdAndStatus(userId, courseId, EnrollmentStatus.ACTIVE);
   }
 }

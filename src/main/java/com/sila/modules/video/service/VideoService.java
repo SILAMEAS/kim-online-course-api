@@ -9,6 +9,8 @@ import com.sila.modules.video.model.Video;
 import com.sila.modules.video.repository.VideoRepository;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import java.util.List;
+
+import com.sila.share.enums.ROLE;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,11 +36,13 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
   public List<?> getVideos(Long courseId) {
     User user = UserContext.getUser();
 
-    if (!this.enrollmentService.canAccess(user.getId(), courseId)) {
+    if (!this.enrollmentService.canAccess(user.getId(), courseId) && user.getRole() != ROLE.ADMIN) {
       throw new AccessDeniedException("Access denied");
     }
 
-    return null;
+    var pageable=super.toPageable(1,10);
+    var vdos=super.findAll(pageable);
+    return vdos.stream().toList();
   }
 
   public void uploadVideo(Long courseId, String title, MultipartFile file) {
