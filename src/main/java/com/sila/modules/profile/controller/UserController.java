@@ -7,6 +7,7 @@ import com.sila.modules.profile.dto.req.UserRequest;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.service.AuthService;
 import com.sila.modules.profile.service.UserService;
+import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.dto.req.PaginationRequest;
 import com.sila.share.enums.ROLE;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final AuthService authService;
+    private final VideoService videoService;
 
     @GetMapping("/profile")
     public ResponseEntity<UserResponse> getUserByJwtToken() throws Exception {

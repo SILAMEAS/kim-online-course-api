@@ -1,4 +1,4 @@
-package com.sila.config.cloudinary;
+package com.sila.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;

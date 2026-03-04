@@ -1,10 +1,22 @@
 package com.sila.modules.course.dto;
 
 import com.sila.modules.profile.dto.res.UserResponse;
-import com.sila.share.enums.CourseStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /** Course Response */
-@Builder(toBuilder = true)
-public record CourseResponse(
-    String title, String description, Double price, CourseStatus status, UserResponse instructor) {}
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Setter
+@Getter
+public class CourseResponse {
+  private Long id;
+  private String title;
+  private String description;
+  private Double price;
+  private UserResponse instructor;
+}

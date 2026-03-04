@@ -6,12 +6,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Setter
 @Getter
+@Table(
+    name = "users",
+    uniqueConstraints = {@UniqueConstraint(name = "uk_user_email", columnNames = "email")})
 public class User extends AbstractAuditable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

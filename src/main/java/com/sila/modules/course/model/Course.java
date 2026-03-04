@@ -9,20 +9,28 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "courses")
 @Entity
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(
+    name = "courses",
+    uniqueConstraints = {@UniqueConstraint(name = "uk_course_title", columnNames = "title")},
+    indexes = {
+      @Index(name = "idx_course_title", columnList = "title"),
+      @Index(name = "idx_course_instructor", columnList = "instructor_id")
+    })
 public class Course extends AbstractAuditable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
