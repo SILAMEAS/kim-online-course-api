@@ -1,4 +1,4 @@
-package com.sila.share.core;
+package com.sila.share.core.crud;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

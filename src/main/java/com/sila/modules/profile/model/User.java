@@ -1,60 +1,33 @@
 package com.sila.modules.profile.model;
 
-import com.sila.modules.course.model.Course;
-import com.sila.modules.enrollment.model.Enrollment;
+import com.sila.share.core.entity.AbstractAuditable;
 import com.sila.share.enums.ROLE;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
+@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EntityListeners(AuditingEntityListener.class)
 @Setter
 @Getter
-//@Table(
-//        name = "users",
-//        uniqueConstraints = {
-//                @UniqueConstraint(name = "uk_user_email", columnNames = "email"),
-//                @UniqueConstraint(name = "uk_user_username", columnNames = "username")
-//        }
-//)
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class User extends AbstractAuditable {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+  @Column(name = "first_name", nullable = false)
+  private String firstName;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+  @Column(name = "last_name", nullable = false)
+  private String lastName;
 
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
+  @Column(name = "email", nullable = false, unique = true)
+  private String email;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+  @Column(name = "password", nullable = false)
+  private String password;
 
-    @Builder.Default
-    private ROLE role = ROLE.STUDENT;
-
-//    @OneToMany(mappedBy = "instructor")
-//    private List<Course> courses;
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Enrollment> enrollments;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt = LocalDateTime.now();
+  @Builder.Default private ROLE role = ROLE.STUDENT;
 }

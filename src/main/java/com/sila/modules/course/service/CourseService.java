@@ -7,9 +7,9 @@ import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.course.spec.CourseSpec;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.service.UserService;
-import com.sila.share.core.AbstractCrudCommon;
-import com.sila.share.core.EntityResponseHandler;
-import com.sila.share.core.PaginationRequest;
+import com.sila.share.core.crud.AbstractCrudCommon;
+import com.sila.share.core.pagiation.EntityResponseHandler;
+import com.sila.share.core.pagiation.PaginationRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +51,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
 
         super.save(course);
 
-        return CourseResponse.from(course,this.mapper.map(instructor,UserResponse.class));
+        return null;
     }
 
 }

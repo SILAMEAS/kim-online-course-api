@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @OpenAPIDefinition
 @SpringBootApplication
-@EnableJpaAuditing // 👈 enable auditing
+@EnableJpaAuditing
 @EnableConfigurationProperties({CorsProperties.class, ApplicationProperties.class})
 @ConfigurationPropertiesScan
 public class OnlineCourseApplication {

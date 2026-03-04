@@ -1,6 +1,6 @@
-package com.sila.modules.course.model;
+package com.sila.modules.video.model;
 
-import com.sila.modules.profile.model.User;
+import com.sila.modules.course.model.Course;
 import com.sila.share.core.entity.AbstractAuditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,31 +17,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "courses")
 @Entity
+@Table(name = "videos")
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Course extends AbstractAuditable {
+public class Video extends AbstractAuditable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  Long id;
 
-  @Column(name = "title", nullable = false, unique = true)
+  @Column(name = "title")
   private String title;
 
-  @Column(name = "description")
-  private String description;
+  @Column(name = "public_id")
+  private String publicId;
 
-  @Column(name = "price", nullable = false)
-  private Double price;
+  @Column(name = "order_index")
+  private Integer orderIndex;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
-      name = "instructor_id",
+      name = "course_id",
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(name = "fk_courses_users"),
-      nullable = false)
-  private User instructor;
+      nullable = false,
+      foreignKey = @ForeignKey(name = "fk_videos_course"))
+  private Course course;
 }

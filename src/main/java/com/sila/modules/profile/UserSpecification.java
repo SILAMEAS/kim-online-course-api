@@ -1,7 +1,7 @@
 package com.sila.modules.profile;
 
 import com.sila.modules.profile.model.User;
-import com.sila.modules.profile.model.User_;
+//import com.sila.modules.profile.model.User_;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
@@ -20,11 +20,12 @@ public class UserSpecification {
 
         final var like = "%" + search.toLowerCase(Locale.ENGLISH).trim() + "%";
 
-        return (var root, var query, var cb) ->
-                cb.or(
-                        cb.like(cb.lower(root.get(User_.FIRST_NAME)), like),
-                        cb.like(cb.lower(root.get(User_.LAST_NAME)), like),
-                        cb.like(cb.lower(root.get(User_.EMAIL)), like));
+//        return (var root, var query, var cb) ->
+//                cb.or(
+//                        cb.like(cb.lower(root.get(User_.FIRST_NAME)), like),
+//                        cb.like(cb.lower(root.get(User_.LAST_NAME)), like),
+//                        cb.like(cb.lower(root.get(User_.EMAIL)), like));
+        return null;
     }
 
     public static Specification<User> hasOrderedFromRestaurant(Long restaurantId) {

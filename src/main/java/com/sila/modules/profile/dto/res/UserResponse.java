@@ -5,6 +5,7 @@ import com.sila.share.enums.ROLE;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Setter
@@ -42,7 +43,7 @@ public class UserResponse implements Serializable {
         private String email;
         private ROLE role;
         private int orders;
-        private LocalDateTime createdAt;
+        private Instant createdAt;
     }
 }
 

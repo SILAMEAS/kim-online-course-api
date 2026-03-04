@@ -1,4 +1,4 @@
-package com.sila.share.core;
+package com.sila.share.core.pagiation;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
