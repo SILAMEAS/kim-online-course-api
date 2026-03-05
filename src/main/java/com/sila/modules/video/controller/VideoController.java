@@ -1,9 +1,12 @@
 package com.sila.modules.video.controller;
 
+import com.sila.modules.video.dto.VideoListResponse;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.enums.ROLE;
+import com.sila.share.pagination.EntityResponseHandler;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,13 +25,16 @@ public class VideoController {
 
   @PostMapping("/upload/{courseId}")
   @PreAuthorization({ROLE.ADMIN})
-  public ResponseEntity<?> upload(
+  public ResponseEntity<String> upload(
       @PathVariable Long courseId, @RequestParam String title, @RequestParam MultipartFile file) {
-
     videoService.uploadVideo(courseId, title, file);
-
     return ResponseEntity.ok("Video uploaded successfully");
   }
 
+  @GetMapping("/videos-by-course/{courseId}")
+  public ResponseEntity<EntityResponseHandler<VideoListResponse>> getVideos(
+      @PathVariable Long courseId) {
 
+    return ResponseEntity.ok(videoService.getVideos(courseId));
+  }
 }

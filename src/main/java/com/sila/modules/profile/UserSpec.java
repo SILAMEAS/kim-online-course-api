@@ -1,7 +1,6 @@
 package com.sila.modules.profile;
 
 import com.sila.modules.profile.model.User;
-// import com.sila.modules.profile.model.User_;
 import com.sila.modules.profile.model.User_;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserSpecification {
+public class UserSpec {
 
   public static Specification<User> search(String search) {
     if (search == null || search.isBlank()) {

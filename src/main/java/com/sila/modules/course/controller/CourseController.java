@@ -9,6 +9,7 @@ import com.sila.share.core.pagiation.EntityResponseHandler;
 import com.sila.share.core.pagiation.PaginationRequest;
 import com.sila.share.enums.ROLE;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,14 +39,9 @@ public class CourseController {
     return new ResponseEntity<>(this.courseService.createCourse(request), HttpStatus.OK);
   }
 
-  @GetMapping("/{courseId}/videos")
-  public ResponseEntity<?> getVideos(@PathVariable Long courseId) {
-
-    return ResponseEntity.ok(videoService.getVideos(courseId));
-  }
-
   @GetMapping("/{courseId}")
-  public ResponseEntity<?> getCourseVideos(@PathVariable Long courseId) {
+  public ResponseEntity<List<String>> getCourseVideos(
+      @PathVariable Long courseId, @ModelAttribute PaginationRequest request) {
 
     return ResponseEntity.ok(videoService.getVideosForStudent(courseId));
   }

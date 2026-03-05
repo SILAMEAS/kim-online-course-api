@@ -11,6 +11,7 @@ import com.sila.modules.profile.dto.res.LoginResponse;
 import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.repository.UserRepository;
 import com.sila.share.enums.ROLE;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,89 +24,92 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthImp implements AuthService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
-    private final CustomerUserDetailsService customerUserDetailsService;
-    private final UserService userService;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtProvider jwtProvider;
+  private final CustomerUserDetailsService customerUserDetailsService;
+  private final UserService userService;
 
-    private Authentication authenticate(String email, String password) {
-        UserDetails userDetails = customerUserDetailsService.loadUserByUsername(email);
-        if (userDetails == null || !passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new NotFoundException("Invalid email or password");
-        }
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+  private Authentication authenticate(String email, String password) {
+    UserDetails userDetails = customerUserDetailsService.loadUserByUsername(email);
+    if (userDetails == null || !passwordEncoder.matches(password, userDetails.getPassword())) {
+      throw new NotFoundException("Invalid email or password");
+    }
+    return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+  }
+
+  public ResponseEntity<String> signUp(SignUpRequest request) {
+    if (userRepository.findByEmail(request.getEmail()) != null) {
+      throw new BadRequestException("Email is already used");
     }
 
-    public ResponseEntity<String> signUp(SignUpRequest request) {
-        if (userRepository.findByEmail(request.getEmail()) != null) {
-            throw new BadRequestException("Email is already used");
-        }
+    User newUser = new User();
+    newUser.setEmail(request.getEmail());
+    newUser.setFirstName(request.getFirstName());
+    newUser.setLastName(request.getLastName());
+    newUser.setRole(request.getRole());
 
-        User newUser = new User();
-        newUser.setEmail(request.getEmail());
-        newUser.setFirstName(request.getFirstName());
-        newUser.setLastName(request.getLastName());
-        newUser.setRole(request.getRole());
+    newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+    userRepository.save(newUser);
 
-        userRepository.save(newUser);
+    return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+  }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+  public ResponseEntity<LoginResponse> signIn(LoginRequest req) {
+    Authentication authentication = authenticate(req.getEmail(), req.getPassword());
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    String jwt = jwtProvider.generateToken(authentication); // Access token
+    String refreshToken =
+        jwtProvider.generateRefreshToken(authentication); // Generate refresh token
+
+    User user = userService.getByEmail(req.getEmail());
+    Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+    String role = authorities.isEmpty() ? null : authorities.iterator().next().getAuthority();
+
+    LoginResponse response =
+        LoginResponse.builder()
+            .accessToken(jwt)
+            .refreshToken(refreshToken)
+            .userId(user.getId())
+            .role(ROLE.valueOf(role))
+            .message("Login successfully")
+            .build();
+    return ResponseEntity.ok(response); // Return response
+  }
+
+  public ResponseEntity<LoginResponse> refreshToken(String refreshToken) {
+
+    if (jwtProvider.validateRefreshToken(refreshToken)) {
+      String email = jwtProvider.getEmailFromJwtToken(refreshToken);
+      CustomUserDetails userDetails =
+          (CustomUserDetails)
+              customerUserDetailsService.loadUserByUsername(email); // Use the custom UserDetails
+
+      Authentication auth =
+          new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+      String newAccessToken = jwtProvider.generateToken(auth);
+      String newRefreshToken =
+          jwtProvider.generateRefreshToken(auth); // Generate a new refresh token
+
+      LoginResponse response =
+          LoginResponse.builder()
+              .accessToken(newAccessToken)
+              .refreshToken(newRefreshToken)
+              .userId(userDetails.user().getId())
+              .role(ROLE.valueOf(userDetails.getAuthorities().iterator().next().getAuthority()))
+              .message("Token refreshed successfully")
+              .build();
+      return ResponseEntity.ok(response);
+    } else {
+      log.warn("Invalid refresh token: {}", refreshToken); // Log invalid token
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
-
-    public ResponseEntity<LoginResponse> signIn(LoginRequest req) {
-        Authentication authentication = authenticate(req.getEmail(), req.getPassword());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = jwtProvider.generateToken(authentication); // Access token
-        String refreshToken = jwtProvider.generateRefreshToken(authentication); // Generate refresh token
-
-
-        User user = userService.getByEmail(req.getEmail());
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        String role = authorities.isEmpty() ? null : authorities.iterator().next().getAuthority();
-
-        LoginResponse response = LoginResponse.builder().
-                accessToken(jwt).
-                refreshToken(refreshToken).
-                userId(user.getId()).
-                role(ROLE.valueOf(role)).
-                message("Login successfully").build();
-        return ResponseEntity.ok(response); // Return response
-    }
-
-
-    public ResponseEntity<LoginResponse> refreshToken(String refreshToken) {
-
-        if (jwtProvider.validateRefreshToken(refreshToken)) {
-            String email = jwtProvider.getEmailFromJwtToken(refreshToken);
-            CustomUserDetails userDetails = (CustomUserDetails) customerUserDetailsService.loadUserByUsername(email); // Use the custom UserDetails
-
-            Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-            String newAccessToken = jwtProvider.generateToken(auth);
-            String newRefreshToken = jwtProvider.generateRefreshToken(auth); // Generate a new refresh token
-
-            LoginResponse response = LoginResponse.builder().
-                    accessToken(newAccessToken).
-                    refreshToken(newRefreshToken).
-                    userId(userDetails.user().getId()).
-                    role(ROLE.valueOf(userDetails.getAuthorities().iterator().next().getAuthority())).
-                    message("Token refreshed successfully").build();
-            return ResponseEntity.ok(response);
-        } else {
-            log.warn("Invalid refresh token: {}", refreshToken); // Log invalid token
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-    }
-
-
+  }
 }

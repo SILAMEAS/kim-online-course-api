@@ -5,12 +5,14 @@ import com.sila.config.exception.AccessDeniedException;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.enrolment.service.EnrollmentService;
 import com.sila.modules.profile.model.User;
+import com.sila.modules.video.dto.VideoListResponse;
 import com.sila.modules.video.model.Video;
 import com.sila.modules.video.repository.VideoRepository;
+import com.sila.modules.video.spec.VideoSpec;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import java.util.List;
-
 import com.sila.share.enums.ROLE;
+import com.sila.share.pagination.EntityResponseHandler;
+import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,16 +35,18 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     this.cloudinaryService = cloudinaryService;
   }
 
-  public List<?> getVideos(Long courseId) {
-    User user = UserContext.getUser();
+  public EntityResponseHandler<VideoListResponse> getVideos(Long courseId) {
 
-    if (!this.enrollmentService.canAccess(user.getId(), courseId) && user.getRole() != ROLE.ADMIN) {
+    if (!this.enrollmentService.canAccess(UserContext.getUserId(), courseId)
+        && UserContext.getUserRole() != ROLE.ADMIN) {
       throw new AccessDeniedException("Access denied");
     }
 
-    var pageable=super.toPageable(1,10);
-    var vdos=super.findAll(pageable);
-    return vdos.stream().toList();
+    var pageable = super.toPageable(1, 10);
+    var spec = VideoSpec.search("");
+    final var videoPage = super.findAll(spec, pageable);
+    final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));
+    return new EntityResponseHandler<>(videos);
   }
 
   public void uploadVideo(Long courseId, String title, MultipartFile file) {

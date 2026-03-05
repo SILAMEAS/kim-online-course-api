@@ -6,40 +6,41 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class UserContextFilter extends OncePerRequestFilter {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String jwt = request.getHeader("Authorization");
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain)
+      throws ServletException, IOException {
+    String jwt = request.getHeader("Authorization");
 
-        if (jwt != null && !jwt.isEmpty()) {
-            try {
-                User user = userService.getByJwt(jwt);
-                UserContext.setUser(user);
-            } catch (Exception ex) {
-                log.error("JWT processing error: {}", ex.getMessage());
-            }
-        }
-
-        try {
-            filterChain.doFilter(request, response);
-        } finally {
-            UserContext.clear(); // Always clear to prevent memory leaks
-        }
+    if (jwt != null && !jwt.isEmpty()) {
+      try {
+        User user = userService.getByJwt(jwt);
+        UserContext.setUser(user);
+      } catch (Exception ex) {
+        log.error("JWT processing error: {}", ex.getMessage());
+      }
     }
+
+    try {
+      filterChain.doFilter(request, response);
+    } finally {
+      UserContext.clear(); // Always clear to prevent memory leaks
+    }
+  }
 }

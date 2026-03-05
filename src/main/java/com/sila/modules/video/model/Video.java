@@ -1,6 +1,5 @@
 package com.sila.modules.video.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sila.modules.course.model.Course;
 import com.sila.share.core.entity.AbstractAuditable;
 import jakarta.persistence.Column;
@@ -47,6 +46,5 @@ public class Video extends AbstractAuditable {
       referencedColumnName = "id",
       nullable = false,
       foreignKey = @ForeignKey(name = "fk_videos_course"))
-  @JsonIgnore
   private Course course;
 }
