@@ -1,5 +1,6 @@
 package com.sila.modules.course.controller;
 
+import com.sila.modules.course.dto.CourseDetailResponse;
 import com.sila.modules.course.dto.CourseResponse;
 import com.sila.modules.course.dto.CreateCourseRequest;
 import com.sila.modules.course.service.CourseService;
@@ -9,7 +10,6 @@ import com.sila.share.core.pagiation.EntityResponseHandler;
 import com.sila.share.core.pagiation.PaginationRequest;
 import com.sila.share.enums.ROLE;
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,6 @@ public class CourseController {
     this.videoService = videoService;
   }
 
-  @PreAuthorization(value = {ROLE.ADMIN, ROLE.INSTRUCTOR})
   @GetMapping
   public ResponseEntity<EntityResponseHandler<CourseResponse>> getCourse(
       @ModelAttribute PaginationRequest request) {
@@ -40,9 +39,8 @@ public class CourseController {
   }
 
   @GetMapping("/{courseId}")
-  public ResponseEntity<List<String>> getCourseVideos(
-      @PathVariable Long courseId, @ModelAttribute PaginationRequest request) {
+  public ResponseEntity<CourseDetailResponse> getCourseDetail(@PathVariable Long courseId) {
 
-    return ResponseEntity.ok(videoService.getVideosForStudent(courseId));
+    return ResponseEntity.ok(this.courseService.courseDetail(courseId));
   }
 }

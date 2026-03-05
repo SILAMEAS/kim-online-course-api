@@ -13,6 +13,4 @@ public class VideoListResponse {
   private String title;
 
   private String publicId;
-
-  private Integer orderIndex;
 }

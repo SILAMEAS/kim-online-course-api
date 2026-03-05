@@ -1,5 +1,6 @@
 package com.sila.modules.course.service;
 
+import com.sila.modules.course.dto.CourseDetailResponse;
 import com.sila.modules.course.dto.CourseResponse;
 import com.sila.modules.course.dto.CreateCourseRequest;
 import com.sila.modules.course.model.Course;
@@ -24,6 +25,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     this.userService = userService;
   }
 
+  /** List Of Courses */
   @Transactional(readOnly = true)
   public EntityResponseHandler<CourseResponse> listCourse(PaginationRequest request) {
     // create pageable from request
@@ -43,6 +45,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     return new EntityResponseHandler<>(coursesNew);
   }
 
+  /** Create Course */
   @Transactional
   public CourseResponse createCourse(CreateCourseRequest request) {
 
@@ -56,5 +59,11 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     super.save(course);
 
     return this.mapper.map(course, CourseResponse.class);
+  }
+
+  /** Get Course Detail */
+  @Transactional(readOnly = true)
+  public CourseDetailResponse courseDetail(Long courseId) {
+    return this.mapper.map(super.findById(courseId), CourseDetailResponse.class);
   }
 }

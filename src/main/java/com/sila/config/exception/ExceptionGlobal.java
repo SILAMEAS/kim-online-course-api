@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 public class ExceptionGlobal {
@@ -183,5 +184,12 @@ public class ExceptionGlobal {
             .status(HttpStatus.BAD_REQUEST.value())
             .build(),
         HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(MissingServletRequestPartException.class)
+  public ResponseEntity<MessageResponse> handleMissingFile(MissingServletRequestPartException ex) {
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(new MessageResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
   }
 }

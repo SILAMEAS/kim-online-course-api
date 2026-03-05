@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface EnrollmentRepository
     extends JpaRepository<Enrollment, Long>, JpaSpecificationExecutor<Enrollment> {
   boolean existsByUserIdAndCourseIdAndStatus(Long userId, Long courseId, EnrollmentStatus status);
+
+  boolean existsByUser_IdAndCourse_Id(Long userId, Long courseId);
 }

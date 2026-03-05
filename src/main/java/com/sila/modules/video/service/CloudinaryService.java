@@ -29,4 +29,31 @@ public class CloudinaryService {
   public String generateSignedUrl(String publicId) {
     return cloudinary.url().resourceType("video").publicId(publicId).signed(true).generate();
   }
+
+  public void deleteVideo(String publicId) {
+    try {
+      cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("resource_type", "video"));
+    } catch (IOException e) {
+      throw new BadRequestException("Video delete failed");
+    }
+  }
+
+  public String updateVideo(String oldPublicId, MultipartFile newFile) {
+
+    if (oldPublicId != null) {
+      deleteVideo(oldPublicId);
+    }
+
+    return uploadVideo(newFile);
+  }
+
+  public String watchVideo(String publicId) {
+    return cloudinary
+        .url()
+        .resourceType("video")
+        .publicId(publicId)
+        .format("mp4")
+        .secure(true)
+        .generate();
+  }
 }
