@@ -10,73 +10,50 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 public class OpenApiConfig {
-    private final ApplicationProperties applicationProperties;
+  private final ApplicationProperties applicationProperties;
 
-    public OpenApiConfig(ApplicationProperties props) {
-        this.applicationProperties = props;
-    }
+  public OpenApiConfig(ApplicationProperties props) {
+    this.applicationProperties = props;
+  }
 
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .info(new Info()
-                        .title(applicationProperties.getName())
-                        .version(applicationProperties.getVersion())
-                        .description(applicationProperties.getDescription()))
-                .components(new Components().addSecuritySchemes("bearer-key",
-                        new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")))
-                .addSecurityItem(new SecurityRequirement().addList("bearer-key"));
-    }
+  @Bean
+  public OpenAPI customOpenAPI() {
+    return new OpenAPI()
+        .info(
+            new Info()
+                .title(applicationProperties.getName())
+                .version(applicationProperties.getVersion())
+                .description(applicationProperties.getDescription()))
+        .components(
+            new Components()
+                .addSecuritySchemes(
+                    "bearer-key",
+                    new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")))
+        .addSecurityItem(new SecurityRequirement().addList("bearer-key"));
+  }
 
+  @Bean
+  public GroupedOpenApi authApi() {
+    return GroupedOpenApi.builder().group("auth").pathsToMatch("/**/auths/**").build();
+  }
 
-    @Bean
-    public GroupedOpenApi authApi() {
-        return GroupedOpenApi.builder()
-                .group("address")
-                .pathsToMatch("/**/address/**")
-                .build();
-    }
-    @Bean
-    public GroupedOpenApi cartApi() {
-        return GroupedOpenApi.builder()
-                .group("card")
-                .pathsToMatch("/**/carts/**")
-                .build();
-    }
-    @Bean
-    public GroupedOpenApi categoryApi() {
-        return GroupedOpenApi.builder()
-                .group("categories")
-                .pathsToMatch("/**/categories/**")
-                .build();
-    }
-    @Bean
-    public GroupedOpenApi foodApi() {
-        return GroupedOpenApi.builder()
-                .group("foods")
-                .pathsToMatch("/**/foods/**")
-                .build();
-    }
-    @Bean
-    public GroupedOpenApi orderApi() {
-        return GroupedOpenApi.builder()
-                .group("orders")
-                .pathsToMatch("/**/orders/**")
-                .build();
-    }
+  @Bean
+  public GroupedOpenApi courseApi() {
+    return GroupedOpenApi.builder().group("course").pathsToMatch("/**/courses/**").build();
+  }
 
-    @Bean
-    public GroupedOpenApi paymentApi() {
-        return GroupedOpenApi.builder()
-                .group("payments")
-                .pathsToMatch("/**/payments/**")
-                .build();
-    }
+  @Bean
+  public GroupedOpenApi paymentApi() {
+    return GroupedOpenApi.builder().group("payment").pathsToMatch("/**/payments/**").build();
+  }
 
+  @Bean
+  public GroupedOpenApi videoApi() {
+    return GroupedOpenApi.builder().group("video").pathsToMatch("/**/videos/**").build();
+  }
 }

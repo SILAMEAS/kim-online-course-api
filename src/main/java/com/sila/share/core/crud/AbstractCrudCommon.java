@@ -1,7 +1,7 @@
 package com.sila.share.core.crud;
 
 import com.sila.config.exception.NotFoundException;
-import com.sila.share.core.pagiation.PaginationConstant;
+import com.sila.share.core.pagination.PaginationConstant;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;

@@ -2,15 +2,14 @@ package com.sila.modules.profile.controller;
 
 import com.sila.modules.profile.dto.req.SignUpRequest;
 import com.sila.modules.profile.dto.req.UpdateUserRequest;
-import com.sila.modules.profile.dto.req.UserRequest;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.service.AuthService;
 import com.sila.modules.profile.service.UserService;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
-import com.sila.share.core.pagiation.PaginationRequest;
+import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
-import com.sila.share.pagination.EntityResponseHandler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,21 +26,10 @@ public class UserController {
   private final AuthService authService;
   private final VideoService videoService;
 
-  @GetMapping("/profile")
-  public ResponseEntity<UserResponse> getUserByJwtToken() throws Exception {
-    return new ResponseEntity<>(userService.getProfile(), HttpStatus.OK);
-  }
-
-  @PutMapping("/profile")
-  public ResponseEntity<UserResponse> updateProfile(@ModelAttribute @Valid UserRequest userReq)
-      throws Exception {
-    return new ResponseEntity<>(userService.update(userReq), HttpStatus.OK);
-  }
-
   @PreAuthorization({ROLE.ADMIN})
   @GetMapping
   public ResponseEntity<EntityResponseHandler<UserResponse>> listUsers(
-      @ModelAttribute PaginationRequest request) throws Exception {
+      @ModelAttribute PaginationRequest request) {
     return new ResponseEntity<>(userService.list(request), HttpStatus.OK);
   }
 

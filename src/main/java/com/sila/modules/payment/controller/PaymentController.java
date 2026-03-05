@@ -29,7 +29,7 @@ public class PaymentController {
     return ResponseEntity.ok("Payment submitted");
   }
 
-  @PostMapping("/payments/{id}/approve")
+  @PostMapping("/{id}/approve")
   @PreAuthorization(ROLE.ADMIN)
   public ResponseEntity<?> approve(@PathVariable Long id) {
 

@@ -3,15 +3,16 @@ package com.sila.modules.video.controller;
 import com.sila.modules.video.dto.VideoListResponse;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
-import com.sila.share.core.pagiation.PaginationRequest;
+import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
-import com.sila.share.pagination.EntityResponseHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,13 @@ public class VideoController {
     this.videoService = videoService;
   }
 
+  @GetMapping
+  public ResponseEntity<EntityResponseHandler<VideoListResponse>> getVideos(
+      @ModelAttribute PaginationRequest paginationRequest) {
+
+    return ResponseEntity.ok(videoService.getAllVideos(paginationRequest));
+  }
+
   @PostMapping("/upload/{courseId}")
   @PreAuthorization({ROLE.ADMIN})
   public ResponseEntity<String> upload(
@@ -35,10 +43,10 @@ public class VideoController {
   }
 
   @GetMapping("/courses/{courseId}")
-  public ResponseEntity<EntityResponseHandler<VideoListResponse>> getVideos(
+  public ResponseEntity<EntityResponseHandler<VideoListResponse>> getVideosByCourseId(
       @PathVariable Long courseId, @ModelAttribute PaginationRequest paginationRequest) {
 
-    return ResponseEntity.ok(videoService.getVideos(courseId, paginationRequest));
+    return ResponseEntity.ok(videoService.getVideosInCourse(courseId, paginationRequest));
   }
 
   @GetMapping("/watch/{publicId}")
@@ -52,7 +60,7 @@ public class VideoController {
     return ResponseEntity.ok("Video was deleted");
   }
 
-  @GetMapping("/{publicId}")
+  @PutMapping("/{publicId}")
   public ResponseEntity<String> updateVideo(
       @PathVariable String publicId, @RequestParam MultipartFile file) {
     return ResponseEntity.ok(this.videoService.updateVideo(publicId, file));

@@ -11,9 +11,9 @@ import com.sila.modules.video.model.Video;
 import com.sila.modules.video.repository.VideoRepository;
 import com.sila.modules.video.spec.VideoSpec;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagiation.PaginationRequest;
+import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
-import com.sila.share.pagination.EntityResponseHandler;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     this.cloudinaryService = cloudinaryService;
   }
 
-  public EntityResponseHandler<VideoListResponse> getVideos(
+  public EntityResponseHandler<VideoListResponse> getVideosInCourse(
       Long courseId, PaginationRequest paginationRequest) {
 
     if (!this.enrollmentService.canAccess(UserContext.getUserId(), courseId)
@@ -49,6 +49,21 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     var pageable = super.toPageable(paginationRequest.getPage(), paginationRequest.getLimit());
     var spec = VideoSpec.search(paginationRequest.getSearch());
     final var videoPage = super.findAll(spec, pageable);
+    final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));
+    return new EntityResponseHandler<>(videos);
+  }
+
+  public EntityResponseHandler<VideoListResponse> getAllVideos(
+      PaginationRequest paginationRequest) {
+
+    if (UserContext.getUserRole() != ROLE.ADMIN) {
+      throw new AccessDeniedException("Access denied");
+    }
+
+    var spec = VideoSpec.search(paginationRequest.getSearch());
+    final var videoPage =
+        super.findAll(
+            spec, super.toPageable(paginationRequest.getPage(), paginationRequest.getLimit()));
     final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));
     return new EntityResponseHandler<>(videos);
   }

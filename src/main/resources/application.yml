@@ -1,4 +1,3 @@
-
 server:
   port: ${PORT:${SERVER_PORT:8080}}
   address: 0.0.0.0
@@ -9,9 +8,9 @@ server:
 spring:
   mail:
     host: ${STMP_HOST}
-    port:  ${STMP_PORT}
-    username:  ${STMP_USER}
-    password:  ${STMP_PASS}
+    port: ${STMP_PORT}
+    username: ${STMP_USER}
+    password: ${STMP_PASS}
     protocol: smtp
     properties:
       mail:
@@ -55,9 +54,9 @@ logging:
 
 app:
   detail:
-    name: "Lacy Restaurant"
+    name: "Online Course"
     version: "1.0.0"
-    description: "API documentation for Lacy restaurant application"
+    description: "API documentation's Online Course"
   cloudinary:
     cloud-name: ${CLOUDINARY_CLOUD_NAME}
     api-key: ${CLOUDINARY_API_KEY}

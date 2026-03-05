@@ -1,4 +1,4 @@
-package com.sila.config;
+package com.sila.config.startup;
 
 import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.repository.UserRepository;
