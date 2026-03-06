@@ -7,6 +7,9 @@ import com.sila.modules.course.model.Course;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.course.spec.CourseSpec;
 import com.sila.modules.profile.service.UserService;
+import com.sila.modules.video.model.Video;
+import com.sila.modules.video.repository.VideoRepository;
+import com.sila.modules.video.service.CloudinaryService;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
@@ -18,11 +21,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CourseService extends AbstractCrudCommon<Course, Long, CourseRepository> {
   final UserService userService;
+  final VideoRepository videoRepository;
+  final CloudinaryService cloudinaryService;
 
   protected CourseService(
-      CourseRepository baseRepository, ModelMapper mapper, UserService userService) {
+      CourseRepository baseRepository,
+      ModelMapper mapper,
+      UserService userService,
+      VideoRepository videoRepository,
+      CloudinaryService cloudinaryService) {
     super(baseRepository, mapper);
     this.userService = userService;
+    this.videoRepository = videoRepository;
+    this.cloudinaryService = cloudinaryService;
   }
 
   /** List Of Courses */
@@ -65,5 +76,18 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
   @Transactional(readOnly = true)
   public CourseDetailResponse courseDetail(Long courseId) {
     return this.mapper.map(super.findById(courseId), CourseDetailResponse.class);
+  }
+
+  /** Delete Course */
+  @Transactional
+  public void deleteAllVideoInCourse(Long courseId) {
+
+    var videos = this.videoRepository.findAll();
+
+    var publicIds = videos.stream().map(Video::getPublicId).toList();
+
+    cloudinaryService.deleteVideos(publicIds);
+
+    this.videoRepository.deleteAllInBatch(videos);
   }
 }

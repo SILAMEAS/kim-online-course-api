@@ -4,6 +4,8 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.sila.config.exception.BadRequestException;
 import java.io.IOException;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,5 +57,17 @@ public class CloudinaryService {
         .format("mp4")
         .secure(true)
         .generate();
+  }
+
+  public void deleteVideos(List<String> publicIds) {
+    if (publicIds == null || publicIds.isEmpty()) {
+      return;
+    }
+
+    try {
+      cloudinary.api().deleteResources(publicIds, ObjectUtils.asMap("resource_type", "video"));
+    } catch (Exception e) {
+      throw new BadRequestException("Bulk video delete failed");
+    }
   }
 }

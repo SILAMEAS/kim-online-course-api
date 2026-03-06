@@ -114,4 +114,14 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
   public String updateVideo(String oldPublicId, MultipartFile file) {
     return cloudinaryService.updateVideo(oldPublicId, file);
   }
+
+  @Transactional
+  public void deleteAllVideoInCourse(Long courseId) {
+
+    var videos = this.baseRepository.findByCourseId(courseId);
+
+    videos.forEach(video -> cloudinaryService.deleteVideo(video.getPublicId()));
+
+    baseRepository.deleteAll(videos);
+  }
 }

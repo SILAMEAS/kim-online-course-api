@@ -38,19 +38,32 @@ public class CourseController {
   @PostMapping
   @PreAuthorization(value = {ROLE.ADMIN, ROLE.INSTRUCTOR})
   @Operation(
-          summary = "Create courses",
-          description = "operation to create course. Ony user has role [ADMIN,INSTRUCTOR] that can be process this operation")
+      summary = "Create courses",
+      description =
+          "operation to create course. Ony user has role [ADMIN,INSTRUCTOR] that can be process this operation")
   public ResponseEntity<CourseResponse> createCourse(
       @RequestBody @Valid CreateCourseRequest request) {
     return new ResponseEntity<>(this.courseService.createCourse(request), HttpStatus.OK);
   }
 
   @Operation(
-          summary = "Get courses by ID",
-          description = "operation to get detail of course like who teaching and more detail about course")
+      summary = "Get courses by ID",
+      description =
+          "operation to get detail of course like who teaching and more detail about course")
   @GetMapping("/{courseId}")
   public ResponseEntity<CourseDetailResponse> getCourseDetail(@PathVariable Long courseId) {
 
     return ResponseEntity.ok(this.courseService.courseDetail(courseId));
+  }
+
+  @DeleteMapping("/{courseId}")
+  @Operation(
+      summary = "Delete courses by",
+      description =
+          "Operation to delete course by Id. Only user has role ADMIN can be process this operation")
+  @PreAuthorization(ROLE.ADMIN)
+  public ResponseEntity<String> deleteCourseById(@PathVariable Long courseId) {
+    this.courseService.deleteAllVideoInCourse(courseId);
+    return new ResponseEntity<>("Course has been delete", HttpStatus.OK);
   }
 }
