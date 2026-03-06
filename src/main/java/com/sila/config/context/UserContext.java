@@ -43,6 +43,12 @@ public class UserContext {
     return currentUser.get().getId();
   }
 
+  public static String getUserEmail() {
+    //    check user login or not
+    checkLogin();
+    return currentUser.get().getEmail();
+  }
+
   public static void checkLogin() {
     if (Objects.isNull(currentUser.get())) {
       throw new BadRequestException("You are not logged in can't get user; note : UserContext");

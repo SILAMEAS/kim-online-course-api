@@ -10,6 +10,7 @@ import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class UserController {
   private final AuthService authService;
   private final VideoService videoService;
 
+  @Operation(description = "Retrieve a paginated list of users in your system include you. Only ROLE ADMIN can user it")
   @PreAuthorization({ROLE.ADMIN})
   @GetMapping
   public ResponseEntity<EntityResponseHandler<UserResponse>> listUsers(
@@ -33,12 +35,14 @@ public class UserController {
     return new ResponseEntity<>(userService.list(request), HttpStatus.OK);
   }
 
+  @Operation(description = "Operation to create new User")
   @PreAuthorization({ROLE.ADMIN})
   @PostMapping
   public ResponseEntity<String> createUser(@RequestBody @Valid SignUpRequest request) {
     return authService.signUp(request);
   }
 
+  @Operation(description = "Operation to update user")
   @PreAuthorization({ROLE.ADMIN})
   @PutMapping("{id}")
   public ResponseEntity<String> updateUser(
@@ -46,6 +50,7 @@ public class UserController {
     return new ResponseEntity<>(userService.updateUser(id, request), HttpStatus.OK);
   }
 
+  @Operation(description = "Operation to delete user")
   @PreAuthorization({ROLE.ADMIN})
   @DeleteMapping("{id}")
   public ResponseEntity<String> deleteUser(@PathVariable Long id) {

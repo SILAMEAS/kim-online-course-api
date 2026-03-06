@@ -9,6 +9,7 @@ import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,9 @@ public class CourseController {
   }
 
   @GetMapping
+  @Operation(
+      summary = "Get courses",
+      description = "Retrieve a paginated list of courses based on pagination parameters.")
   public ResponseEntity<EntityResponseHandler<CourseResponse>> getCourse(
       @ModelAttribute PaginationRequest request) {
     return new ResponseEntity<>(this.courseService.listCourse(request), HttpStatus.OK);
@@ -33,11 +37,17 @@ public class CourseController {
 
   @PostMapping
   @PreAuthorization(value = {ROLE.ADMIN, ROLE.INSTRUCTOR})
+  @Operation(
+          summary = "Create courses",
+          description = "operation to create course. Ony user has role [ADMIN,INSTRUCTOR] that can be process this operation")
   public ResponseEntity<CourseResponse> createCourse(
       @RequestBody @Valid CreateCourseRequest request) {
     return new ResponseEntity<>(this.courseService.createCourse(request), HttpStatus.OK);
   }
 
+  @Operation(
+          summary = "Get courses by ID",
+          description = "operation to get detail of course like who teaching and more detail about course")
   @GetMapping("/{courseId}")
   public ResponseEntity<CourseDetailResponse> getCourseDetail(@PathVariable Long courseId) {
 

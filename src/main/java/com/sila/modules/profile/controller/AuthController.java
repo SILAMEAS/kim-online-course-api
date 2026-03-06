@@ -10,6 +10,7 @@ import com.sila.modules.profile.service.AuthService;
 import com.sila.modules.profile.service.UserService;
 import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class AuthController {
   }
 
   @PostMapping("/sign-up")
+  @Operation(description = "Operation to sign up account Only student can be use it")
   public ResponseEntity<String> signUp(@RequestBody @Valid SignUpRequest request) {
     if (request.getRole().equals(ROLE.STUDENT)) {
       return authService.signUp(request);
@@ -39,11 +41,13 @@ public class AuthController {
   }
 
   @PostMapping("/sign-in")
+  @Operation(description = "Operation to sign in to use your account")
   public ResponseEntity<LoginResponse> signIn(@RequestBody LoginRequest loginReq) {
     return authService.signIn(loginReq);
   }
 
   @PostMapping("/refresh-token")
+  @Operation(description = "Operation to ex-change access token by passing old refresh token")
   public ResponseEntity<LoginResponse> refreshToken(@RequestBody Map<String, String> request) {
     String refreshToken = request.get("refreshToken");
     return authService.refreshToken(refreshToken);
@@ -51,16 +55,19 @@ public class AuthController {
 
   @Hidden
   @GetMapping("/test-api")
+  @Operation(description = "Just for test make sure our backend is running")
   public ResponseEntity<String> getTest() {
     return new ResponseEntity<>("Api working", HttpStatus.OK);
   }
 
   @GetMapping("/me")
+  @Operation(description = "Operation to get your account detail after you login")
   public ResponseEntity<UserResponse> getUserByJwtToken() {
     return new ResponseEntity<>(userService.getProfile(), HttpStatus.OK);
   }
 
   @PutMapping("/me")
+  @Operation(description = "Operation to update your account detail after you login")
   public ResponseEntity<UserResponse> updateProfile(@ModelAttribute @Valid UserRequest userReq) {
     return new ResponseEntity<>(userService.update(userReq), HttpStatus.OK);
   }

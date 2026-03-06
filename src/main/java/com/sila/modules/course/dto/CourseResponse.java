@@ -17,4 +17,6 @@ public class CourseResponse {
   private String title;
   private String description;
   private Double price;
+  private Long updatedBy;
+  private Long createdBy;
 }

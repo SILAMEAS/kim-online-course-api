@@ -3,6 +3,7 @@ package com.sila.modules.payment.controller;
 import com.sila.modules.payment.dto.PaymentRequest;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.enums.ROLE;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/payments")
 public class PaymentController {
 
+  @Operation(description = "Operation student try to submit their payment")
   @PreAuthorization({ROLE.STUDENT})
   public ResponseEntity<?> submitPayment(@RequestBody PaymentRequest req) {
 
@@ -29,6 +31,9 @@ public class PaymentController {
     return ResponseEntity.ok("Payment submitted");
   }
 
+  @Operation(
+      description =
+          "Operation User ADMIN approve payment to enroll student that payment into course")
   @PostMapping("/{id}/approve")
   @PreAuthorization(ROLE.ADMIN)
   public ResponseEntity<?> approve(@PathVariable Long id) {
