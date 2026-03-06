@@ -58,12 +58,12 @@ public class CourseController {
 
   @DeleteMapping("/{courseId}")
   @Operation(
-      summary = "Delete courses by",
+      summary = "Delete courses",
       description =
-          "Operation to delete course by Id. Only user has role ADMIN can be process this operation")
+          "Operation to delete course by Id. Only user has role ADMIN can be process this operation. noted when delete course all video in course will be delete all")
   @PreAuthorization(ROLE.ADMIN)
   public ResponseEntity<String> deleteCourseById(@PathVariable Long courseId) {
-    this.courseService.deleteAllVideoInCourse(courseId);
+    this.courseService.deleteCourse(courseId);
     return new ResponseEntity<>("Course has been delete", HttpStatus.OK);
   }
 }

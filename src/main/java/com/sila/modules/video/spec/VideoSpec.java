@@ -2,6 +2,7 @@ package com.sila.modules.video.spec;
 
 import com.sila.modules.video.model.Video;
 import com.sila.modules.video.model.Video_;
+import java.util.List;
 import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -21,5 +22,13 @@ public class VideoSpec {
           cb.like(cb.lower(root.get(Video_.COURSE)), like),
           cb.like(cb.lower(root.get(Video_.TITLE)), like));
     };
+  }
+
+  public static Specification<Video> byCourseId(Long courseId) {
+    if (courseId == null) {
+      return (var root, var query, var cb) -> cb.conjunction();
+    }
+    return (var root, var query, var cb) ->
+        root.get(Video_.COURSE).get(Video_.ID).in(List.of(courseId));
   }
 }

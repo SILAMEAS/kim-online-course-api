@@ -38,6 +38,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     this.cloudinaryService = cloudinaryService;
   }
 
+  @Transactional(readOnly = true)
   public EntityResponseHandler<VideoListResponse> getVideosInCourse(
       Long courseId, PaginationRequest paginationRequest) {
 
@@ -47,27 +48,23 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     }
 
     var pageable = super.toPageable(paginationRequest.getPage(), paginationRequest.getLimit());
+    var spec = VideoSpec.search(paginationRequest.getSearch()).and(VideoSpec.byCourseId(courseId));
+    final var videoPage = this.baseRepository.findAll(spec, pageable);
+    final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));
+    return new EntityResponseHandler<>(videos);
+  }
+
+  @Transactional(readOnly = true)
+  public EntityResponseHandler<VideoListResponse> getAllVideos(
+      PaginationRequest paginationRequest) {
+    var pageable = super.toPageable(paginationRequest.getPage(), paginationRequest.getLimit());
     var spec = VideoSpec.search(paginationRequest.getSearch());
     final var videoPage = super.findAll(spec, pageable);
     final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));
     return new EntityResponseHandler<>(videos);
   }
 
-  public EntityResponseHandler<VideoListResponse> getAllVideos(
-      PaginationRequest paginationRequest) {
-
-    if (UserContext.getUserRole() != ROLE.ADMIN) {
-      throw new AccessDeniedException("Access denied");
-    }
-
-    var spec = VideoSpec.search(paginationRequest.getSearch());
-    final var videoPage =
-        super.findAll(
-            spec, super.toPageable(paginationRequest.getPage(), paginationRequest.getLimit()));
-    final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));
-    return new EntityResponseHandler<>(videos);
-  }
-
+  @Transactional
   public void uploadVideo(Long courseId, String title, MultipartFile file) {
 
     final var course =
@@ -86,7 +83,8 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     super.save(video);
   }
 
-  public List<String> getVideosForStudent(Long courseId) {
+  @Transactional(readOnly = true)
+  public List<String> getVideoStudentInrollment(Long courseId) {
     User user = UserContext.getUser();
 
     // 🔒 Check enrollment first
@@ -95,7 +93,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
       throw new AccessDeniedException("Access denied");
     }
 
-    return super.baseRepository.findByCourseId(courseId).stream()
+    return super.baseRepository.findAllByCourseId(courseId, super.toPageable(1, 100)).stream()
         .map(video -> cloudinaryService.generateSignedUrl(video.getPublicId()))
         .toList();
   }
@@ -115,13 +113,16 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     return cloudinaryService.updateVideo(oldPublicId, file);
   }
 
+  /** Delete Video In Course */
   @Transactional
   public void deleteAllVideoInCourse(Long courseId) {
 
-    var videos = this.baseRepository.findByCourseId(courseId);
+    var videos = this.baseRepository.findAllByCourseId(courseId, super.toPageable(1, 100));
 
-    videos.forEach(video -> cloudinaryService.deleteVideo(video.getPublicId()));
+    var publicIds = videos.stream().map(Video::getPublicId).toList();
 
-    baseRepository.deleteAll(videos);
+    cloudinaryService.deleteVideos(publicIds);
+
+    this.baseRepository.deleteAllInBatch(videos);
   }
 }

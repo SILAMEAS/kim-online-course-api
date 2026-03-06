@@ -7,9 +7,9 @@ import com.sila.modules.course.model.Course;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.course.spec.CourseSpec;
 import com.sila.modules.profile.service.UserService;
-import com.sila.modules.video.model.Video;
 import com.sila.modules.video.repository.VideoRepository;
 import com.sila.modules.video.service.CloudinaryService;
+import com.sila.modules.video.service.VideoService;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
@@ -23,17 +23,20 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
   final UserService userService;
   final VideoRepository videoRepository;
   final CloudinaryService cloudinaryService;
+  final VideoService videoService;
 
   protected CourseService(
       CourseRepository baseRepository,
       ModelMapper mapper,
       UserService userService,
       VideoRepository videoRepository,
-      CloudinaryService cloudinaryService) {
+      CloudinaryService cloudinaryService,
+      VideoService videoService) {
     super(baseRepository, mapper);
     this.userService = userService;
     this.videoRepository = videoRepository;
     this.cloudinaryService = cloudinaryService;
+    this.videoService = videoService;
   }
 
   /** List Of Courses */
@@ -80,14 +83,12 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
 
   /** Delete Course */
   @Transactional
-  public void deleteAllVideoInCourse(Long courseId) {
-
-    var videos = this.videoRepository.findAll();
-
-    var publicIds = videos.stream().map(Video::getPublicId).toList();
-
-    cloudinaryService.deleteVideos(publicIds);
-
-    this.videoRepository.deleteAllInBatch(videos);
+  public void deleteCourse(Long courseId) {
+    //    find course
+    super.findById(courseId);
+    //    delete all video in course
+    videoService.deleteAllVideoInCourse(courseId);
+    //    delete course from db
+    super.deleteById(courseId);
   }
 }

@@ -53,6 +53,15 @@ public class VideoController {
     return ResponseEntity.ok(videoService.getVideosInCourse(courseId, paginationRequest));
   }
 
+  @DeleteMapping("/by-course-id/{courseId}")
+  @Operation(
+      summary = "Delete all video in course",
+      description = "Operation to delete all video in course")
+  public ResponseEntity<String> deleteVideosByCourseId(@PathVariable Long courseId) {
+    videoService.deleteAllVideoInCourse(courseId);
+    return ResponseEntity.ok("Delete all video in course success");
+  }
+
   @GetMapping("/watch/{publicId}")
   @Operation(description = "Get link of video to watch from Cloudinary")
   public ResponseEntity<String> watchVideo(@PathVariable String publicId) {
