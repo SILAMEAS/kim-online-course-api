@@ -68,7 +68,7 @@ public class AuthController {
 
   @PutMapping("/me")
   @Operation(description = "Operation to update your account detail after you login")
-  public ResponseEntity<UserResponse> updateProfile(@ModelAttribute @Valid UserRequest userReq) {
+  public ResponseEntity<UserResponse> updateProfile(@RequestBody UserRequest userReq) {
     return new ResponseEntity<>(userService.update(userReq), HttpStatus.OK);
   }
 }

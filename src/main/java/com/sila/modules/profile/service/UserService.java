@@ -22,74 +22,73 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class UserService extends AbstractCrudCommon<User, Long, UserRepository> {
-    private final JwtProvider jwtProvider;
+  private final JwtProvider jwtProvider;
 
-    protected UserService(
-            UserRepository baseRepository, ModelMapper mapper, JwtProvider jwtProvider) {
-        super(baseRepository, mapper);
-        this.jwtProvider = jwtProvider;
+  protected UserService(
+      UserRepository baseRepository, ModelMapper mapper, JwtProvider jwtProvider) {
+    super(baseRepository, mapper);
+    this.jwtProvider = jwtProvider;
+  }
+
+  public User getByJwt(String jwt) {
+    String email = jwtProvider.getEmailFromJwtToken(jwt);
+    return getByEmail(email);
+  }
+
+  public User getByEmail(String email) {
+    User foundUser = this.baseRepository.findByEmail(email);
+    if (foundUser == null) {
+      throw new NotFoundException("User not found");
     }
+    return foundUser;
+  }
 
-    public User getByJwt(String jwt) {
-        String email = jwtProvider.getEmailFromJwtToken(jwt);
-        return getByEmail(email);
-    }
+  public User getById(Long userId) {
+    return this.baseRepository
+        .findById(userId)
+        .orElseThrow(() -> new BadRequestException("User not found"));
+  }
 
-    public User getByEmail(String email) {
-        User foundUser = this.baseRepository.findByEmail(email);
-        if (foundUser == null) {
-            throw new NotFoundException("User not found");
-        }
-        return foundUser;
-    }
+  public EntityResponseHandler<UserResponse> list(PaginationRequest request) {
+    final var spec = UserSpec.search(request.getSearch());
+    final var pageable = super.toPageable(request.getPage(), request.getLimit());
 
-    public User getById(Long userId) {
-        return this.baseRepository
-                .findById(userId)
-                .orElseThrow(() -> new BadRequestException("User not found"));
-    }
+    return new EntityResponseHandler<>(
+        super.findAll(spec, pageable).map(re -> mapper.map(re, UserResponse.class)));
+  }
 
-    public EntityResponseHandler<UserResponse> list(PaginationRequest request) {
-        final var spec = UserSpec.search(request.getSearch());
-        final var pageable = super.toPageable(request.getPage(), request.getLimit());
+  public String updateUser(Long Id, UpdateUserRequest request) {
+    User user = super.findById(Id);
+    user.setRole(request.getRole());
+    user.setFirstName(request.getFistName());
+    user.setLastName(request.getLastName());
+    super.save(mapper.map(user, User.class));
 
-        return new EntityResponseHandler<>(
-                super.findAll(spec, pageable).map(re -> mapper.map(re, UserResponse.class)));
-    }
+    return "User updated successfully";
+  }
 
+  public String deleteUser(Long id) {
+    super.findById(id);
+    super.deleteById(id);
+    return "Successfully deleted user";
+  }
 
-    public String updateUser(Long Id, UpdateUserRequest request) {
-        User user = super.findById(Id);
-        user.setRole(request.getRole());
-        user.setFirstName(request.getFistName());
-        user.setLastName(request.getLastName());
-        super.save(mapper.map(user, User.class));
+  public UserResponse update(UserRequest userReq) {
+    var user = super.findById(UserContext.getUserId());
+    Utils.setValueSafe(userReq.getFirstName(), user::setFirstName);
+    Utils.setValueSafe(userReq.getLastName(), user::setLastName);
+    super.update(user);
 
-        return "User updated successfully";
-    }
+    return mapper.map(user, UserResponse.class);
+  }
 
-    public String deleteUser(Long id) {
-        super.findById(id);
-        super.deleteById(id);
-        return "Successfully deleted user";
-    }
+  @Transactional
+  public UserResponse getProfile() {
+    User user = super.findById(UserContext.getUserId());
+    return mapper.map(user, UserResponse.class);
+  }
 
-    public UserResponse update(UserRequest userReq) {
-        var user = UserContext.getUser();
-
-        Utils.setValueSafe(userReq.getFirstName(), user::setFirstName);
-        Utils.setValueSafe(userReq.getLastName(), user::setLastName);
-
-        return mapper.map(super.save(user), UserResponse.class);
-    }
-
-    @Transactional
-    public UserResponse getProfile() {
-        User user = super.findById(UserContext.getUserId());
-        return mapper.map(user, UserResponse.class);
-    }
-
-    public Long count() {
-        return this.baseRepository.count();
-    }
+  public Long count() {
+    return this.baseRepository.count();
+  }
 }
