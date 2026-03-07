@@ -4,8 +4,11 @@ import com.sila.modules.enrolment.Enum.EnrollmentStatus;
 import com.sila.modules.enrolment.dto.EnrollmentResponse;
 import com.sila.modules.enrolment.model.Enrollment;
 import com.sila.modules.enrolment.repository.EnrollmentRepository;
+import com.sila.modules.enrolment.spec.EnrollmentSpec;
 import com.sila.modules.payment.model.Payment;
 import com.sila.share.core.crud.AbstractCrudCommon;
+import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.PaginationRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,5 +32,19 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
     enroll.setStatus(EnrollmentStatus.ACTIVE);
     super.save(enroll);
     return this.mapper.map(enroll, EnrollmentResponse.class);
+  }
+
+  @Transactional(readOnly = true)
+  public EntityResponseHandler<EnrollmentResponse> listAllEnrollment(
+      PaginationRequest paginationRequest) {
+    final var pageable =
+        super.toPageable(
+            paginationRequest.getPage(),
+            paginationRequest.getLimit(),
+            paginationRequest.getSortBy(),
+            String.valueOf(paginationRequest.getSortOrder()));
+    final var spec = EnrollmentSpec.search(paginationRequest.getSearch());
+    return new EntityResponseHandler<>(
+        super.findAll(spec, pageable).map(en -> mapper.map(en, EnrollmentResponse.class)));
   }
 }

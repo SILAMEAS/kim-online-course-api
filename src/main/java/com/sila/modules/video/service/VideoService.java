@@ -47,7 +47,12 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
       throw new AccessDeniedException("Access denied");
     }
 
-    var pageable = super.toPageable(paginationRequest.getPage(), paginationRequest.getLimit());
+    var pageable =
+        super.toPageable(
+            paginationRequest.getPage(),
+            paginationRequest.getLimit(),
+            paginationRequest.getSortBy(),
+            String.valueOf(paginationRequest.getSortOrder()));
     var spec = VideoSpec.search(paginationRequest.getSearch()).and(VideoSpec.byCourseId(courseId));
     final var videoPage = this.baseRepository.findAll(spec, pageable);
     final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));
@@ -57,7 +62,12 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
   @Transactional(readOnly = true)
   public EntityResponseHandler<VideoListResponse> getAllVideos(
       PaginationRequest paginationRequest) {
-    var pageable = super.toPageable(paginationRequest.getPage(), paginationRequest.getLimit());
+    var pageable =
+        super.toPageable(
+            paginationRequest.getPage(),
+            paginationRequest.getLimit(),
+            paginationRequest.getSortBy(),
+            String.valueOf(paginationRequest.getSortOrder()));
     var spec = VideoSpec.search(paginationRequest.getSearch());
     final var videoPage = super.findAll(spec, pageable);
     final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));

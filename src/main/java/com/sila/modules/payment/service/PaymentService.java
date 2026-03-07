@@ -48,7 +48,11 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
   public EntityResponseHandler<ListPaymentResponse> listPayments(
       PaginationRequest paginationRequest) {
     final var pageable =
-        super.toPageable(paginationRequest.getPage(), paginationRequest.getLimit());
+        super.toPageable(
+            paginationRequest.getPage(),
+            paginationRequest.getLimit(),
+            paginationRequest.getSortBy(),
+            String.valueOf(paginationRequest.getSortOrder()));
 
     final var spec = PaymentSpec.search(paginationRequest.getSearch());
 
