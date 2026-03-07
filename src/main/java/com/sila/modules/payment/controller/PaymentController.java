@@ -24,6 +24,7 @@ public class PaymentController {
 
   @Operation(description = "Operation list payment")
   @GetMapping
+  @PreAuthorization({ROLE.ADMIN, ROLE.STUDENT})
   public ResponseEntity<EntityResponseHandler<ListPaymentResponse>> getAllPayments(
       @ModelAttribute @Validated PaginationRequest request) {
     return ResponseEntity.ok(paymentService.listPayments(request));
@@ -31,6 +32,7 @@ public class PaymentController {
 
   @Operation(description = "Operation  submit their payment")
   @PostMapping("/{courseId}")
+  @PreAuthorization(ROLE.STUDENT)
   public ResponseEntity<PaymentResponse> submitPayment(@PathVariable Long courseId) {
     return ResponseEntity.ok(paymentService.createPayments(courseId));
   }

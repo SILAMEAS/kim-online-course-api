@@ -50,10 +50,12 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
     var spec = EnrollmentSpec.search(paginationRequest.getSearch());
 
     if (UserContext.getUserRole() != ROLE.ADMIN) {
-      spec = spec.and(EnrollmentSpec.byUser(UserContext.getUser()));
+      spec = spec.and(EnrollmentSpec.byUserId(UserContext.getUserId()));
     }
 
+    var enrollPages = super.findAll(spec, pageable);
+
     return new EntityResponseHandler<>(
-        super.findAll(spec, pageable).map(en -> mapper.map(en, EnrollmentResponse.class)));
+        enrollPages.map(en -> mapper.map(en, EnrollmentResponse.class)));
   }
 }

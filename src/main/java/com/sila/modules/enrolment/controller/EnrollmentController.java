@@ -2,8 +2,10 @@ package com.sila.modules.enrolment.controller;
 
 import com.sila.modules.enrolment.dto.EnrollmentResponse;
 import com.sila.modules.enrolment.service.EnrollmentService;
+import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import com.sila.share.enums.ROLE;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,7 @@ public class EnrollmentController {
   }
 
   @GetMapping
+  @PreAuthorization({ROLE.ADMIN, ROLE.STUDENT})
   EntityResponseHandler<EnrollmentResponse> getAll(
       @ModelAttribute PaginationRequest paginationRequest) {
     return this.paymentService.listAllEnrollment(paginationRequest);

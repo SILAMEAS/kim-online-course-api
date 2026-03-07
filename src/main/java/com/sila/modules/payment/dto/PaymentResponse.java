@@ -1,5 +1,6 @@
 package com.sila.modules.payment.dto;
 
+import com.sila.modules.profile.dto.res.UserResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +15,5 @@ public class PaymentResponse {
   private Long courseId;
   private String courseTitle;
 
-  private Long userId;
+  private UserResponse user;
 }

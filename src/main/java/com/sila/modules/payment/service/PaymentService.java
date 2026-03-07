@@ -14,9 +14,11 @@ import com.sila.modules.payment.model.Payment;
 import com.sila.modules.payment.repository.PaymentRepository;
 import com.sila.modules.payment.spec.PaymentSpec;
 import com.sila.modules.profile.model.User;
+import com.sila.modules.profile.repository.UserRepository;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import com.sila.share.enums.ROLE;
 import java.time.Instant;
 import lombok.NonNull;
 import org.modelmapper.ModelMapper;
@@ -28,15 +30,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRepository> {
   private final CourseRepository courseRepository;
   private final EnrollmentService enrollmentService;
+  private final UserRepository userRepository;
 
   protected PaymentService(
       PaymentRepository baseRepository,
       ModelMapper mapper,
       CourseRepository courseRepository,
-      EnrollmentService enrollmentService) {
+      EnrollmentService enrollmentService,
+      UserRepository userRepository) {
     super(baseRepository, mapper);
     this.courseRepository = courseRepository;
     this.enrollmentService = enrollmentService;
+    this.userRepository = userRepository;
   }
 
   @Transactional(readOnly = true)
@@ -54,7 +59,11 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
             paginationRequest.getSortBy(),
             String.valueOf(paginationRequest.getSortOrder()));
 
-    final var spec = PaymentSpec.search(paginationRequest.getSearch());
+    var spec = PaymentSpec.search(paginationRequest.getSearch());
+
+    if (UserContext.getUserRole() != ROLE.ADMIN) {
+      spec = spec.and(PaymentSpec.byUserId(UserContext.getUserId()));
+    }
 
     Page<Payment> pagePayments = super.findAll(spec, pageable);
     return new EntityResponseHandler<>(
@@ -62,17 +71,18 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
   }
 
   @Transactional
-  public EnrollmentResponse approvePayment(Long paymentId) {
+  public EnrollmentResponse approvePayment(Long id) {
 
     //    Modify Payment
-
-    final var payment = super.findById(paymentId);
+    Payment payment =
+        this.baseRepository
+            .findWithUser(id)
+            .orElseThrow(() -> new RuntimeException("Payment not found"));
     payment.setApprovedAt(Instant.now());
     payment.setApprovedBy(UserContext.getUserId());
     payment.setStatus(PaymentStatus.DONE);
 
     //    Enrollment
-
     return this.enrollmentService.createEnrollment(payment);
   }
 
