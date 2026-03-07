@@ -6,9 +6,11 @@ import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/api/enrollments")
+@RestController()
+@RequestMapping("/api/enrollments")
 public class EnrollmentController {
   private final EnrollmentService paymentService;
 

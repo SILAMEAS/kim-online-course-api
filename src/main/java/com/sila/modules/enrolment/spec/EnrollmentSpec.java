@@ -3,6 +3,7 @@ package com.sila.modules.enrolment.spec;
 import com.sila.modules.course.model.Course_;
 import com.sila.modules.enrolment.model.Enrollment;
 import com.sila.modules.enrolment.model.Enrollment_;
+import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.model.User_;
 import java.util.Locale;
 import lombok.AccessLevel;
@@ -28,5 +29,9 @@ public class EnrollmentSpec {
             cb.like(
                 cb.lower(root.get(Enrollment_.COURSE).get(Course_.INSTRUCTOR).get(User_.LAST_NAME)),
                 like));
+  }
+
+  public static Specification<Enrollment> byUser(User user) {
+    return (var root, var query, var cb) -> cb.equal(root.get(Enrollment_.USER), user);
   }
 }
