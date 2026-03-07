@@ -12,19 +12,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PaymentRequest {
 
-  @NotBlank(message = "user id is required")
-  private String userId;
-
   @NotBlank(message = "course id is required")
-  private String courseId;
+  private Long courseId;
 
   @NotBlank(message = "amount id is required")
   private Double amount;
-
-  @NotBlank(message = "status id is required")
-  private String status;
-
-  private String proofImage;
-
-  private Long approvedBy;
 }

@@ -32,10 +32,10 @@ public class Payment extends AbstractAuditable {
   @Column(name = "amount", nullable = false)
   private Double amount;
 
-  @Column(name = "approved_by", nullable = false)
+  @Column(name = "approved_by")
   private Long approvedBy;
 
-  @Column(name = "approved_at", nullable = false)
+  @Column(name = "approved_at")
   private Instant approvedAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -53,4 +53,11 @@ public class Payment extends AbstractAuditable {
       nullable = false,
       foreignKey = @ForeignKey(name = "fk_payments_users"))
   private User user;
+
+  @Override
+  public void onPreCreated() {
+    this.status = PaymentStatus.PENDING;
+    this.approvedBy = null;
+    this.approvedAt = null;
+  }
 }
