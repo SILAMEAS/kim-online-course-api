@@ -47,6 +47,7 @@ public class ExceptionGlobal {
                 .build());
   }
 
+  /** just util to use in Handle DataIntegrityViolationException */
   private String resolveConstraintMessage(String constraintName) {
 
     if (constraintName == null) {
@@ -186,6 +187,7 @@ public class ExceptionGlobal {
         HttpStatus.BAD_REQUEST);
   }
 
+  /** Handle Missing File Upload */
   @ExceptionHandler(MissingServletRequestPartException.class)
   public ResponseEntity<MessageResponse> handleMissingFile(MissingServletRequestPartException ex) {
 

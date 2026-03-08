@@ -4,6 +4,7 @@ import com.sila.config.custom.CustomUserDetails;
 import com.sila.config.custom.CustomerUserDetailsService;
 import com.sila.config.exception.BadRequestException;
 import com.sila.config.exception.NotFoundException;
+import com.sila.config.jwt.JwtConstant;
 import com.sila.config.jwt.JwtProvider;
 import com.sila.modules.profile.dto.req.LoginRequest;
 import com.sila.modules.profile.dto.req.SignUpRequest;
@@ -64,7 +65,7 @@ public class AuthImp implements AuthService {
     Authentication authentication = authenticate(req.getEmail(), req.getPassword());
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    String jwt = jwtProvider.generateToken(authentication); // Access token
+    String accessToken = jwtProvider.generateToken(authentication); // Access token
     String refreshToken =
         jwtProvider.generateRefreshToken(authentication); // Generate refresh token
 
@@ -74,11 +75,16 @@ public class AuthImp implements AuthService {
 
     LoginResponse response =
         LoginResponse.builder()
-            .accessToken(jwt)
+            .accessToken(accessToken)
             .refreshToken(refreshToken)
             .userId(user.getId())
             .role(ROLE.valueOf(role))
             .message("Login successfully")
+            .refreshTokenExpiresIn(
+                jwtProvider.getExpirationIn(JwtConstant.REFRESH_TOKEN_EXPIRATION))
+            .accessTokenExpiresIn(jwtProvider.getExpirationIn(JwtConstant.ACCESS_TOKEN_EXPIRATION))
+            .refreshTokenExpiresAt(jwtProvider.getExpirationTimestamp(refreshToken))
+            .accessTokenExpiresAt(jwtProvider.getExpirationTimestamp(accessToken))
             .build();
     return ResponseEntity.ok(response); // Return response
   }
@@ -104,6 +110,12 @@ public class AuthImp implements AuthService {
               .refreshToken(newRefreshToken)
               .userId(userDetails.user().getId())
               .role(ROLE.valueOf(userDetails.getAuthorities().iterator().next().getAuthority()))
+              .refreshTokenExpiresIn(
+                  jwtProvider.getExpirationIn(JwtConstant.REFRESH_TOKEN_EXPIRATION))
+              .accessTokenExpiresIn(
+                  jwtProvider.getExpirationIn(JwtConstant.ACCESS_TOKEN_EXPIRATION))
+              .refreshTokenExpiresAt(jwtProvider.getExpirationTimestamp(newRefreshToken))
+              .accessTokenExpiresAt(jwtProvider.getExpirationTimestamp(newAccessToken))
               .message("Token refreshed successfully")
               .build();
       return ResponseEntity.ok(response);
