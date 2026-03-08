@@ -2,23 +2,15 @@ server:
   port: ${PORT:${SERVER_PORT:8080}}
   address: 0.0.0.0
   tomcat:
-    max-http-form-post-size: 20MB
-    max-swallow-size: 20MB
+    max-http-form-post-size: 200MB
+    max-swallow-size: 200MB
 
 spring:
-  mail:
-    host: ${STMP_HOST}
-    port: ${STMP_PORT}
-    username: ${STMP_USER}
-    password: ${STMP_PASS}
-    protocol: smtp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 200MB
   jmx:
     enabled: false
   main:
@@ -38,19 +30,10 @@ spring:
         show_sql: ${SHOW_SQL:false}
         format_sql: ${FORMAT_SQL:false}
 
-  servlet:
-    multipart:
-      max-file-size: ${MAX_FILE_SIZE:10MB}
-      max-request-size: ${MAX_REQUEST_SIZE:10MB}
-      enabled: true
-
-
 logging:
   level:
     org.springframework.security: warn
     org.springframework.web.socket: trace
-
-
 
 app:
   detail:
