@@ -10,6 +10,7 @@ import com.sila.modules.video.dto.VideoListResponse;
 import com.sila.modules.video.model.Video;
 import com.sila.modules.video.repository.VideoRepository;
 import com.sila.modules.video.spec.VideoSpec;
+import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
@@ -80,7 +81,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     final var course =
         this.courseRepository
             .findById(courseId)
-            .orElseThrow(() -> new NotFoundException("Course not found"));
+            .orElseThrow(() -> new NotFoundException(StaticMessage.COURSE_NOT_FOUND));
 
     //    upload vdo to cloudinary
     String publicId = cloudinaryService.uploadVideo(file);

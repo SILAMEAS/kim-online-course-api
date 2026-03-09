@@ -1,9 +1,11 @@
 package com.sila.modules.enrolment.spec;
 
+import com.sila.config.context.UserContext;
 import com.sila.modules.course.model.Course_;
 import com.sila.modules.enrolment.model.Enrollment;
 import com.sila.modules.enrolment.model.Enrollment_;
 import com.sila.modules.profile.model.User_;
+import com.sila.share.enums.ROLE;
 import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,13 +32,13 @@ public class EnrollmentSpec {
                 like));
   }
 
-  public static Specification<Enrollment> byUserId(Long userId) {
+  public static Specification<Enrollment> byOwnership() {
     return (root, query, cb) -> {
-      if (userId == null) {
+      if (UserContext.getUserRole() == ROLE.ADMIN) {
         return cb.conjunction();
       }
 
-      return cb.equal(root.get(Enrollment_.USER).get(User_.ID), userId);
+      return cb.equal(root.get(Enrollment_.USER).get(User_.ID), UserContext.getUserId());
     };
   }
 }

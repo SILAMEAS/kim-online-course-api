@@ -1,7 +1,9 @@
 package com.sila.share.core.crud;
 
 import com.sila.config.exception.NotFoundException;
+import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.pagination.PaginationConstant;
+import com.sila.share.core.pagination.PaginationRequest;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,6 +62,20 @@ public abstract class AbstractCrudCommon<
     return PageRequest.of(page - 1, limit, sort);
   }
 
+  /**
+   * Creates a Pageable object for pagination with the given page number, page size, sort by field,
+   * and sort direction.
+   *
+   * @return a Pageable object representing the pagination settings
+   */
+  protected Pageable toPageable(PaginationRequest paginationRequest) {
+    return toPageable(
+        paginationRequest.getPage(),
+        paginationRequest.getLimit(),
+        paginationRequest.getSortBy(),
+        String.valueOf(paginationRequest.getSortOrder()));
+  }
+
   protected <B extends BaseSortEnum> Pageable toPageable(BaseSearchRequest<B> request) {
 
     final var sort =
@@ -73,7 +89,7 @@ public abstract class AbstractCrudCommon<
   protected E findById(@NonNull T id) {
     return this.baseRepository
         .findById(id)
-        .orElseThrow(() -> new NotFoundException("resource not found"));
+        .orElseThrow(() -> new NotFoundException(StaticMessage.RESOURCE_NOT_FOUND));
   }
 
   protected E findActiveById(UUID id) {
@@ -82,7 +98,7 @@ public abstract class AbstractCrudCommon<
         .findOne(
             Specification.<E>where((var root, var query, var cb) -> cb.equal(root.get("id"), id))
                 .and((var root, var query, var cb) -> cb.isNull(root.get("deletedAt"))))
-        .orElseThrow(() -> new NotFoundException("resource not found"));
+        .orElseThrow(() -> new NotFoundException(StaticMessage.RESOURCE_NOT_FOUND));
   }
 
   protected E save(@NonNull E entity) {
@@ -105,7 +121,7 @@ public abstract class AbstractCrudCommon<
    * @throws NotFoundException if no entity is found
    */
   protected E findOne(FluentQuery.FetchableFluentQuery<E> query) {
-    return query.one().orElseThrow(() -> new NotFoundException("resource not found"));
+    return query.one().orElseThrow(() -> new NotFoundException(StaticMessage.RESOURCE_NOT_FOUND));
   }
 
   /**

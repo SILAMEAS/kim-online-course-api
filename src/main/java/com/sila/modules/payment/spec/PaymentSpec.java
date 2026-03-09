@@ -1,9 +1,11 @@
 package com.sila.modules.payment.spec;
 
+import com.sila.config.context.UserContext;
 import com.sila.modules.payment.model.Payment;
 import com.sila.modules.payment.model.Payment_;
 import com.sila.modules.profile.model.User_;
 import com.sila.modules.video.model.Video_;
+import com.sila.share.enums.ROLE;
 import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,6 +25,15 @@ public class PaymentSpec {
       return cb.or(
           cb.like(cb.lower(root.get(Video_.COURSE)), like),
           cb.like(cb.lower(root.get(Video_.TITLE)), like));
+    };
+  }
+
+  public static Specification<Payment> byOwnership() {
+    return (root, query, cb) -> {
+      if (UserContext.getUserRole() == ROLE.ADMIN) {
+        return cb.conjunction();
+      }
+      return cb.equal(root.get(Payment_.USER).get(User_.ID), UserContext.getUserId());
     };
   }
 

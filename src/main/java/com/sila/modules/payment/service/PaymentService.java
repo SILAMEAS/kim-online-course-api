@@ -18,7 +18,6 @@ import com.sila.modules.profile.repository.UserRepository;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
-import com.sila.share.enums.ROLE;
 import java.time.Instant;
 import lombok.NonNull;
 import org.modelmapper.ModelMapper;
@@ -59,11 +58,7 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
             paginationRequest.getSortBy(),
             String.valueOf(paginationRequest.getSortOrder()));
 
-    var spec = PaymentSpec.search(paginationRequest.getSearch());
-
-    if (UserContext.getUserRole() != ROLE.ADMIN) {
-      spec = spec.and(PaymentSpec.byUserId(UserContext.getUserId()));
-    }
+    var spec = PaymentSpec.search(paginationRequest.getSearch()).and(PaymentSpec.byOwnership());
 
     Page<Payment> pagePayments = super.findAll(spec, pageable);
     return new EntityResponseHandler<>(

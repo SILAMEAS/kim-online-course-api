@@ -1,6 +1,5 @@
 package com.sila.modules.enrolment.service;
 
-import com.sila.config.context.UserContext;
 import com.sila.modules.enrolment.Enum.EnrollmentStatus;
 import com.sila.modules.enrolment.dto.EnrollmentResponse;
 import com.sila.modules.enrolment.model.Enrollment;
@@ -10,7 +9,6 @@ import com.sila.modules.payment.model.Payment;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
-import com.sila.share.enums.ROLE;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,18 +38,10 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
   public EntityResponseHandler<EnrollmentResponse> listAllEnrollment(
       PaginationRequest paginationRequest) {
 
-    final var pageable =
-        super.toPageable(
-            paginationRequest.getPage(),
-            paginationRequest.getLimit(),
-            paginationRequest.getSortBy(),
-            String.valueOf(paginationRequest.getSortOrder()));
+    final var pageable = super.toPageable(paginationRequest);
 
-    var spec = EnrollmentSpec.search(paginationRequest.getSearch());
-
-    if (UserContext.getUserRole() != ROLE.ADMIN) {
-      spec = spec.and(EnrollmentSpec.byUserId(UserContext.getUserId()));
-    }
+    var spec =
+        EnrollmentSpec.search(paginationRequest.getSearch()).and(EnrollmentSpec.byOwnership());
 
     var enrollPages = super.findAll(spec, pageable);
 
