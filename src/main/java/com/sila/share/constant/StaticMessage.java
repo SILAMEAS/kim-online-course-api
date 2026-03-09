@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StaticMessage {
-    public static final String RESOURCE_NOT_FOUND="resource not found";
-    public static final String COURSE_NOT_FOUND="Course not found";
+  public static final String RESOURCE_NOT_FOUND = "resource not found";
+  public static final String COURSE_NOT_FOUND = "Course not found";
+  public static final String VIDEO_UPLOAD_FAILED = "Video upload failed: ";
 }

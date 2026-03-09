@@ -3,6 +3,7 @@ package com.sila.modules.video.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.sila.config.exception.BadRequestException;
+import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.pagination.CloudinaryConstant;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,23 +27,36 @@ public class CloudinaryService {
               .uploadLarge(
                   inputStream,
                   ObjectUtils.asMap(
-                      "resource_type", "video", "chunk_size", 6000000 // 6MB chunks
+                      CloudinaryConstant.RESOURCE_TYPE_KEY,
+                      CloudinaryConstant.RESOURCE_TYPE_VALUE,
+                      CloudinaryConstant.CHUNK_SIZE,
+                      CloudinaryConstant.CHUNK_MB // 6MB chunks
                       ));
-      return uploadResult.get("public_id").toString();
+      return uploadResult.get(CloudinaryConstant.PUBLIC_ID).toString();
     } catch (IOException e) {
-      throw new BadRequestException("Video upload failed: " + e.getMessage());
+      throw new BadRequestException(StaticMessage.VIDEO_UPLOAD_FAILED + e.getMessage());
     }
   }
 
   /** Generate signed URL */
   public String generateSignedUrl(String publicId) {
-    return cloudinary.url().resourceType("video").publicId(publicId).signed(true).generate();
+    return cloudinary
+        .url()
+        .resourceType(CloudinaryConstant.RESOURCE_TYPE_VALUE)
+        .publicId(publicId)
+        .signed(true)
+        .generate();
   }
 
   /** Delete a single video */
   public void deleteVideo(String publicId) {
     try {
-      cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("resource_type", "video"));
+      cloudinary
+          .uploader()
+          .destroy(
+              publicId,
+              ObjectUtils.asMap(
+                  CloudinaryConstant.RESOURCE_TYPE_KEY, CloudinaryConstant.RESOURCE_TYPE_VALUE));
     } catch (IOException e) {
       throw new BadRequestException("Video delete failed: " + e.getMessage());
     }

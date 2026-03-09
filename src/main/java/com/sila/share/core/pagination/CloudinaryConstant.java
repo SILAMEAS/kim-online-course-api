@@ -12,6 +12,9 @@ public final class CloudinaryConstant {
   public static final String RESOURCE_TYPE_VALUE = "video";
 
   public static final String PUBLIC_ID = "public_id";
+  public static final String CHUNK_SIZE = "chunk_size";
+  // 6MB chunks
+  public static final Number CHUNK_MB = 6000000;
 
   public static final String FORMAT = "mp4";
 }
