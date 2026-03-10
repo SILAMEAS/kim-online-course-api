@@ -11,49 +11,92 @@ import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Profile Controller", description = "Operations related to Profile")
+@Tag(name = "User Management", description = "Operations related to managing user accounts")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
+
   private final UserService userService;
   private final AuthService authService;
   private final VideoService videoService;
 
-  @Operation(description = "Retrieve a paginated list of users in your system include you. Only ROLE ADMIN can user it")
-  @PreAuthorization({ROLE.ADMIN})
   @GetMapping
+  @PreAuthorization({ROLE.ADMIN})
+  @Operation(
+      summary = "List all users",
+      description =
+          "Retrieve a paginated list of all users including yourself. Only ADMIN can access this endpoint.",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Users retrieved successfully",
+            content = @Content(schema = @Schema(implementation = UserResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Access denied")
+      })
   public ResponseEntity<EntityResponseHandler<UserResponse>> listUsers(
-      @ModelAttribute PaginationRequest request) {
-    return new ResponseEntity<>(userService.list(request), HttpStatus.OK);
+      @ParameterObject PaginationRequest request) {
+    return ResponseEntity.ok(userService.list(request));
   }
 
-  @Operation(description = "Operation to create new User")
-  @PreAuthorization({ROLE.ADMIN})
   @PostMapping
-  public ResponseEntity<String> createUser(@RequestBody @Valid SignUpRequest request) {
+  @PreAuthorization({ROLE.ADMIN})
+  @Operation(
+      summary = "Create a new user",
+      description = "Create a new user account. Only ADMIN can perform this operation.",
+      responses = {
+        @ApiResponse(responseCode = "200", description = "User created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request data"),
+        @ApiResponse(responseCode = "403", description = "Access denied")
+      })
+  public ResponseEntity<String> createUser(@Valid @RequestBody SignUpRequest request) {
     return authService.signUp(request);
   }
 
-  @Operation(description = "Operation to update user")
-  @PreAuthorization({ROLE.ADMIN})
   @PutMapping("{id}")
+  @PreAuthorization({ROLE.ADMIN})
+  @Operation(
+      summary = "Update user",
+      description = "Update an existing user's details. Only ADMIN can perform this operation.",
+      responses = {
+        @ApiResponse(responseCode = "200", description = "User updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid update data"),
+        @ApiResponse(responseCode = "403", description = "Access denied"),
+        @ApiResponse(responseCode = "404", description = "User not found")
+      })
   public ResponseEntity<String> updateUser(
-      @PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
-    return new ResponseEntity<>(userService.updateUser(id, request), HttpStatus.OK);
+      @Parameter(description = "ID of the user to update", example = "1", required = true)
+          @PathVariable
+          Long id,
+      @Valid @RequestBody UpdateUserRequest request) {
+    return ResponseEntity.ok(userService.updateUser(id, request));
   }
 
-  @Operation(description = "Operation to delete user")
-  @PreAuthorization({ROLE.ADMIN})
   @DeleteMapping("{id}")
-  public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-    return new ResponseEntity<>(userService.deleteUser(id), HttpStatus.OK);
+  @PreAuthorization({ROLE.ADMIN})
+  @Operation(
+      summary = "Delete user",
+      description = "Delete a user by ID. Only ADMIN can perform this operation.",
+      responses = {
+        @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+        @ApiResponse(responseCode = "403", description = "Access denied"),
+        @ApiResponse(responseCode = "404", description = "User not found")
+      })
+  public ResponseEntity<String> deleteUser(
+      @Parameter(description = "ID of the user to delete", example = "1", required = true)
+          @PathVariable
+          Long id) {
+    return ResponseEntity.ok(userService.deleteUser(id));
   }
 }

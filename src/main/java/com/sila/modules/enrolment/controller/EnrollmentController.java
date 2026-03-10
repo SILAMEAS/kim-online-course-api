@@ -6,40 +6,90 @@ import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController()
+@RestController
 @RequestMapping("/api/enrollments")
+@Tag(
+    name = "Enrollment Management",
+    description = "APIs for managing student enrollments in courses")
 public class EnrollmentController {
-  private final EnrollmentService paymentService;
 
-  public EnrollmentController(EnrollmentService paymentService1) {
-    this.paymentService = paymentService1;
+  private final EnrollmentService enrollmentService;
+
+  public EnrollmentController(EnrollmentService enrollmentService) {
+    this.enrollmentService = enrollmentService;
   }
 
+  /** Get all enrollments */
   @GetMapping
   @PreAuthorization({ROLE.ADMIN, ROLE.STUDENT})
-  ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAll(
-      @ModelAttribute PaginationRequest paginationRequest) {
-    return ResponseEntity.ok(this.paymentService.listAllEnrollment(null, paginationRequest));
+  @Operation(
+      summary = "Get all enrollments",
+      description =
+          "Retrieve a paginated list of all enrollments. ADMIN can view all enrollments, "
+              + "STUDENT can view only their own enrollments.",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Enrollments retrieved successfully",
+            content = @Content(schema = @Schema(implementation = EnrollmentResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Access denied")
+      })
+  public ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAll(
+      @ParameterObject PaginationRequest paginationRequest) {
+
+    return ResponseEntity.ok(enrollmentService.listAllEnrollment(null, paginationRequest));
   }
 
-  @GetMapping("courses/{id}")
+  /** Get enrollments by course */
+  @GetMapping("/courses/{courseId}")
   @PreAuthorization({ROLE.ADMIN, ROLE.STUDENT})
-  ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAllByCourse(
-      @PathVariable Long id, @ModelAttribute PaginationRequest paginationRequest) {
-    return ResponseEntity.ok(this.paymentService.listAllEnrollment(id, paginationRequest));
+  @Operation(
+      summary = "Get enrollments for a specific course",
+      description =
+          "Retrieve a paginated list of enrollments for a given course ID. "
+              + "ADMIN can view all enrollments, STUDENT can view only their own enrollments.",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Enrollments retrieved successfully",
+            content = @Content(schema = @Schema(implementation = EnrollmentResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Course not found"),
+        @ApiResponse(responseCode = "403", description = "Access denied")
+      })
+  public ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAllByCourse(
+      @Parameter(description = "ID of the course", example = "1", required = true) @PathVariable
+          Long courseId,
+      @ParameterObject PaginationRequest paginationRequest) {
+
+    return ResponseEntity.ok(enrollmentService.listAllEnrollment(courseId, paginationRequest));
   }
 
-  @DeleteMapping("courses/{id}")
+  /** Delete all enrollments by course */
+  @DeleteMapping("/courses/{courseId}")
   @PreAuthorization({ROLE.ADMIN})
-  ResponseEntity<String> deleteAllByCourse(@PathVariable Long id) {
-    return ResponseEntity.ok(this.paymentService.bulkDeleteByCourseId(id));
+  @Operation(
+      summary = "Delete all enrollments for a course",
+      description =
+          "Deletes all enrollments associated with a specific course. Only ADMIN users can perform this operation.",
+      responses = {
+        @ApiResponse(responseCode = "200", description = "Enrollments deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "Course not found"),
+        @ApiResponse(responseCode = "403", description = "Access denied")
+      })
+  public ResponseEntity<String> deleteAllByCourse(
+      @Parameter(description = "ID of the course", example = "1", required = true) @PathVariable
+          Long courseId) {
+
+    return ResponseEntity.ok(enrollmentService.bulkDeleteByCourseId(courseId));
   }
 }

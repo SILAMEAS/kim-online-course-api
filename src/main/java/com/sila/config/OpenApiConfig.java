@@ -56,4 +56,9 @@ public class OpenApiConfig {
   public GroupedOpenApi videoApi() {
     return GroupedOpenApi.builder().group("video").pathsToMatch("/**/videos/**").build();
   }
+
+  @Bean
+  public GroupedOpenApi enrollmentApi() {
+    return GroupedOpenApi.builder().group("enrollment").pathsToMatch("/**/enrollments/**").build();
+  }
 }
