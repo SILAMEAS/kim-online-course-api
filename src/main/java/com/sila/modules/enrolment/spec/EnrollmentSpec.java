@@ -41,4 +41,14 @@ public class EnrollmentSpec {
       return cb.equal(root.get(Enrollment_.USER).get(User_.ID), UserContext.getUserId());
     };
   }
+
+  public static Specification<Enrollment> byCourse(Long courseId) {
+    return (root, query, cb) -> {
+      if (courseId == null) {
+        return cb.conjunction();
+      }
+
+      return cb.equal(root.get(Enrollment_.COURSE).get(Course_.ID), courseId);
+    };
+  }
 }

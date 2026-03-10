@@ -1,7 +1,6 @@
 package com.sila.modules.course.spec;
 
 import com.sila.modules.course.model.Course;
-// import com.sila.modules.course.model.Course_;
 import com.sila.modules.course.model.Course_;
 import java.util.Locale;
 import lombok.AccessLevel;

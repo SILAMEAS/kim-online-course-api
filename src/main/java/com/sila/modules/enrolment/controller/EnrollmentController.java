@@ -6,8 +6,11 @@ import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,8 +25,21 @@ public class EnrollmentController {
 
   @GetMapping
   @PreAuthorization({ROLE.ADMIN, ROLE.STUDENT})
-  EntityResponseHandler<EnrollmentResponse> getAll(
+  ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAll(
       @ModelAttribute PaginationRequest paginationRequest) {
-    return this.paymentService.listAllEnrollment(paginationRequest);
+    return ResponseEntity.ok(this.paymentService.listAllEnrollment(null, paginationRequest));
+  }
+
+  @GetMapping("courses/{id}")
+  @PreAuthorization({ROLE.ADMIN, ROLE.STUDENT})
+  ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAllByCourse(
+      @PathVariable Long id, @ModelAttribute PaginationRequest paginationRequest) {
+    return ResponseEntity.ok(this.paymentService.listAllEnrollment(id, paginationRequest));
+  }
+
+  @DeleteMapping("courses/{id}")
+  @PreAuthorization({ROLE.ADMIN})
+  ResponseEntity<String> deleteAllByCourse(@PathVariable Long id) {
+    return ResponseEntity.ok(this.paymentService.bulkDeleteByCourseId(id));
   }
 }

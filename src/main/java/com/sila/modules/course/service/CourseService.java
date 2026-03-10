@@ -1,15 +1,18 @@
 package com.sila.modules.course.service;
 
+import com.sila.config.exception.BadRequestException;
 import com.sila.modules.course.dto.CourseDetailResponse;
 import com.sila.modules.course.dto.CourseResponse;
 import com.sila.modules.course.dto.CreateCourseRequest;
 import com.sila.modules.course.model.Course;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.course.spec.CourseSpec;
+import com.sila.modules.enrolment.service.EnrollmentService;
 import com.sila.modules.profile.service.UserService;
 import com.sila.modules.video.repository.VideoRepository;
 import com.sila.modules.video.service.CloudinaryService;
 import com.sila.modules.video.service.VideoService;
+import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
@@ -24,6 +27,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
   final VideoRepository videoRepository;
   final CloudinaryService cloudinaryService;
   final VideoService videoService;
+  final EnrollmentService enrollmentService;
 
   protected CourseService(
       CourseRepository baseRepository,
@@ -31,12 +35,14 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
       UserService userService,
       VideoRepository videoRepository,
       CloudinaryService cloudinaryService,
-      VideoService videoService) {
+      VideoService videoService,
+      EnrollmentService enrollmentService) {
     super(baseRepository, mapper);
     this.userService = userService;
     this.videoRepository = videoRepository;
     this.cloudinaryService = cloudinaryService;
     this.videoService = videoService;
+    this.enrollmentService = enrollmentService;
   }
 
   /** List Of Courses */
@@ -84,6 +90,10 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
   /** Delete Course */
   @Transactional
   public void deleteCourse(Long courseId) {
+    //    can't delete course if already have student has enrollment
+    if (this.enrollmentService.existByCourseId(courseId)) {
+      throw new BadRequestException(StaticMessage.COURSE_HAS_ENROLLMENT);
+    }
     //    find course
     super.findById(courseId);
     //    delete all video in course

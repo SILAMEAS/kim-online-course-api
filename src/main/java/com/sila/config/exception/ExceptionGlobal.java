@@ -1,5 +1,6 @@
 package com.sila.config.exception;
 
+import com.sila.share.Utils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,10 @@ public class ExceptionGlobal {
       if (cause instanceof org.hibernate.exception.ConstraintViolationException constraintEx) {
 
         String constraintName = constraintEx.getConstraintName();
+        // ✅ fallback if Hibernate returns null
+        if (constraintName == null) {
+          constraintName = Utils.extractConstraintName(constraintEx.getMessage());
+        }
         String message = resolveConstraintMessage(constraintName);
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -49,24 +54,45 @@ public class ExceptionGlobal {
 
   /** just util to use in Handle DataIntegrityViolationException */
   private String resolveConstraintMessage(String constraintName) {
-
     if (constraintName == null) {
-      return "Duplicate value";
+      return "Database constraint violation";
     }
 
-    // ✅ Remove schema or table prefix (anything before last dot)
+    // remove schema prefix if exists
     if (constraintName.contains(".")) {
       constraintName = constraintName.substring(constraintName.lastIndexOf(".") + 1);
     }
 
-    // Now constraintName = uk_course_title
+    String[] parts = constraintName.split("_");
 
+    // ✅ UNIQUE constraint
     if (constraintName.startsWith("uk_")) {
-      String[] parts = constraintName.split("_");
-      return parts[parts.length - 1] + " already exists";
+
+      if (parts.length >= 3) {
+        String field = parts[parts.length - 1];
+        return Utils.capitalize(field) + " already exists";
+      }
+
+      return "Duplicate value already exists";
     }
 
-    return "Duplicate value";
+    // ✅ FOREIGN KEY constraint
+    if (constraintName.startsWith("fk_")) {
+
+      if (parts.length >= 3) {
+        String childTable = parts[1];
+        String parentTable = parts[2];
+
+        return "Cannot delete "
+            + Utils.singular(parentTable)
+            + " because it is referenced by "
+            + childTable;
+      }
+
+      return "Cannot delete this record because it is referenced by other data";
+    }
+
+    return "Database constraint violation";
   }
 
   /** Handle FileValidationException */

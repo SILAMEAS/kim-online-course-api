@@ -10,4 +10,8 @@ public interface EnrollmentRepository
   boolean existsByUserIdAndCourseIdAndStatus(Long userId, Long courseId, EnrollmentStatus status);
 
   boolean existsByUser_IdAndCourse_Id(Long userId, Long courseId);
+
+  boolean existsByCourse_Id(Long courseId);
+
+  void deleteAllByCourse_Id(Long courseId);
 }

@@ -58,7 +58,7 @@ public class CloudinaryService {
               ObjectUtils.asMap(
                   CloudinaryConstant.RESOURCE_TYPE_KEY, CloudinaryConstant.RESOURCE_TYPE_VALUE));
     } catch (IOException e) {
-      throw new BadRequestException("Video delete failed: " + e.getMessage());
+      throw new BadRequestException(StaticMessage.VIDEO_DELETE_FAILED + e.getMessage());
     }
   }
 
@@ -74,7 +74,7 @@ public class CloudinaryService {
   public String watchVideo(String publicId) {
     return cloudinary
         .url()
-        .resourceType("video")
+        .resourceType(CloudinaryConstant.RESOURCE_TYPE_VALUE)
         .publicId(publicId)
         .format(CloudinaryConstant.FORMAT)
         .secure(true)
@@ -86,9 +86,14 @@ public class CloudinaryService {
     if (publicIds == null || publicIds.isEmpty()) return;
 
     try {
-      cloudinary.api().deleteResources(publicIds, ObjectUtils.asMap("resource_type", "video"));
+      cloudinary
+          .api()
+          .deleteResources(
+              publicIds,
+              ObjectUtils.asMap(
+                  CloudinaryConstant.RESOURCE_TYPE_KEY, CloudinaryConstant.RESOURCE_TYPE_VALUE));
     } catch (Exception e) {
-      throw new BadRequestException("Bulk video delete failed: " + e.getMessage());
+      throw new BadRequestException(StaticMessage.BULK_VIDEO_FAILED + e.getMessage());
     }
   }
 }
