@@ -14,7 +14,6 @@ import com.sila.modules.payment.model.Payment;
 import com.sila.modules.payment.repository.PaymentRepository;
 import com.sila.modules.payment.spec.PaymentSpec;
 import com.sila.modules.profile.model.User;
-import com.sila.modules.profile.repository.UserRepository;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
@@ -25,32 +24,63 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service for managing course payments.
+ *
+ * <p>This service handles:
+ *
+ * <ul>
+ *   <li>Retrieving payment details.
+ *   <li>Listing payments with pagination and search.
+ *   <li>Approving payments and creating enrollments.
+ *   <li>Creating new payments for courses.
+ * </ul>
+ */
 @Service
 public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRepository> {
+
   private final CourseRepository courseRepository;
   private final EnrollmentService enrollmentService;
-  private final UserRepository userRepository;
 
   protected PaymentService(
       PaymentRepository baseRepository,
       ModelMapper mapper,
       CourseRepository courseRepository,
-      EnrollmentService enrollmentService,
-      UserRepository userRepository) {
+      EnrollmentService enrollmentService) {
     super(baseRepository, mapper);
     this.courseRepository = courseRepository;
     this.enrollmentService = enrollmentService;
-    this.userRepository = userRepository;
   }
 
+  /**
+   * Retrieves payment details by ID.
+   *
+   * @param paymentId ID of the payment (cannot be null)
+   * @return Payment entity
+   * @throws RuntimeException if payment not found
+   */
   @Transactional(readOnly = true)
-  public Payment findById(@NonNull Long paymentId) {
+  public Payment getDetail(@NonNull Long paymentId) {
     return super.findById(paymentId);
   }
 
+  /**
+   * Lists all payments for the current user with pagination and optional search.
+   *
+   * <p>Filters applied:
+   *
+   * <ul>
+   *   <li>Search term from PaginationRequest
+   *   <li>Ownership filter: only payments for the current user
+   * </ul>
+   *
+   * @param paginationRequest PaginationRequest containing page, limit, sort, and search term.
+   * @return EntityResponseHandler containing paginated ListPaymentResponse DTOs.
+   */
   @Transactional(readOnly = true)
   public EntityResponseHandler<ListPaymentResponse> listPayments(
       PaginationRequest paginationRequest) {
+
     final var pageable =
         super.toPageable(
             paginationRequest.getPage(),
@@ -65,10 +95,24 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
         pagePayments.map(pt -> this.mapper.map(pt, ListPaymentResponse.class)));
   }
 
+  /**
+   * Approves a payment and creates enrollment for the associated course.
+   *
+   * <p>Steps:
+   *
+   * <ol>
+   *   <li>Sets approvedAt timestamp and approvedBy user ID.
+   *   <li>Updates payment status to DONE.
+   *   <li>Creates enrollment for the user in the course.
+   * </ol>
+   *
+   * @param id ID of the payment to approve
+   * @return EnrollmentResponse representing the newly created enrollment
+   * @throws RuntimeException if payment not found
+   */
   @Transactional
   public EnrollmentResponse approvePayment(Long id) {
 
-    //    Modify Payment
     Payment payment =
         this.baseRepository
             .findWithUser(id)
@@ -77,10 +121,24 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
     payment.setApprovedBy(UserContext.getUserId());
     payment.setStatus(PaymentStatus.DONE);
 
-    //    Enrollment
     return this.enrollmentService.createEnrollment(payment);
   }
 
+  /**
+   * Creates a new payment for a course by the current user.
+   *
+   * <p>Validations:
+   *
+   * <ul>
+   *   <li>Course must exist.
+   *   <li>User cannot submit duplicate payment for the same course.
+   * </ul>
+   *
+   * @param courseId ID of the course to pay for
+   * @return PaymentResponse representing the newly created payment
+   * @throws NotFoundException if the course does not exist
+   * @throws BadRequestException if a payment already exists for this course by the user
+   */
   @Transactional
   public PaymentResponse createPayments(Long courseId) {
 

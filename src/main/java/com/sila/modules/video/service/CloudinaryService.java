@@ -12,13 +12,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Service for interacting with Cloudinary for video operations.
+ *
+ * <p>Supports uploading, updating, deleting single or multiple videos, and generating signed URLs
+ * for secure video access.
+ */
 @Service
 @RequiredArgsConstructor
 public class CloudinaryService {
 
   private final Cloudinary cloudinary;
 
-  /** Upload video directly using InputStream (safer for large files) */
+  /**
+   * Uploads a video file to Cloudinary using a streaming approach (suitable for large files).
+   *
+   * @param file MultipartFile representing the video to upload
+   * @return The publicId of the uploaded video
+   * @throws BadRequestException if the upload fails
+   */
   public String uploadVideo(MultipartFile file) {
     try (InputStream inputStream = file.getInputStream()) {
       var uploadResult =
@@ -30,15 +42,19 @@ public class CloudinaryService {
                       CloudinaryConstant.RESOURCE_TYPE_KEY,
                       CloudinaryConstant.RESOURCE_TYPE_VALUE,
                       CloudinaryConstant.CHUNK_SIZE,
-                      CloudinaryConstant.CHUNK_MB
-                      ));
+                      CloudinaryConstant.CHUNK_MB));
       return uploadResult.get(CloudinaryConstant.PUBLIC_ID).toString();
     } catch (IOException e) {
       throw new BadRequestException(StaticMessage.VIDEO_UPLOAD_FAILED + e.getMessage());
     }
   }
 
-  /** Generate signed URL */
+  /**
+   * Generates a signed, time-limited URL for a video.
+   *
+   * @param publicId Public ID of the video
+   * @return Signed URL for secure access
+   */
   public String generateSignedUrl(String publicId) {
     return cloudinary
         .url()
@@ -48,7 +64,12 @@ public class CloudinaryService {
         .generate();
   }
 
-  /** Delete a single video */
+  /**
+   * Deletes a single video from Cloudinary.
+   *
+   * @param publicId Public ID of the video to delete
+   * @throws BadRequestException if deletion fails
+   */
   public void deleteVideo(String publicId) {
     try {
       cloudinary
@@ -62,7 +83,13 @@ public class CloudinaryService {
     }
   }
 
-  /** Update video (delete old, upload new) */
+  /**
+   * Updates a video by deleting the old one and uploading a new file.
+   *
+   * @param oldPublicId Public ID of the old video (nullable)
+   * @param newFile New MultipartFile to upload
+   * @return Public ID of the newly uploaded video
+   */
   public String updateVideo(String oldPublicId, MultipartFile newFile) {
     if (oldPublicId != null) {
       deleteVideo(oldPublicId);
@@ -70,7 +97,12 @@ public class CloudinaryService {
     return uploadVideo(newFile);
   }
 
-  /** Get video URL for viewing */
+  /**
+   * Generates a secure URL for viewing a video.
+   *
+   * @param publicId Public ID of the video
+   * @return URL for watching the video
+   */
   public String watchVideo(String publicId) {
     return cloudinary
         .url()
@@ -81,7 +113,12 @@ public class CloudinaryService {
         .generate();
   }
 
-  /** Delete multiple videos */
+  /**
+   * Deletes multiple videos in bulk from Cloudinary.
+   *
+   * @param publicIds List of public IDs of the videos to delete
+   * @throws BadRequestException if deletion fails
+   */
   public void deleteVideos(List<String> publicIds) {
     if (publicIds == null || publicIds.isEmpty()) return;
 

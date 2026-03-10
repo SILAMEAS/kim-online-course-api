@@ -25,16 +25,36 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementation of authentication service.
+ *
+ * <p>Handles:
+ *
+ * <ul>
+ *   <li>User sign-up (registration)
+ *   <li>User sign-in (login) with JWT token generation
+ *   <li>Refresh token flow
+ * </ul>
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthImp implements AuthService {
+
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtProvider jwtProvider;
   private final CustomerUserDetailsService customerUserDetailsService;
   private final UserService userService;
 
+  /**
+   * Authenticates a user by email and password.
+   *
+   * @param email User email
+   * @param password User password
+   * @return Authentication object if credentials are valid
+   * @throws NotFoundException if user does not exist or password mismatch
+   */
   private Authentication authenticate(String email, String password) {
     UserDetails userDetails = customerUserDetailsService.loadUserByUsername(email);
     if (userDetails == null || !passwordEncoder.matches(password, userDetails.getPassword())) {
@@ -43,6 +63,13 @@ public class AuthImp implements AuthService {
     return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
   }
 
+  /**
+   * Registers a new user.
+   *
+   * @param request SignUpRequest containing email, password, firstName, lastName, and role
+   * @return ResponseEntity with HTTP status CREATED and success message
+   * @throws BadRequestException if the email is already registered
+   */
   public ResponseEntity<String> signUp(SignUpRequest request) {
     if (userRepository.findByEmail(request.getEmail()) != null) {
       throw new BadRequestException("Email is already used");
@@ -53,7 +80,6 @@ public class AuthImp implements AuthService {
     newUser.setFirstName(request.getFirstName());
     newUser.setLastName(request.getLastName());
     newUser.setRole(request.getRole());
-
     newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 
     userRepository.save(newUser);
@@ -61,13 +87,19 @@ public class AuthImp implements AuthService {
     return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
   }
 
+  /**
+   * Logs in a user and generates access and refresh tokens.
+   *
+   * @param req LoginRequest containing email and password
+   * @return ResponseEntity containing LoginResponse with tokens, userId, role, and expiration info
+   * @throws NotFoundException if authentication fails
+   */
   public ResponseEntity<LoginResponse> signIn(LoginRequest req) {
     Authentication authentication = authenticate(req.getEmail(), req.getPassword());
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    String accessToken = jwtProvider.generateToken(authentication); // Access token
-    String refreshToken =
-        jwtProvider.generateRefreshToken(authentication); // Generate refresh token
+    String accessToken = jwtProvider.generateToken(authentication);
+    String refreshToken = jwtProvider.generateRefreshToken(authentication);
 
     User user = userService.getByEmail(req.getEmail());
     Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -86,23 +118,34 @@ public class AuthImp implements AuthService {
             .refreshTokenExpiresAt(jwtProvider.getExpirationTimestamp(refreshToken))
             .accessTokenExpiresAt(jwtProvider.getExpirationTimestamp(accessToken))
             .build();
-    return ResponseEntity.ok(response); // Return response
+
+    return ResponseEntity.ok(response);
   }
 
+  /**
+   * Refreshes JWT tokens using a valid refresh token.
+   *
+   * <p>If the refresh token is valid:
+   *
+   * <ul>
+   *   <li>Generates a new access token and refresh token
+   *   <li>Returns LoginResponse with new tokens and expiration info
+   * </ul>
+   *
+   * @param refreshToken Refresh token string
+   * @return ResponseEntity with LoginResponse if valid, or UNAUTHORIZED if invalid
+   */
   public ResponseEntity<LoginResponse> refreshToken(String refreshToken) {
-
     if (jwtProvider.validateRefreshToken(refreshToken)) {
       String email = jwtProvider.getEmailFromJwtToken(refreshToken);
       CustomUserDetails userDetails =
-          (CustomUserDetails)
-              customerUserDetailsService.loadUserByUsername(email); // Use the custom UserDetails
+          (CustomUserDetails) customerUserDetailsService.loadUserByUsername(email);
 
       Authentication auth =
           new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
       String newAccessToken = jwtProvider.generateToken(auth);
-      String newRefreshToken =
-          jwtProvider.generateRefreshToken(auth); // Generate a new refresh token
+      String newRefreshToken = jwtProvider.generateRefreshToken(auth);
 
       LoginResponse response =
           LoginResponse.builder()
@@ -118,9 +161,10 @@ public class AuthImp implements AuthService {
               .accessTokenExpiresAt(jwtProvider.getExpirationTimestamp(newAccessToken))
               .message("Token refreshed successfully")
               .build();
+
       return ResponseEntity.ok(response);
     } else {
-      log.warn("Invalid refresh token: {}", refreshToken); // Log invalid token
+      log.warn("Invalid refresh token: {}", refreshToken);
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
   }
