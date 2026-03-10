@@ -2,15 +2,15 @@ server:
   port: ${PORT:${SERVER_PORT:8080}}
   address: 0.0.0.0
   tomcat:
-    max-http-form-post-size: 200MB
-    max-swallow-size: 200MB
-
+    max-http-form-post-size: 100MB # Max size for form data
+    max-swallow-size: 100MB        # Max size Tomcat will swallow
+    connection-timeout: 5m   # 10 minutes timeout
 spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 200MB
-      max-request-size: 200MB
+      max-file-size: 100MB       # Max single file
+      max-request-size: 100MB    # Max request
   jmx:
     enabled: false
   main:

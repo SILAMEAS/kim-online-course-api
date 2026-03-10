@@ -30,7 +30,7 @@ public class CloudinaryService {
                       CloudinaryConstant.RESOURCE_TYPE_KEY,
                       CloudinaryConstant.RESOURCE_TYPE_VALUE,
                       CloudinaryConstant.CHUNK_SIZE,
-                      CloudinaryConstant.CHUNK_MB // 6MB chunks
+                      CloudinaryConstant.CHUNK_MB
                       ));
       return uploadResult.get(CloudinaryConstant.PUBLIC_ID).toString();
     } catch (IOException e) {
