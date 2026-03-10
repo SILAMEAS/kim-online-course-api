@@ -19,6 +19,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Represents a course in the system.
+ *
+ * <p>A course contains basic information like title, description, price, and the instructor
+ * responsible for the course.
+ *
+ * <p>Each course is uniquely identified by its title.
+ */
 @Entity
 @Setter
 @Getter
@@ -32,19 +40,29 @@ import lombok.Setter;
       @Index(name = "idx_course_instructor", columnList = "instructor_id")
     })
 public class Course extends AbstractAuditable {
+
+  /** Primary key for the course entity. Auto-generated. */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  /** Title of the course. Must be unique and non-null. */
   @Column(name = "title", nullable = false, unique = true)
   private String title;
 
+  /** Description of the course. Optional. */
   @Column(name = "description")
   private String description;
 
+  /** Price of the course. Cannot be null. */
   @Column(name = "price", nullable = false)
   private Double price;
 
+  /**
+   * Instructor associated with the course.
+   *
+   * <p>References the {@link User} entity. Cannot be null. Uses lazy loading for performance.
+   */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "instructor_id",
