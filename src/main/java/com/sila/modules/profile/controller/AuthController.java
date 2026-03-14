@@ -1,6 +1,5 @@
 package com.sila.modules.profile.controller;
 
-import com.sila.config.exception.AccessDeniedException;
 import com.sila.modules.profile.dto.req.LoginRequest;
 import com.sila.modules.profile.dto.req.SignUpRequest;
 import com.sila.modules.profile.dto.req.UserRequest;
@@ -8,7 +7,6 @@ import com.sila.modules.profile.dto.res.LoginResponse;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.service.AuthService;
 import com.sila.modules.profile.service.UserService;
-import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,7 +50,7 @@ public class AuthController {
             responseCode = "400",
             description = "Invalid request data")
       })
-  public ResponseEntity<String> signUp(
+  public ResponseEntity<Map<String,String>> signUp(
       @RequestBody(
               description = "Sign up details for the student account",
               required = true,
@@ -61,11 +59,7 @@ public class AuthController {
           @org.springframework.web.bind.annotation.RequestBody
           SignUpRequest request) {
 
-    if (ROLE.STUDENT.equals(request.getRole())) {
-      return authService.signUp(request);
-    } else {
-      throw new AccessDeniedException("Only student can sign up");
-    }
+    return authService.signUp(request);
   }
 
   /** Sign in to your account */
