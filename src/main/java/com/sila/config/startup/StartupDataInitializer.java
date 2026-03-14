@@ -34,7 +34,7 @@ public class StartupDataInitializer implements ApplicationRunner {
     // Create Admin User
     User admin = new User();
     admin.setEmail(email);
-    admin.setPassword(passwordEncoder.encode("123"));
+    admin.setPassword(passwordEncoder.encode("#Kim346414"));
     admin.setFirstName(firstName);
     admin.setLastName("LA");
     admin.setRole(role);
