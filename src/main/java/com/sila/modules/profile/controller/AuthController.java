@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Map;
+
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -136,26 +138,14 @@ public class AuthController {
   }
 
   /** Update profile of logged-in user */
-  @PutMapping("/me")
+  @PutMapping(value = "/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(
-      summary = "Update Profile",
-      description = "Update the account details of the currently authenticated user.",
-      responses = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Profile updated successfully",
-            content = @Content(schema = @Schema(implementation = UserResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Invalid update request"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized")
-      })
+          summary = "Update Profile",
+          description = "Update the account details of the currently authenticated user."
+  )
   public ResponseEntity<UserResponse> updateProfile(
-      @RequestBody(
-              description = "Updated user profile details",
-              required = true,
-              content = @Content(schema = @Schema(implementation = UserRequest.class)))
-          @org.springframework.web.bind.annotation.RequestBody
-          UserRequest userReq) {
+          @ModelAttribute UserRequest userReq) {
 
-    return ResponseEntity.ok(userService.update(userReq));
+      return ResponseEntity.ok(userService.update(userReq));
   }
 }

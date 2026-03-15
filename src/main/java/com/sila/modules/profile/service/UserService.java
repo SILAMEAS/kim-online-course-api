@@ -4,12 +4,14 @@ import com.sila.config.context.UserContext;
 import com.sila.config.exception.BadRequestException;
 import com.sila.config.exception.NotFoundException;
 import com.sila.config.jwt.JwtProvider;
-import com.sila.modules.profile.spec.UserSpec;
+import com.sila.modules.image.model.Image;
+import com.sila.modules.image.service.ImageService;
 import com.sila.modules.profile.dto.req.UpdateUserRequest;
 import com.sila.modules.profile.dto.req.UserRequest;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.repository.UserRepository;
+import com.sila.modules.profile.spec.UserSpec;
 import com.sila.share.Utils;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
@@ -37,11 +39,16 @@ import org.springframework.stereotype.Service;
 public class UserService extends AbstractCrudCommon<User, Long, UserRepository> {
 
   private final JwtProvider jwtProvider;
+  private final ImageService imageService;
 
   protected UserService(
-      UserRepository baseRepository, ModelMapper mapper, JwtProvider jwtProvider) {
+      UserRepository baseRepository,
+      ModelMapper mapper,
+      JwtProvider jwtProvider,
+      ImageService imageService) {
     super(baseRepository, mapper);
     this.jwtProvider = jwtProvider;
+    this.imageService = imageService;
   }
 
   /**
@@ -136,13 +143,59 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
    * @param userReq UserRequest containing new firstName and lastName
    * @return UserResponse DTO with updated user information
    */
+  /** Updates the current logged-in user's profile. */
   public UserResponse update(UserRequest userReq) {
     var user = super.findById(UserContext.getUserId());
-    Utils.setValueSafe(userReq.getFirstName(), user::setFirstName);
-    Utils.setValueSafe(userReq.getLastName(), user::setLastName);
+
+    updateBasicInfo(userReq, user);
+    String publicId = handleProfileImage(userReq, user);
+
     super.update(user);
 
-    return mapper.map(user, UserResponse.class);
+    return mapToResponse(user, this.imageService.getUrlImage(publicId));
+  }
+
+  private void updateBasicInfo(UserRequest userReq, User user) {
+    Utils.setValueSafe(userReq.getFirstName(), user::setFirstName);
+    Utils.setValueSafe(userReq.getLastName(), user::setLastName);
+  }
+
+  private String handleProfileImage(UserRequest userReq, User user) {
+    if (userReq.getFile() == null || userReq.getFile().isEmpty()) {
+      return imageService.getPublicProfileImage();
+    }
+
+    String publicId = imageService.getPublicProfileImage();
+
+    if (publicId == null) {
+      return createNewProfileImage(userReq, user);
+    }
+
+    return imageService.updateImage(publicId, userReq.getFile());
+  }
+
+  private String createNewProfileImage(UserRequest userReq, User user) {
+    String publicId = imageService.uploadImage(userReq.getFile());
+
+    Image image = new Image();
+    image.setUser(user);
+    image.setPublicId(publicId);
+    image.setTitle("profile_image_" + user.getId());
+
+    imageService.saveImage(image);
+
+    return publicId;
+  }
+
+  private UserResponse mapToResponse(User user, String publicId) {
+    return UserResponse.builder()
+        .id(user.getId())
+        .firstName(user.getFirstName())
+        .lastName(user.getLastName())
+        .role(user.getRole())
+        .email(user.getEmail())
+        .image_url(publicId)
+        .build();
   }
 
   /**
@@ -153,7 +206,8 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
   @Transactional
   public UserResponse getProfile() {
     User user = super.findById(UserContext.getUserId());
-    return mapper.map(user, UserResponse.class);
+    var publicId = this.imageService.getPublicProfileImage();
+    return mapToResponse(user, publicId);
   }
 
   /**
