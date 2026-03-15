@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Service
 @RequiredArgsConstructor
-public class CloudinaryService {
+public class VideoCloudinaryService {
 
   private final Cloudinary cloudinary;
 

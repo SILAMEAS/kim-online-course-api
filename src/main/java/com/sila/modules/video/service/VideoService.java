@@ -38,18 +38,18 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
 
   final EnrollmentService enrollmentService;
   private final CourseRepository courseRepository;
-  private final CloudinaryService cloudinaryService;
+  private final VideoCloudinaryService videoCloudinaryService;
 
   protected VideoService(
       VideoRepository baseRepository,
       ModelMapper mapper,
       EnrollmentService enrollmentService,
       CourseRepository courseRepository,
-      CloudinaryService cloudinaryService) {
+      VideoCloudinaryService videoCloudinaryService) {
     super(baseRepository, mapper);
     this.enrollmentService = enrollmentService;
     this.courseRepository = courseRepository;
-    this.cloudinaryService = cloudinaryService;
+    this.videoCloudinaryService = videoCloudinaryService;
   }
 
   /**
@@ -118,7 +118,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
             .findById(courseId)
             .orElseThrow(() -> new NotFoundException(StaticMessage.COURSE_NOT_FOUND));
 
-    String publicId = cloudinaryService.uploadVideo(file);
+    String publicId = videoCloudinaryService.uploadVideo(file);
 
     Video video = new Video();
     video.setTitle(title);
@@ -145,7 +145,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     }
 
     return super.baseRepository.findAllByCourseId(courseId, super.toPageable(1, 100)).stream()
-        .map(video -> cloudinaryService.generateSignedUrl(video.getPublicId()))
+        .map(video -> videoCloudinaryService.generateSignedUrl(video.getPublicId()))
         .toList();
   }
 
@@ -157,7 +157,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
    */
   @Transactional(readOnly = true)
   public String watchVideo(String publicId) {
-    return cloudinaryService.watchVideo(publicId);
+    return videoCloudinaryService.watchVideo(publicId);
   }
 
   /**
@@ -167,7 +167,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
    */
   @Transactional
   public void deleteVideo(String publicId) {
-    cloudinaryService.deleteVideo(publicId);
+    videoCloudinaryService.deleteVideo(publicId);
   }
 
   /**
@@ -179,7 +179,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
    */
   @Transactional
   public String updateVideo(String oldPublicId, MultipartFile file) {
-    return cloudinaryService.updateVideo(oldPublicId, file);
+    return videoCloudinaryService.updateVideo(oldPublicId, file);
   }
 
   /**
@@ -193,7 +193,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     var videos = this.baseRepository.findAllByCourseId(courseId, super.toPageable(1, 100));
     var publicIds = videos.stream().map(Video::getPublicId).toList();
 
-    cloudinaryService.deleteVideos(publicIds);
+    videoCloudinaryService.deleteVideos(publicIds);
     this.baseRepository.deleteAllInBatch(videos);
   }
 }
