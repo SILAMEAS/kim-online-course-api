@@ -5,6 +5,7 @@ import com.sila.config.exception.BadRequestException;
 import com.sila.config.exception.NotFoundException;
 import com.sila.config.jwt.JwtProvider;
 import com.sila.modules.image.model.Image;
+import com.sila.modules.image.repository.ImageRepository;
 import com.sila.modules.image.service.ImageService;
 import com.sila.modules.profile.dto.req.UpdateUserRequest;
 import com.sila.modules.profile.dto.req.UserRequest;
@@ -40,15 +41,18 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
 
   private final JwtProvider jwtProvider;
   private final ImageService imageService;
+  private final ImageRepository imageRepository;
 
   protected UserService(
       UserRepository baseRepository,
       ModelMapper mapper,
       JwtProvider jwtProvider,
-      ImageService imageService) {
+      ImageService imageService,
+      ImageRepository imageRepository) {
     super(baseRepository, mapper);
     this.jwtProvider = jwtProvider;
     this.imageService = imageService;
+    this.imageRepository = imageRepository;
   }
 
   /**
@@ -108,12 +112,12 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
   /**
    * Updates a user by ID with the given information.
    *
-   * @param Id ID of the user to update
+   * @param id ID of the user to update
    * @param request UpdateUserRequest containing new user data
    * @return Success message
    */
-  public String updateUser(Long Id, UpdateUserRequest request) {
-    User user = super.findById(Id);
+  public String updateUser(Long id, UpdateUserRequest request) {
+    User user = super.findById(id);
     user.setRole(request.getRole());
     user.setFirstName(request.getFistName());
     user.setLastName(request.getLastName());
@@ -135,54 +139,69 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
     return "Successfully deleted user";
   }
 
-  /**
-   * Updates the current logged-in user’s information.
-   *
-   * <p>Only non-null values in UserRequest are applied.
-   *
-   * @param userReq UserRequest containing new firstName and lastName
-   * @return UserResponse DTO with updated user information
-   */
   /** Updates the current logged-in user's profile. */
+  @Transactional
   public UserResponse update(UserRequest userReq) {
-    var user = super.findById(UserContext.getUserId());
+    // 1️⃣ Get current logged-in user
+    User user = super.findById(UserContext.getUserId());
 
+    // 2️⃣ Update basic info
     updateBasicInfo(userReq, user);
-    String publicId = handleProfileImage(userReq, user);
 
+    // 3️⃣ Handle profile image (delete old, upload new, save new publicId)
+    String publicId = handleProfileImageUpdate(userReq, user);
+
+    // 4️⃣ Persist user changes
     super.update(user);
 
-    return mapToResponse(user, this.imageService.getUrlImage(publicId));
+    // 5️⃣ Return response with updated info and image URL
+    return mapToResponse(user, imageService.getUrlImage(publicId));
   }
 
+  /** Updates user's firstName and lastName if provided */
   private void updateBasicInfo(UserRequest userReq, User user) {
     Utils.setValueSafe(userReq.getFirstName(), user::setFirstName);
     Utils.setValueSafe(userReq.getLastName(), user::setLastName);
   }
 
-  private String handleProfileImage(UserRequest userReq, User user) {
+  /**
+   * Handles profile image update: - deletes old image from Cloudinary - uploads new image - updates
+   * Image entity in DB
+   */
+  private String handleProfileImageUpdate(UserRequest userReq, User user) {
+    // Get existing image entity
+    Image existingImage = imageService.getImageByUserLogin();
+    // If no new file, return existing image publicId
     if (userReq.getFile() == null || userReq.getFile().isEmpty()) {
-      return imageService.getPublicProfileImage();
+      return existingImage != null ? existingImage.getPublicId() : null;
     }
 
-    String publicId = imageService.getPublicProfileImage();
-
-    if (publicId == null) {
+    if (existingImage == null) {
+      // No existing image, create a new one
       return createNewProfileImage(userReq, user);
     }
 
-    return imageService.updateImage(publicId, userReq.getFile());
+    // Update image in Cloudinary (old one will be deleted inside updateImage)
+    String newPublicId = imageService.updateImage(existingImage.getPublicId(), userReq.getFile());
+
+    // Persist new publicId in DB
+    existingImage.setPublicId(newPublicId);
+    imageService.updateImageEntity(existingImage);
+
+    return newPublicId;
   }
 
+  /** Creates a new profile image record in DB and uploads it */
   private String createNewProfileImage(UserRequest userReq, User user) {
-    String publicId = imageService.uploadImage(userReq.getFile());
+    // Upload image to Cloudinary
+    String publicId = imageService.uploadImageFolderProfile(userReq.getFile());
 
+    // Create DB record
     Image image = new Image();
     image.setUser(user);
     image.setPublicId(publicId);
-    image.setTitle("profile_image_" + user.getId());
-
-    imageService.saveImage(image);
+    image.setTitle(String.valueOf(user.getId()));
+    this.imageRepository.save(image);
 
     return publicId;
   }
@@ -205,17 +224,8 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
    */
   @Transactional
   public UserResponse getProfile() {
-    User user = super.findById(UserContext.getUserId());
-    var publicId = this.imageService.getPublicProfileImage();
-    return mapToResponse(user, publicId);
-  }
-
-  /**
-   * Counts the total number of users in the system.
-   *
-   * @return Total user count
-   */
-  public Long count() {
-    return this.baseRepository.count();
+    return mapToResponse(
+        super.findById(UserContext.getUserId()),
+        this.imageService.getImageByUserLogin().getPublicId());
   }
 }

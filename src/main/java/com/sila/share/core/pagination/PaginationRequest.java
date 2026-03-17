@@ -14,7 +14,7 @@ import org.springframework.data.domain.Sort;
 @NoArgsConstructor
 public class PaginationRequest {
   @Builder.Default
-  @Schema(name = "search", example = "Search field")
+  @Schema(name = "search", example = "")
   private String search = PaginationConstant.DEFAULT_SEARCH;
 
   @Builder.Default
@@ -33,6 +33,6 @@ public class PaginationRequest {
   private String sortBy = PaginationConstant.DEFAULT_SORT_BY_FIELD;
 
   @Builder.Default
-  @Schema(name = "sortOrder", example = "DESC,ASC")
+  @Schema(name = "sortOrder", example = "DESC")
   private Sort.Direction sortOrder = Sort.Direction.DESC;
 }

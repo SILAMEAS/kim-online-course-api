@@ -4,7 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.sila.config.exception.BadRequestException;
 import com.sila.share.constant.StaticMessage;
-import com.sila.share.core.pagination.CloudinaryConstant;
+import com.sila.modules.video.constant.ConstantCloudinaryVideo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Service
 @RequiredArgsConstructor
-public class VideoCloudinaryService {
+public class VideoServiceCloudinary {
 
   private final Cloudinary cloudinary;
 
@@ -39,11 +39,11 @@ public class VideoCloudinaryService {
               .uploadLarge(
                   inputStream,
                   ObjectUtils.asMap(
-                      CloudinaryConstant.RESOURCE_TYPE_KEY,
-                      CloudinaryConstant.RESOURCE_TYPE_VALUE,
-                      CloudinaryConstant.CHUNK_SIZE,
-                      CloudinaryConstant.CHUNK_MB));
-      return uploadResult.get(CloudinaryConstant.PUBLIC_ID).toString();
+                      ConstantCloudinaryVideo.RESOURCE_TYPE,
+                      ConstantCloudinaryVideo.RESOURCE_VIDEO,
+                      ConstantCloudinaryVideo.CHUNK_SIZE,
+                      ConstantCloudinaryVideo.CHUNK_MB));
+      return uploadResult.get(ConstantCloudinaryVideo.PUBLIC_ID).toString();
     } catch (IOException e) {
       throw new BadRequestException(StaticMessage.VIDEO_UPLOAD_FAILED + e.getMessage());
     }
@@ -58,7 +58,7 @@ public class VideoCloudinaryService {
   public String generateSignedUrl(String publicId) {
     return cloudinary
         .url()
-        .resourceType(CloudinaryConstant.RESOURCE_TYPE_VALUE)
+        .resourceType(ConstantCloudinaryVideo.RESOURCE_VIDEO)
         .publicId(publicId)
         .signed(true)
         .generate();
@@ -77,7 +77,7 @@ public class VideoCloudinaryService {
           .destroy(
               publicId,
               ObjectUtils.asMap(
-                  CloudinaryConstant.RESOURCE_TYPE_KEY, CloudinaryConstant.RESOURCE_TYPE_VALUE));
+                  ConstantCloudinaryVideo.RESOURCE_TYPE, ConstantCloudinaryVideo.RESOURCE_VIDEO));
     } catch (IOException e) {
       throw new BadRequestException(StaticMessage.VIDEO_DELETE_FAILED + e.getMessage());
     }
@@ -106,9 +106,9 @@ public class VideoCloudinaryService {
   public String watchVideo(String publicId) {
     return cloudinary
         .url()
-        .resourceType(CloudinaryConstant.RESOURCE_TYPE_VALUE)
+        .resourceType(ConstantCloudinaryVideo.RESOURCE_VIDEO)
         .publicId(publicId)
-        .format(CloudinaryConstant.FORMAT)
+        .format(ConstantCloudinaryVideo.FORMAT_MP4)
         .secure(true)
         .generate();
   }
@@ -128,7 +128,7 @@ public class VideoCloudinaryService {
           .deleteResources(
               publicIds,
               ObjectUtils.asMap(
-                  CloudinaryConstant.RESOURCE_TYPE_KEY, CloudinaryConstant.RESOURCE_TYPE_VALUE));
+                  ConstantCloudinaryVideo.RESOURCE_TYPE, ConstantCloudinaryVideo.RESOURCE_VIDEO));
     } catch (Exception e) {
       throw new BadRequestException(StaticMessage.BULK_VIDEO_FAILED + e.getMessage());
     }
