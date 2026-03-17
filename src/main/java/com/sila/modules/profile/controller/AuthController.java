@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Map;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,13 +51,13 @@ public class AuthController {
             responseCode = "400",
             description = "Invalid request data")
       })
-  public ResponseEntity<Map<String,String>> signUp(
+  public ResponseEntity<Map<String, String>> signUp(
       @RequestBody(
               description = "Sign up details for the student account",
               required = true,
               content = @Content(schema = @Schema(implementation = SignUpRequest.class)))
           @Valid
-          @org.springframework.web.bind.annotation.RequestBody
+          @ModelAttribute
           SignUpRequest request) {
 
     return authService.signUp(request);
@@ -140,12 +139,10 @@ public class AuthController {
   /** Update profile of logged-in user */
   @PutMapping(value = "/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(
-          summary = "Update Profile",
-          description = "Update the account details of the currently authenticated user."
-  )
-  public ResponseEntity<UserResponse> updateProfile(
-          @ModelAttribute UserRequest userReq) {
+      summary = "Update Profile",
+      description = "Update the account details of the currently authenticated user.")
+  public ResponseEntity<UserResponse> updateProfile(@ModelAttribute UserRequest userReq) {
 
-      return ResponseEntity.ok(userService.update(userReq));
+    return ResponseEntity.ok(userService.update(userReq));
   }
 }

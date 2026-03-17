@@ -3,8 +3,8 @@ package com.sila.modules.profile.dto.req;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.io.File;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class SignUpRequest {
@@ -16,5 +16,5 @@ public class SignUpRequest {
 
   @NotBlank private String lastName;
 
-  @NotNull private File profile_img;
+  @NotNull private MultipartFile file;
 }

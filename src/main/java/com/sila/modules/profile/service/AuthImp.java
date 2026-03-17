@@ -1,13 +1,12 @@
 package com.sila.modules.profile.service;
 
-import com.sila.config.context.UserContext;
 import com.sila.config.custom.CustomUserDetails;
 import com.sila.config.custom.CustomerUserDetailsService;
-import com.sila.config.exception.AccessDeniedException;
 import com.sila.config.exception.BadRequestException;
 import com.sila.config.exception.NotFoundException;
 import com.sila.config.jwt.JwtConstant;
 import com.sila.config.jwt.JwtProvider;
+import com.sila.modules.image.service.ImageService;
 import com.sila.modules.profile.dto.req.CreateUserRequest;
 import com.sila.modules.profile.dto.req.LoginRequest;
 import com.sila.modules.profile.dto.req.SignUpRequest;
@@ -18,7 +17,6 @@ import com.sila.share.enums.ROLE;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -52,6 +50,7 @@ public class AuthImp implements AuthService {
   private final JwtProvider jwtProvider;
   private final CustomerUserDetailsService customerUserDetailsService;
   private final UserService userService;
+  private final ImageService imageService;
 
   /**
    * Authenticates a user by email and password.
@@ -76,8 +75,8 @@ public class AuthImp implements AuthService {
    * @return ResponseEntity with HTTP status CREATED and success message
    * @throws BadRequestException if the email is already registered
    */
-  public ResponseEntity<Map<String,String>> signUp(SignUpRequest request) {
-    if (userRepository.findByEmail(request.getEmail()) != null) {
+  public ResponseEntity<Map<String, String>> signUp(SignUpRequest request) {
+    if (userRepository.existsByEmail(request.getEmail())) {
       throw new BadRequestException("Email is already used");
     }
 
@@ -86,13 +85,14 @@ public class AuthImp implements AuthService {
     newUser.setFirstName(request.getFirstName());
     newUser.setLastName(request.getLastName());
     newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+    var profileImage = imageService.createImage(request.getFile());
+    newUser.setImage(profileImage);
 
     userRepository.save(newUser);
 
-
     // Explicit Map<String, String> type
     return ResponseEntity.status(HttpStatus.CREATED)
-            .body(Collections.singletonMap("message", "User registered successfully"));
+        .body(Collections.singletonMap("message", "User registered successfully"));
   }
 
   /**
@@ -193,9 +193,8 @@ public class AuthImp implements AuthService {
 
     userRepository.save(newUser);
 
-
     // Explicit Map<String, String> type
     return ResponseEntity.status(HttpStatus.CREATED)
-            .body(Collections.singletonMap("message", "Create user successfully"));
+        .body(Collections.singletonMap("message", "Create user successfully"));
   }
 }
