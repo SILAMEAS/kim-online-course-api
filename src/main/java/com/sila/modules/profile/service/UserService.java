@@ -224,8 +224,8 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
    */
   @Transactional
   public UserResponse getProfile() {
+    var publicId = this.imageService.getImageByUserLogin().getPublicId();
     return mapToResponse(
-        super.findById(UserContext.getUserId()),
-        this.imageService.getImageByUserLogin().getPublicId());
+        super.findById(UserContext.getUserId()), this.imageService.getUrlImage(publicId));
   }
 }
