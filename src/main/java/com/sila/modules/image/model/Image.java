@@ -1,7 +1,5 @@
 package com.sila.modules.image.model;
 
-import com.sila.modules.course.model.Course;
-import com.sila.modules.profile.model.User;
 import com.sila.share.core.entity.AbstractAuditable;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,13 +36,4 @@ public class Image extends AbstractAuditable {
   /** Optional order index to sort videos within a course. */
   @Column(name = "order_index")
   private Integer orderIndex;
-
-  /** Course this video belongs to. Cannot be null. */
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "user_id",
-      referencedColumnName = "id",
-      nullable = false,
-      foreignKey = @ForeignKey(name = "fk_images_users"))
-  private User user;
 }

@@ -1,5 +1,6 @@
 package com.sila.modules.profile.model;
 
+import com.sila.modules.image.model.Image;
 import com.sila.share.core.entity.AbstractAuditable;
 import com.sila.share.enums.ROLE;
 import jakarta.persistence.*;
@@ -47,4 +48,12 @@ public class User extends AbstractAuditable {
   @Enumerated(EnumType.STRING)
   @Column(name = "role", nullable = false, length = 20)
   private ROLE role = ROLE.STUDENT;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "image_id",
+      referencedColumnName = "id",
+      nullable = true,
+      foreignKey = @ForeignKey(name = "fk_users_images"))
+  private Image image;
 }

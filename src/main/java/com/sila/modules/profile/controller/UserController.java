@@ -1,7 +1,6 @@
 package com.sila.modules.profile.controller;
 
 import com.sila.modules.profile.dto.req.CreateUserRequest;
-import com.sila.modules.profile.dto.req.SignUpRequest;
 import com.sila.modules.profile.dto.req.UpdateUserRequest;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.service.AuthService;
@@ -18,12 +17,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @Tag(name = "User Management", description = "Operations related to managing user accounts")
 @RestController
@@ -63,7 +61,8 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "Invalid request data"),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<Map<String,String>> createUser(@Valid @RequestBody CreateUserRequest request) {
+  public ResponseEntity<Map<String, String>> createUser(
+      @Valid @RequestBody CreateUserRequest request) {
     return authService.createUser(request);
   }
 

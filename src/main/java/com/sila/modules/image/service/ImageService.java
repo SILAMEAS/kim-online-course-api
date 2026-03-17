@@ -1,6 +1,5 @@
 package com.sila.modules.image.service;
 
-import com.sila.config.context.UserContext;
 import com.sila.config.exception.BadRequestException;
 import com.sila.modules.image.Enum.CloudinaryFolder;
 import com.sila.modules.image.dto.ImageListResponse;
@@ -30,36 +29,11 @@ public class ImageService extends AbstractCrudCommon<Image, Long, ImageRepositor
     this.imageServiceCloudinary = imageServiceCloudinary;
   }
 
-  /** Upload single image */
-  @Transactional
-  public String uploadImageFolderProfile(MultipartFile file) {
-    return imageServiceCloudinary.uploadImage(file, CloudinaryFolder.PROFILE);
-  }
-
-  /** Update image */
-  @Transactional
-  public String updateImage(String oldPublicId, MultipartFile file) {
-
-    return imageServiceCloudinary.updateImage(oldPublicId, file, CloudinaryFolder.PROFILE);
-  }
-
-  @Transactional
-  public void updateImageEntity(Image image) {
-    super.update(image);
-  }
-
   /** Get URL of image */
   @Transactional
   public String getUrlImage(String publicId) {
 
     return imageServiceCloudinary.getImageUrl(publicId);
-  }
-
-  /** Get URL of image */
-  @Transactional(readOnly = true)
-  public Image getImageByUserLogin() {
-
-    return baseRepository.findOneByUserId(UserContext.getUserId()).orElse(null);
   }
 
   /**
@@ -94,5 +68,25 @@ public class ImageService extends AbstractCrudCommon<Image, Long, ImageRepositor
   @Transactional
   public void deleteImageByPublicId(String publicId) {
     imageServiceCloudinary.deleteImage(publicId);
+  }
+
+  @Transactional
+  public Image createImage(MultipartFile file) {
+    String publicId = this.uploadImageFolderProfile(file);
+    return super.save(Image.builder().title(publicId).publicId(publicId).build());
+  }
+
+  /** Update image */
+  @Transactional
+  public Image updateImage(Image image, MultipartFile file) {
+    var newPublicId =
+        imageServiceCloudinary.updateImage(image.getPublicId(), file, CloudinaryFolder.PROFILE);
+    image.setPublicId(newPublicId);
+    return super.update(image);
+  }
+
+  /** Upload single image */
+  public String uploadImageFolderProfile(MultipartFile file) {
+    return imageServiceCloudinary.uploadImage(file, CloudinaryFolder.PROFILE);
   }
 }
