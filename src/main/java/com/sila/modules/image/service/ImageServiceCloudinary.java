@@ -5,7 +5,6 @@ import com.cloudinary.utils.ObjectUtils;
 import com.sila.config.exception.BadRequestException;
 import com.sila.modules.image.Enum.CloudinaryFolder;
 import com.sila.modules.image.constant.ConstantCloudinaryImage;
-import com.sila.modules.image.utils.ImageUtils;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -57,13 +56,10 @@ public class ImageServiceCloudinary {
   public void deleteImage(String publicId) {
     if (publicId == null || publicId.isBlank()) return;
 
-    String idToDelete = ImageUtils.resolvePublicIdForDeletion(publicId);
-    if (idToDelete == null) return;
-
     try {
-      cloudinary.uploader().destroy(idToDelete, ObjectUtils.emptyMap());
+      cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
     } catch (IOException e) {
-      log.error("Cloudinary delete failed for publicId {}: {}", idToDelete, e.getMessage(), e);
+      log.error("Cloudinary delete failed for publicId {}: {}", publicId, e.getMessage(), e);
       throw new BadRequestException("Image delete failed: " + e.getMessage());
     }
   }

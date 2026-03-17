@@ -10,11 +10,13 @@ import com.sila.modules.image.spec.ImageSpec;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 public class ImageService extends AbstractCrudCommon<Image, Long, ImageRepository> {
 
@@ -38,8 +40,7 @@ public class ImageService extends AbstractCrudCommon<Image, Long, ImageRepositor
   @Transactional
   public String updateImage(String oldPublicId, MultipartFile file) {
 
-    return imageServiceCloudinary.updateImage(
-        oldPublicId, file, CloudinaryFolder.PROFILE);
+    return imageServiceCloudinary.updateImage(oldPublicId, file, CloudinaryFolder.PROFILE);
   }
 
   @Transactional
@@ -87,5 +88,11 @@ public class ImageService extends AbstractCrudCommon<Image, Long, ImageRepositor
     return this.baseRepository
         .findOneByPublicId(publicId)
         .orElseThrow(() -> new BadRequestException("Not found image with this publicId"));
+  }
+
+  /** Delete image by publicId */
+  @Transactional
+  public void deleteImageByPublicId(String publicId) {
+    imageServiceCloudinary.deleteImage(publicId);
   }
 }
