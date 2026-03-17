@@ -1,6 +1,7 @@
 package com.sila.config.context;
 
 import com.sila.config.exception.BadRequestException;
+import com.sila.config.exception.UnauthorizedException;
 import com.sila.modules.profile.model.User;
 import com.sila.share.enums.ROLE;
 import java.util.Objects;
@@ -51,7 +52,7 @@ public class UserContext {
 
   public static void checkLogin() {
     if (Objects.isNull(currentUser.get())) {
-      throw new BadRequestException("You are not logged in can't get user; note : UserContext");
+      throw new UnauthorizedException("Unauthorized: Please log in to access this resource.");
     }
   }
 }

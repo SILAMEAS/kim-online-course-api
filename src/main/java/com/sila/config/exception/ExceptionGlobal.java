@@ -150,6 +150,17 @@ public class ExceptionGlobal {
         HttpStatus.BAD_REQUEST);
   }
 
+  /** Handle Unauthorized Exception */
+  @ExceptionHandler(value = UnauthorizedException.class)
+  public ResponseEntity<MessageResponse> handleAuthorized(UnauthorizedException ex) {
+    return new ResponseEntity<>(
+        MessageResponse.builder()
+            .message(ex.getMessage())
+            .status(HttpStatus.UNAUTHORIZED.value())
+            .build(),
+        HttpStatus.UNAUTHORIZED);
+  }
+
   /** HttpMediaTypeNotSupportedException */
   @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
   public ResponseEntity<MessageResponse> handleHttpMediaTypeNotSupported(
