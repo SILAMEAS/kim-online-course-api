@@ -19,4 +19,5 @@ public class CourseResponse {
   private Double price;
   private Long updatedBy;
   private Long createdBy;
+  private String image_url;
 }

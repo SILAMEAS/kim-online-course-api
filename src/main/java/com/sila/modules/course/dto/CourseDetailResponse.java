@@ -19,4 +19,5 @@ public class CourseDetailResponse {
   private String description;
   private Double price;
   private UserResponse instructor;
+  private String image_url;
 }

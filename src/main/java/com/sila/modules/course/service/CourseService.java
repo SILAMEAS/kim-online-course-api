@@ -8,6 +8,8 @@ import com.sila.modules.course.model.Course;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.course.spec.CourseSpec;
 import com.sila.modules.enrolment.service.EnrollmentService;
+import com.sila.modules.image.service.ImageService;
+import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.service.UserService;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.constant.StaticMessage;
@@ -37,17 +39,20 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
   private final UserService userService;
   private final VideoService videoService;
   private final EnrollmentService enrollmentService;
+  private final ImageService imageService;
 
   protected CourseService(
       CourseRepository baseRepository,
       ModelMapper mapper,
       UserService userService,
       VideoService videoService,
-      EnrollmentService enrollmentService) {
+      EnrollmentService enrollmentService,
+      ImageService imageService) {
     super(baseRepository, mapper);
     this.userService = userService;
     this.videoService = videoService;
     this.enrollmentService = enrollmentService;
+    this.imageService = imageService;
   }
 
   /**
@@ -67,7 +72,18 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
             String.valueOf(request.getSortOrder()));
     final var spec = CourseSpec.search(request.getSearch());
     Page<Course> courses = super.findAll(spec, pageable);
-    var coursesNew = courses.map(c -> this.mapper.map(c, CourseResponse.class));
+    var coursesNew =
+        courses.map(
+            c ->
+                CourseResponse.builder()
+                    .id(c.getId())
+                    .title(c.getTitle())
+                    .description(c.getDescription())
+                    .price(c.getPrice())
+                    .updatedBy(c.getUpdatedBy())
+                    .createdBy(c.getCreatedBy())
+                    .image_url(this.imageService.getUrlImage(c.getImage().getPublicId()))
+                    .build());
     return new EntityResponseHandler<>(coursesNew);
   }
 
@@ -85,6 +101,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     course.setTitle(request.getTitle());
     course.setDescription(request.getDescription());
     course.setPrice(request.getPrice());
+    course.setImage(this.imageService.createImage(request.getFile()));
     var instructor = userService.getById(request.getInstructorId());
     course.setInstructor(instructor);
 
@@ -100,7 +117,27 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
    */
   @Transactional(readOnly = true)
   public CourseDetailResponse courseDetail(Long courseId) {
-    return this.mapper.map(super.findById(courseId), CourseDetailResponse.class);
+    var course = super.findById(courseId);
+    var instructor = course.getInstructor();
+    return CourseDetailResponse.builder()
+        .id(course.getId())
+        .title(course.getTitle())
+        .description(course.getDescription())
+        .price(course.getPrice())
+        .image_url(this.imageService.getUrlImage(course.getImage().getPublicId()))
+        .instructor(
+            UserResponse.builder()
+                .id(instructor.getId())
+                .firstName(instructor.getFirstName())
+                .lastName(instructor.getLastName())
+                .email(instructor.getEmail())
+                .role(instructor.getRole())
+                .image_url(
+                    instructor.getImage() == null
+                        ? null
+                        : this.imageService.getUrlImage(instructor.getImage().getPublicId()))
+                .build())
+        .build();
   }
 
   /**

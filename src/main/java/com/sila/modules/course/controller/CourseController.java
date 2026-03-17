@@ -70,7 +70,7 @@ public class CourseController {
               required = true,
               content = @Content(schema = @Schema(implementation = CreateCourseRequest.class)))
           @Valid
-          @org.springframework.web.bind.annotation.RequestBody
+          @ModelAttribute
           CreateCourseRequest request) {
 
     return ResponseEntity.ok(courseService.createCourse(request));
