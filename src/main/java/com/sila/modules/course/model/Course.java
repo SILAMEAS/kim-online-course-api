@@ -4,6 +4,7 @@ import com.sila.modules.image.model.Image;
 import com.sila.modules.profile.model.User;
 import com.sila.share.core.entity.AbstractAuditable;
 import com.sila.share.enums.CourseStatus;
+import com.sila.share.enums.LevelStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -69,6 +70,31 @@ public class Course extends AbstractAuditable {
   @Enumerated(EnumType.STRING)
   private CourseStatus status;
 
+  /** Price of the course. Cannot be null. */
+  @Column(name = "category")
+  private String category;
+
+  /** Price of the course. Cannot be null. */
+  @Column(name = "level")
+  @Enumerated(EnumType.STRING)
+  private LevelStatus level;
+
+  /** Price of the course. Cannot be null. */
+  @Column(name = "rating")
+  private Double rating;
+
+  /** Price of the course. Cannot be null. */
+  @Column(name = "reviews_count")
+  private Number reviewsCount;
+
+  /** Price of the course. Cannot be null. */
+  @Column(name = "duration")
+  private Number duration;
+
+  /** Price of the course. Cannot be null. */
+  @Column(name = "students_count")
+  private Number studentsCount;
+
   /**
    * Instructor associated with the course.
    *
@@ -89,5 +115,13 @@ public class Course extends AbstractAuditable {
       nullable = true,
       foreignKey = @ForeignKey(name = "fk_course_images"))
   private Image image;
-  
+
+  @Override
+  public void onPreCreated() {
+    this.studentsCount = 0;
+    this.reviewsCount = 0;
+    this.rating = 0D;
+    this.level = LevelStatus.BEGINNER;
+    this.duration = 0;
+  }
 }

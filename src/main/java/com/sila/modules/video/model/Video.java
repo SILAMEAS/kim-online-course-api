@@ -29,6 +29,10 @@ public class Video extends AbstractAuditable {
   @Column(name = "title", nullable = false)
   private String title;
 
+  /** Title of the video. */
+  @Column(name = "description")
+  private String description;
+
   /** Cloudinary public ID for the video. */
   @Column(name = "public_id", nullable = false)
   private String publicId;

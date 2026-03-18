@@ -10,6 +10,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VideoListResponse {
+
+  private Long id;
+
   private String title;
 
   private String publicId;

@@ -101,7 +101,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     course.setInstructor(instructor);
 
     super.save(course);
-    return this.mapper.map(course, CourseResponse.class);
+    return courseMapping.mapToCourseResponse(course);
   }
 
   /** Update course. */
@@ -131,7 +131,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     }
     //    save course after update
     super.save(course);
-    return this.mapper.map(course, CourseResponse.class);
+    return courseMapping.mapToCourseResponse(course);
   }
 
   /**

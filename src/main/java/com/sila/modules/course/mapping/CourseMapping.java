@@ -23,6 +23,12 @@ public class CourseMapping {
         .description(course.getDescription())
         .price(course.getPrice())
         .imageUrl(imageService.getUrlImage(course.getImage().getPublicId()))
+        .rating(course.getRating())
+        .level(course.getLevel())
+        .status(course.getStatus())
+        .studentsCount(course.getStudentsCount())
+        .reviewsCount(course.getReviewsCount())
+        .duration(course.getDuration())
         .instructor(
             UserResponse.builder()
                 .id(instructor.getId())
@@ -44,6 +50,12 @@ public class CourseMapping {
         .title(course.getTitle())
         .description(course.getDescription())
         .price(course.getPrice())
+        .rating(course.getRating())
+        .level(course.getLevel())
+        .status(course.getStatus())
+        .studentsCount(course.getStudentsCount())
+        .reviewsCount(course.getReviewsCount())
+        .duration(course.getDuration())
         .imageUrl(imageService.getUrlImage(course.getImage().getPublicId()))
         .build();
   }
