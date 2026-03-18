@@ -167,7 +167,7 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
         .lastName(user.getLastName())
         .role(user.getRole())
         .email(user.getEmail())
-        .image_url(publicId)
+        .imageUrl(publicId)
         .build();
   }
 

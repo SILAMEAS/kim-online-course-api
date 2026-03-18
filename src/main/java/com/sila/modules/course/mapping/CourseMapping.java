@@ -22,7 +22,7 @@ public class CourseMapping {
         .title(course.getTitle())
         .description(course.getDescription())
         .price(course.getPrice())
-        .image_url(imageService.getUrlImage(course.getImage().getPublicId()))
+        .imageUrl(imageService.getUrlImage(course.getImage().getPublicId()))
         .instructor(
             UserResponse.builder()
                 .id(instructor.getId())
@@ -30,7 +30,7 @@ public class CourseMapping {
                 .lastName(instructor.getLastName())
                 .email(instructor.getEmail())
                 .role(instructor.getRole())
-                .image_url(
+                .imageUrl(
                     instructor.getImage() == null
                         ? null
                         : imageService.getUrlImage(instructor.getImage().getPublicId()))
@@ -44,7 +44,7 @@ public class CourseMapping {
         .title(course.getTitle())
         .description(course.getDescription())
         .price(course.getPrice())
-        .image_url(imageService.getUrlImage(course.getImage().getPublicId()))
+        .imageUrl(imageService.getUrlImage(course.getImage().getPublicId()))
         .build();
   }
 }

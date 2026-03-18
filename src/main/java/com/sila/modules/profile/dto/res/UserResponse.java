@@ -20,7 +20,7 @@ public class UserResponse implements Serializable {
     private String lastName;
     private String email;
     private ROLE role;
-    private String image_url;
+    private String imageUrl;
 
     public static UserResponseCustom toUserResponseCustom(User user) {
         return UserResponseCustom.builder()
