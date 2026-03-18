@@ -96,7 +96,11 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     course.setTitle(request.getTitle());
     course.setDescription(request.getDescription());
     course.setPrice(request.getPrice());
+    course.setCategory(request.getCategory());
     course.setImage(this.imageService.createImage(request.getFile(), CloudinaryFolder.COURSE));
+    course.setReviewsCount(0);
+    course.setDuration(0);
+    course.setStudentsCount(0);
     var instructor = userService.getById(request.getInstructorId());
     course.setInstructor(instructor);
 

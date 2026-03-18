@@ -29,6 +29,7 @@ public class CourseMapping {
         .studentsCount(course.getStudentsCount())
         .reviewsCount(course.getReviewsCount())
         .duration(course.getDuration())
+        .category(course.getCategory())
         .instructor(
             UserResponse.builder()
                 .id(instructor.getId())
@@ -45,6 +46,7 @@ public class CourseMapping {
   }
 
   public CourseResponse mapToCourseResponse(Course course) {
+    var instructor = course.getInstructor();
     return CourseResponse.builder()
         .id(course.getId())
         .title(course.getTitle())
@@ -55,8 +57,21 @@ public class CourseMapping {
         .status(course.getStatus())
         .studentsCount(course.getStudentsCount())
         .reviewsCount(course.getReviewsCount())
+        .category(course.getCategory())
         .duration(course.getDuration())
         .imageUrl(imageService.getUrlImage(course.getImage().getPublicId()))
+        .instructor(
+            UserResponse.builder()
+                .id(instructor.getId())
+                .firstName(instructor.getFirstName())
+                .lastName(instructor.getLastName())
+                .email(instructor.getEmail())
+                .role(instructor.getRole())
+                .imageUrl(
+                    instructor.getImage() == null
+                        ? null
+                        : imageService.getUrlImage(instructor.getImage().getPublicId()))
+                .build())
         .build();
   }
 }

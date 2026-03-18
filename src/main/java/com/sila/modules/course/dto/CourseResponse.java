@@ -1,5 +1,6 @@
 package com.sila.modules.course.dto;
 
+import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.share.enums.CourseStatus;
 import com.sila.share.enums.LevelStatus;
 import lombok.AllArgsConstructor;
@@ -29,4 +30,5 @@ public class CourseResponse {
   private Number reviewsCount;
   private Number duration;
   private Number studentsCount;
+  private UserResponse instructor;
 }
