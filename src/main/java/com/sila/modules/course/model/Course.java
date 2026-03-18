@@ -3,9 +3,12 @@ package com.sila.modules.course.model;
 import com.sila.modules.image.model.Image;
 import com.sila.modules.profile.model.User;
 import com.sila.share.core.entity.AbstractAuditable;
+import com.sila.share.enums.CourseStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -61,6 +64,11 @@ public class Course extends AbstractAuditable {
   @Column(name = "price", nullable = false)
   private Double price;
 
+  /** Price of the course. Cannot be null. */
+  @Column(name = "status", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private CourseStatus status;
+
   /**
    * Instructor associated with the course.
    *
@@ -79,6 +87,7 @@ public class Course extends AbstractAuditable {
       name = "image_id",
       referencedColumnName = "id",
       nullable = true,
-      foreignKey = @ForeignKey(name = "fk_users_images"))
+      foreignKey = @ForeignKey(name = "fk_course_images"))
   private Image image;
+  
 }

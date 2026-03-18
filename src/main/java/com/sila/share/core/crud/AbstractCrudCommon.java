@@ -35,6 +35,10 @@ public abstract class AbstractCrudCommon<
     this.mapper = mapper;
   }
 
+  protected String getEntityName() {
+    return ((Class<?>) getClassType(0)).getSimpleName();
+  }
+
   /**
    * Creates a Pageable object for pagination with the given page number and page size.
    *
@@ -89,7 +93,10 @@ public abstract class AbstractCrudCommon<
   protected E findById(@NonNull T id) {
     return this.baseRepository
         .findById(id)
-        .orElseThrow(() -> new NotFoundException(StaticMessage.RESOURCE_NOT_FOUND));
+        .orElseThrow(
+            () ->
+                new NotFoundException(
+                    String.format("%s with id %s not found", getEntityName(), id)));
   }
 
   protected E findActiveById(UUID id) {

@@ -4,14 +4,17 @@ import com.sila.config.exception.BadRequestException;
 import com.sila.modules.course.dto.CourseDetailResponse;
 import com.sila.modules.course.dto.CourseResponse;
 import com.sila.modules.course.dto.CreateCourseRequest;
+import com.sila.modules.course.dto.UpdateCourseRequest;
+import com.sila.modules.course.mapping.CourseMapping;
 import com.sila.modules.course.model.Course;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.course.spec.CourseSpec;
 import com.sila.modules.enrolment.service.EnrollmentService;
+import com.sila.modules.image.Enum.CloudinaryFolder;
 import com.sila.modules.image.service.ImageService;
-import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.service.UserService;
 import com.sila.modules.video.service.VideoService;
+import com.sila.share.Utils;
 import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
@@ -40,6 +43,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
   private final VideoService videoService;
   private final EnrollmentService enrollmentService;
   private final ImageService imageService;
+  private final CourseMapping courseMapping;
 
   protected CourseService(
       CourseRepository baseRepository,
@@ -47,12 +51,14 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
       UserService userService,
       VideoService videoService,
       EnrollmentService enrollmentService,
-      ImageService imageService) {
+      ImageService imageService,
+      CourseMapping courseMapping) {
     super(baseRepository, mapper);
     this.userService = userService;
     this.videoService = videoService;
     this.enrollmentService = enrollmentService;
     this.imageService = imageService;
+    this.courseMapping = courseMapping;
   }
 
   /**
@@ -63,7 +69,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
    * @return Paginated response of CourseResponse DTOs.
    */
   @Transactional(readOnly = true)
-  public EntityResponseHandler<CourseResponse> listCourse(PaginationRequest request) {
+  public EntityResponseHandler<CourseResponse> lists(PaginationRequest request) {
     final var pageable =
         super.toPageable(
             request.getPage(),
@@ -72,19 +78,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
             String.valueOf(request.getSortOrder()));
     final var spec = CourseSpec.search(request.getSearch());
     Page<Course> courses = super.findAll(spec, pageable);
-    var coursesNew =
-        courses.map(
-            c ->
-                CourseResponse.builder()
-                    .id(c.getId())
-                    .title(c.getTitle())
-                    .description(c.getDescription())
-                    .price(c.getPrice())
-                    .updatedBy(c.getUpdatedBy())
-                    .createdBy(c.getCreatedBy())
-                    .image_url(this.imageService.getUrlImage(c.getImage().getPublicId()))
-                    .build());
-    return new EntityResponseHandler<>(coursesNew);
+    return new EntityResponseHandler<>(courses.map(courseMapping::mapToCourseResponse));
   }
 
   /**
@@ -96,15 +90,46 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
    * @return CourseResponse DTO of the newly created course.
    */
   @Transactional
-  public CourseResponse createCourse(CreateCourseRequest request) {
+  public CourseResponse create(CreateCourseRequest request) {
     Course course = new Course();
+    course.setStatus(request.getStatus());
     course.setTitle(request.getTitle());
     course.setDescription(request.getDescription());
     course.setPrice(request.getPrice());
-    course.setImage(this.imageService.createImage(request.getFile()));
+    course.setImage(this.imageService.createImage(request.getFile(), CloudinaryFolder.COURSE));
     var instructor = userService.getById(request.getInstructorId());
     course.setInstructor(instructor);
 
+    super.save(course);
+    return this.mapper.map(course, CourseResponse.class);
+  }
+
+  /** Update course. */
+  @Transactional
+  public CourseResponse update(Long courseId, UpdateCourseRequest request) {
+
+    var course = super.findById(courseId);
+    //    general information
+    Utils.setValueSafe(request.getTitle(), course::setTitle);
+    Utils.setValueSafe(request.getDescription(), course::setDescription);
+    Utils.setValueSafe(request.getPrice(), course::setPrice);
+    Utils.setValueSafe(request.getStatus(), course::setStatus);
+    //    update instructor
+    if (request.getInstructorId() != null) {
+      var instructor = this.userService.getById(request.getInstructorId());
+      Utils.setValueSafe(instructor, course::setInstructor);
+    }
+    //    process update image
+    var fileUpload = request.getFile();
+    var courseImage = course.getImage();
+    if (fileUpload != null) {
+      if (courseImage == null) {
+        course.setImage(this.imageService.createImage(fileUpload, CloudinaryFolder.COURSE));
+      }
+      course.setImage(
+          this.imageService.updateImage(course.getImage(), fileUpload, CloudinaryFolder.COURSE));
+    }
+    //    save course after update
     super.save(course);
     return this.mapper.map(course, CourseResponse.class);
   }
@@ -116,28 +141,9 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
    * @return CourseDetailResponse DTO including course details and instructor info.
    */
   @Transactional(readOnly = true)
-  public CourseDetailResponse courseDetail(Long courseId) {
+  public CourseDetailResponse detail(Long courseId) {
     var course = super.findById(courseId);
-    var instructor = course.getInstructor();
-    return CourseDetailResponse.builder()
-        .id(course.getId())
-        .title(course.getTitle())
-        .description(course.getDescription())
-        .price(course.getPrice())
-        .image_url(this.imageService.getUrlImage(course.getImage().getPublicId()))
-        .instructor(
-            UserResponse.builder()
-                .id(instructor.getId())
-                .firstName(instructor.getFirstName())
-                .lastName(instructor.getLastName())
-                .email(instructor.getEmail())
-                .role(instructor.getRole())
-                .image_url(
-                    instructor.getImage() == null
-                        ? null
-                        : this.imageService.getUrlImage(instructor.getImage().getPublicId()))
-                .build())
-        .build();
+    return courseMapping.mapToCourseDetailResponse(course);
   }
 
   /**
@@ -154,7 +160,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
    * @throws BadRequestException if course has enrolled students.
    */
   @Transactional
-  public void deleteCourse(Long courseId) {
+  public void deleteByCourseId(Long courseId) {
     if (this.enrollmentService.existByCourseId(courseId)) {
       throw new BadRequestException(StaticMessage.COURSE_HAS_ENROLLMENT);
     }

@@ -6,6 +6,7 @@ import com.sila.config.exception.BadRequestException;
 import com.sila.config.exception.NotFoundException;
 import com.sila.config.jwt.JwtConstant;
 import com.sila.config.jwt.JwtProvider;
+import com.sila.modules.image.Enum.CloudinaryFolder;
 import com.sila.modules.image.service.ImageService;
 import com.sila.modules.profile.dto.req.CreateUserRequest;
 import com.sila.modules.profile.dto.req.LoginRequest;
@@ -85,7 +86,7 @@ public class AuthImp implements AuthService {
     newUser.setFirstName(request.getFirstName());
     newUser.setLastName(request.getLastName());
     newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-    var profileImage = imageService.createImage(request.getFile());
+    var profileImage = imageService.createImage(request.getFile(), CloudinaryFolder.PROFILE);
     newUser.setImage(profileImage);
 
     userRepository.save(newUser);

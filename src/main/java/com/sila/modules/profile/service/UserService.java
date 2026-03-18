@@ -4,6 +4,7 @@ import com.sila.config.context.UserContext;
 import com.sila.config.exception.BadRequestException;
 import com.sila.config.exception.NotFoundException;
 import com.sila.config.jwt.JwtProvider;
+import com.sila.modules.image.Enum.CloudinaryFolder;
 import com.sila.modules.image.service.ImageService;
 import com.sila.modules.profile.dto.req.UpdateUserRequest;
 import com.sila.modules.profile.dto.req.UserRequest;
@@ -146,9 +147,10 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
     var newImage = oldImage;
 
     if (newImage == null) {
-      newImage = this.imageService.createImage(userReq.getFile());
+      newImage = this.imageService.createImage(userReq.getFile(), CloudinaryFolder.PROFILE);
     } else {
-      newImage = this.imageService.updateImage(oldImage, userReq.getFile());
+      newImage =
+          this.imageService.updateImage(oldImage, userReq.getFile(), CloudinaryFolder.PROFILE);
     }
 
     user.setImage(newImage);
@@ -177,7 +179,7 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
   @Transactional
   public UserResponse getProfile() {
     var profileImage = this.findById(UserContext.getUserId()).getImage();
-    String publicId=null;
+    String publicId = null;
     if (profileImage != null) {
       publicId = this.imageService.getUrlImage(profileImage.getPublicId());
     }

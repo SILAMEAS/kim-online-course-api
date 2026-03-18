@@ -3,6 +3,7 @@ package com.sila.modules.course.controller;
 import com.sila.modules.course.dto.CourseDetailResponse;
 import com.sila.modules.course.dto.CourseResponse;
 import com.sila.modules.course.dto.CreateCourseRequest;
+import com.sila.modules.course.dto.UpdateCourseRequest;
 import com.sila.modules.course.service.CourseService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.EntityResponseHandler;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,7 +48,7 @@ public class CourseController {
   public ResponseEntity<EntityResponseHandler<CourseResponse>> getCourse(
       @ParameterObject PaginationRequest request) {
 
-    return ResponseEntity.ok(courseService.listCourse(request));
+    return ResponseEntity.ok(courseService.lists(request));
   }
 
   /** Create a new course */
@@ -73,7 +75,13 @@ public class CourseController {
           @ModelAttribute
           CreateCourseRequest request) {
 
-    return ResponseEntity.ok(courseService.createCourse(request));
+    return ResponseEntity.ok(courseService.create(request));
+  }
+
+  @PutMapping("/{courseId}")
+  public ResponseEntity<CourseResponse> updateCourse(
+          @RequestBody @Validated @ModelAttribute UpdateCourseRequest request, @PathVariable Long courseId) {
+    return ResponseEntity.ok(courseService.update(courseId,request));
   }
 
   /** Get course details */
@@ -93,7 +101,7 @@ public class CourseController {
       @Parameter(description = "ID of the course", example = "1", required = true) @PathVariable
           Long courseId) {
 
-    return ResponseEntity.ok(courseService.courseDetail(courseId));
+    return ResponseEntity.ok(courseService.detail(courseId));
   }
 
   /** Delete a course */
@@ -113,7 +121,7 @@ public class CourseController {
       @Parameter(description = "ID of the course", example = "1", required = true) @PathVariable
           Long courseId) {
 
-    courseService.deleteCourse(courseId);
+    courseService.deleteByCourseId(courseId);
     return ResponseEntity.ok("Course has been deleted successfully");
   }
 }

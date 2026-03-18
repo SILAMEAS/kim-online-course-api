@@ -71,22 +71,21 @@ public class ImageService extends AbstractCrudCommon<Image, Long, ImageRepositor
   }
 
   @Transactional
-  public Image createImage(MultipartFile file) {
-    String publicId = this.uploadImageFolderProfile(file);
+  public Image createImage(MultipartFile file, CloudinaryFolder folder) {
+    String publicId = this.uploadImageFolderProfile(file, folder);
     return super.save(Image.builder().title(publicId).publicId(publicId).build());
   }
 
   /** Update image */
   @Transactional
-  public Image updateImage(Image image, MultipartFile file) {
-    var newPublicId =
-        imageServiceCloudinary.updateImage(image.getPublicId(), file, CloudinaryFolder.PROFILE);
+  public Image updateImage(Image image, MultipartFile file, CloudinaryFolder folder) {
+    var newPublicId = imageServiceCloudinary.updateImage(image.getPublicId(), file, folder);
     image.setPublicId(newPublicId);
     return super.update(image);
   }
 
   /** Upload single image */
-  public String uploadImageFolderProfile(MultipartFile file) {
-    return imageServiceCloudinary.uploadImage(file, CloudinaryFolder.PROFILE);
+  public String uploadImageFolderProfile(MultipartFile file, CloudinaryFolder folder) {
+    return imageServiceCloudinary.uploadImage(file, folder);
   }
 }
