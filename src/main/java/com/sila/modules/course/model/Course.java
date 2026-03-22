@@ -1,10 +1,11 @@
 package com.sila.modules.course.model;
 
+import com.sila.modules.course.Enum.CategoryStatus;
 import com.sila.modules.image.model.Image;
 import com.sila.modules.profile.model.User;
 import com.sila.share.core.entity.AbstractAuditable;
-import com.sila.share.enums.CourseStatus;
-import com.sila.share.enums.LevelStatus;
+import com.sila.modules.course.Enum.CourseStatus;
+import com.sila.modules.course.Enum.LevelStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -72,7 +73,8 @@ public class Course extends AbstractAuditable {
 
   /** Price of the course. Cannot be null. */
   @Column(name = "category")
-  private String category;
+  @Enumerated(EnumType.STRING)
+  private CategoryStatus category;
 
   /** Price of the course. Cannot be null. */
   @Column(name = "level")
@@ -80,12 +82,12 @@ public class Course extends AbstractAuditable {
   private LevelStatus level;
 
   /** Price of the course. Cannot be null. */
-  @Column(name = "rating")
-  private Double rating;
+  @Column(name = "rating",length = 1)
+  private Integer rating;
 
   /** Price of the course. Cannot be null. */
   @Column(name = "reviews_count")
-  private Number reviewsCount;
+  private Integer reviewsCount;
 
   /** Price of the course. Cannot be null. */
   @Column(name = "duration")
@@ -93,7 +95,7 @@ public class Course extends AbstractAuditable {
 
   /** Price of the course. Cannot be null. */
   @Column(name = "students_count")
-  private Number studentsCount;
+  private Integer studentsCount;
 
   /**
    * Instructor associated with the course.
@@ -120,7 +122,7 @@ public class Course extends AbstractAuditable {
   public void onPreCreated() {
     this.studentsCount = 0;
     this.reviewsCount = 0;
-    this.rating = 0D;
+    this.rating = 0;
     this.level = LevelStatus.BEGINNER;
     this.duration = 0;
   }

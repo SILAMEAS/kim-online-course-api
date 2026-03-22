@@ -1,4 +1,4 @@
-package com.sila.share.enums;
+package com.sila.modules.course.Enum;
 
 public enum LevelStatus {
   BEGINNER,

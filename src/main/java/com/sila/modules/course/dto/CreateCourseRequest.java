@@ -1,6 +1,7 @@
 package com.sila.modules.course.dto;
 
-import com.sila.share.enums.CourseStatus;
+import com.sila.modules.course.Enum.CategoryStatus;
+import com.sila.modules.course.Enum.CourseStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,5 +34,5 @@ public class CreateCourseRequest {
   private MultipartFile file;
 
   @NotNull(message = "category is required")
-  private String category;
+  private CategoryStatus category;
 }

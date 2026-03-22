@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +53,7 @@ public class CourseController {
   }
 
   /** Create a new course */
-  @PostMapping
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @PreAuthorization({ROLE.ADMIN, ROLE.INSTRUCTOR})
   @Operation(
       summary = "Create a new course",
@@ -67,21 +68,16 @@ public class CourseController {
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
   public ResponseEntity<CourseResponse> createCourse(
-      @RequestBody(
-              description = "Course information required to create a new course",
-              required = true,
-              content = @Content(schema = @Schema(implementation = CreateCourseRequest.class)))
-          @Valid
-          @ModelAttribute
-          CreateCourseRequest request) {
+      @Valid @ModelAttribute CreateCourseRequest request) {
 
     return ResponseEntity.ok(courseService.create(request));
   }
 
-  @PutMapping("/{courseId}")
+  @PutMapping(value = "/{courseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<CourseResponse> updateCourse(
-          @RequestBody @Validated @ModelAttribute UpdateCourseRequest request, @PathVariable Long courseId) {
-    return ResponseEntity.ok(courseService.update(courseId,request));
+      @RequestBody @Validated @ModelAttribute UpdateCourseRequest request,
+      @PathVariable Long courseId) {
+    return ResponseEntity.ok(courseService.update(courseId, request));
   }
 
   /** Get course details */

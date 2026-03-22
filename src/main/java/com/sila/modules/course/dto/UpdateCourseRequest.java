@@ -1,6 +1,6 @@
 package com.sila.modules.course.dto;
 
-import com.sila.share.enums.CourseStatus;
+import com.sila.modules.course.Enum.CourseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
