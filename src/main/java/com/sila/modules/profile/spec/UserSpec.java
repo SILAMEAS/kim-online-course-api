@@ -2,6 +2,7 @@ package com.sila.modules.profile.spec;
 
 import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.model.User_;
+import com.sila.share.enums.ROLE;
 import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,5 +36,9 @@ public class UserSpec {
             cb.like(cb.lower(root.get(User_.FIRST_NAME)), like),
             cb.like(cb.lower(root.get(User_.LAST_NAME)), like),
             cb.like(cb.lower(root.get(User_.EMAIL)), like));
+  }
+
+  public static Specification<User> byTeacher() {
+    return (var root, var query, var cb) -> cb.equal(root.get(User_.ROLE), ROLE.INSTRUCTOR);
   }
 }

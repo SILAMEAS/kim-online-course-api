@@ -2,6 +2,7 @@ package com.sila.modules.course.dto;
 
 import com.sila.modules.course.Enum.CategoryStatus;
 import com.sila.modules.course.Enum.CourseStatus;
+import com.sila.modules.course.Enum.LevelStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,9 @@ public class CreateCourseRequest {
 
   @NotNull(message = "status is required")
   private CourseStatus status;
+
+  @NotNull(message = "level is required")
+  private LevelStatus level;
 
   @NotNull(message = "instructor is required")
   private Long instructorId;

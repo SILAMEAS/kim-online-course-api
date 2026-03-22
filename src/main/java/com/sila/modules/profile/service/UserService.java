@@ -105,6 +105,16 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
         super.findAll(spec, pageable).map(re -> mapper.map(re, UserResponse.class)));
   }
 
+  public EntityResponseHandler<UserResponse> listTeachers(PaginationRequest request) {
+    var spec = UserSpec.search(request.getSearch());
+    spec=spec.and(UserSpec.byTeacher());
+    final var pageable = super.toPageable(request.getPage(), request.getLimit());
+
+    return new EntityResponseHandler<>(
+            super.findAll(spec, pageable).map(re -> mapper.map(re, UserResponse.class)));
+  }
+
+
   /**
    * Updates a user by ID with the given information.
    *

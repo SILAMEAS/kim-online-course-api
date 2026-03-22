@@ -101,4 +101,10 @@ public class UserController {
           Long id) {
     return ResponseEntity.ok(userService.deleteUser(id));
   }
+
+  @GetMapping("/teachers")
+  public ResponseEntity<EntityResponseHandler<UserResponse>> listTeachers(
+      @ParameterObject PaginationRequest request) {
+    return ResponseEntity.ok(userService.listTeachers(request));
+  }
 }
