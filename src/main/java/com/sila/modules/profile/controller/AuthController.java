@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import java.util.Map;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,7 @@ public class AuthController {
   }
 
   /** Sign up a new student account */
-  @PostMapping("/sign-up")
+  @PostMapping(value = "/sign-up", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(
       summary = "Student Sign Up",
       description = "Registers a new account. Only users with STUDENT role can sign up.",
@@ -51,15 +50,7 @@ public class AuthController {
             responseCode = "400",
             description = "Invalid request data")
       })
-  public ResponseEntity<Map<String, String>> signUp(
-      @RequestBody(
-              description = "Sign up details for the student account",
-              required = true,
-              content = @Content(schema = @Schema(implementation = SignUpRequest.class)))
-          @Valid
-          @ModelAttribute
-          SignUpRequest request) {
-
+  public ResponseEntity<Map<String, String>> signUp(@ModelAttribute SignUpRequest request) {
     return authService.signUp(request);
   }
 

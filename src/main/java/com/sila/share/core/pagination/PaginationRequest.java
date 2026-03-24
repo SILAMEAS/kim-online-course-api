@@ -19,13 +19,13 @@ public class PaginationRequest {
 
   @Builder.Default
   @Min(1)
-  @Schema(name = "page", example = "1")
+  @Schema(name = "page",type = "integer", example = "1")
   private Integer page = PaginationConstant.DEFAULT_PAGE_NUMBER;
 
   @Builder.Default
   @Min(1)
   @Max(100)
-  @Schema(name = "limit", example = "10")
+  @Schema(name = "limit",type = "integer", example = "10")
   private Integer limit = PaginationConstant.DEFAULT_PAGE_SIZE;
 
   @Builder.Default

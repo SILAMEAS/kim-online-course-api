@@ -2,6 +2,7 @@ package com.sila.modules.profile.dto.res;
 
 import com.sila.modules.profile.model.User;
 import com.sila.share.enums.ROLE;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.io.Serializable;
@@ -15,11 +16,17 @@ import java.time.LocalDateTime;
 @ToString
 @Builder
 public class UserResponse implements Serializable {
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String firstName;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String lastName;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private ROLE role;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String imageUrl;
 
     public static UserResponseCustom toUserResponseCustom(User user) {

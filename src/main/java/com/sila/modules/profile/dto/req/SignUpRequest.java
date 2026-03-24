@@ -1,5 +1,6 @@
 package com.sila.modules.profile.dto.req;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,9 +13,13 @@ public class SignUpRequest {
 
   @NotBlank private String password;
 
+  @NotBlank private String confirmPassword;
+
   @NotBlank private String firstName;
 
   @NotBlank private String lastName;
 
-  @NotNull private MultipartFile file;
+  @Schema(type = "string", format = "binary")
+  @NotNull
+  private MultipartFile file;
 }
