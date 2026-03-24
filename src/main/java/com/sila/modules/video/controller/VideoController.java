@@ -1,5 +1,6 @@
 package com.sila.modules.video.controller;
 
+import com.sila.modules.video.dto.UploadVideoRequest;
 import com.sila.modules.video.dto.VideoListResponse;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +40,7 @@ public class VideoController {
     return ResponseEntity.ok(videoService.getAllVideos(paginationRequest));
   }
 
-  @PostMapping("/upload/{courseId}")
+  @PostMapping(value = "/upload/{courseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @PreAuthorization({ROLE.ADMIN})
   @Operation(
       summary = "Upload video",
@@ -49,12 +51,8 @@ public class VideoController {
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
   public ResponseEntity<String> uploadVideo(
-      @Parameter(description = "Course ID to upload the video into", example = "1") @PathVariable
-          Long courseId,
-      @Parameter(description = "Title of the video", example = "Lecture 1") @RequestParam
-          String title,
-      @Parameter(description = "Video file to upload") @RequestParam MultipartFile file) {
-    videoService.uploadVideo(courseId, title, file);
+      @PathVariable Long courseId, @ModelAttribute UploadVideoRequest request) {
+    videoService.uploadVideo(courseId, request.getTitle(), request.getFile());
     return ResponseEntity.ok("Video uploaded successfully");
   }
 
