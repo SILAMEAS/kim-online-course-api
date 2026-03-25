@@ -8,21 +8,18 @@ import com.sila.modules.course.service.CourseService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.CoursePageResponse;
 import com.sila.share.core.pagination.EntityResponseHandler;
-import com.sila.share.core.pagination.PageResponse;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -77,8 +74,7 @@ public class CourseController {
 
   @PutMapping(value = "/{courseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<CourseResponse> updateCourse(
-      @RequestBody @Validated @ModelAttribute UpdateCourseRequest request,
-      @PathVariable Long courseId) {
+      @Valid @ModelAttribute UpdateCourseRequest request, @PathVariable Long courseId) {
     return ResponseEntity.ok(courseService.update(courseId, request));
   }
 
