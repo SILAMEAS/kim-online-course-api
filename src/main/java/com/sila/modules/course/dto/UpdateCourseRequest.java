@@ -1,5 +1,6 @@
 package com.sila.modules.course.dto;
 
+import com.sila.modules.course.Enum.CategoryStatus;
 import com.sila.modules.course.Enum.CourseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,4 +25,6 @@ public class UpdateCourseRequest {
   private Long instructorId;
 
   private MultipartFile file;
+
+  private CategoryStatus category;
 }
