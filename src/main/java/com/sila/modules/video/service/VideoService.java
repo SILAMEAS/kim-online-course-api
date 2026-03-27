@@ -166,7 +166,9 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
    * @param publicId Public ID of the video to delete
    */
   @Transactional
-  public void deleteVideo(String publicId) {
+  public void deleteVideo(String publicId, Long videoId) {
+    super.findById(videoId);
+    super.deleteById(videoId);
     videoServiceCloudinary.deleteVideo(publicId);
   }
 

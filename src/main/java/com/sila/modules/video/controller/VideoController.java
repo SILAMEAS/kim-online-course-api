@@ -6,6 +6,7 @@ import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import com.sila.share.dto.GeneralResponse;
 import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,10 +51,11 @@ public class VideoController {
         @ApiResponse(responseCode = "200", description = "Video uploaded successfully"),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<String> uploadVideo(
+  public ResponseEntity<GeneralResponse> uploadVideo(
       @PathVariable Long courseId, @ModelAttribute UploadVideoRequest request) {
     videoService.uploadVideo(courseId, request.getTitle(), request.getFile());
-    return ResponseEntity.ok("Video uploaded successfully");
+    return ResponseEntity.ok(
+        GeneralResponse.builder().status(200).message("Video uploaded successfully").build());
   }
 
   @GetMapping("/by-course-id/{courseId}")
@@ -98,7 +100,7 @@ public class VideoController {
     return ResponseEntity.ok(videoService.watchVideo(publicId));
   }
 
-  @DeleteMapping("/{publicId}")
+  @DeleteMapping("/{id}/publicId/{publicId}")
   @PreAuthorization({ROLE.ADMIN})
   @Operation(
       summary = "Delete video",
@@ -108,11 +110,13 @@ public class VideoController {
         @ApiResponse(responseCode = "200", description = "Video deleted successfully"),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<String> deleteVideo(
+  public ResponseEntity<GeneralResponse> deleteVideo(
       @Parameter(description = "Public ID of the video in Cloudinary") @PathVariable
-          String publicId) {
-    videoService.deleteVideo(publicId);
-    return ResponseEntity.ok("Video deleted successfully");
+          String publicId,
+      @Parameter(description = "Video ID") @PathVariable Long id) {
+    videoService.deleteVideo(publicId, id);
+    return ResponseEntity.ok(
+        GeneralResponse.builder().status(200).message("Video deleted successfully").build());
   }
 
   @PutMapping("/{publicId}")

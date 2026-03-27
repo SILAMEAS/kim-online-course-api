@@ -125,7 +125,7 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
   public String updateUser(Long id, UpdateUserRequest request) {
     User user = super.findById(id);
     user.setRole(request.getRole());
-    user.setFirstName(request.getFistName());
+    user.setFirstName(request.getFirstName());
     user.setLastName(request.getLastName());
     super.save(mapper.map(user, User.class));
 
