@@ -3,6 +3,7 @@ package com.sila.modules.profile.model;
 import com.sila.modules.image.model.Image;
 import com.sila.share.core.entity.AbstractAuditable;
 import com.sila.share.enums.ROLE;
+import com.sila.share.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -48,6 +49,12 @@ public class User extends AbstractAuditable {
   @Enumerated(EnumType.STRING)
   @Column(name = "role", nullable = false, length = 20)
   private ROLE role = ROLE.STUDENT;
+
+  /** Status of the user. Defaults to ACTIVE. */
+  @Builder.Default
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false, length = 20)
+  private UserStatus status = UserStatus.ACTIVE;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(

@@ -1,6 +1,7 @@
 package com.sila.modules.profile.dto.req;
 
 import com.sila.share.enums.ROLE;
+import com.sila.share.enums.UserStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -12,9 +13,8 @@ public class UpdateUserRequest {
     private String firstName;
     @NotBlank(message = "last name is required")
     private String lastName;
-
-    @NotNull
     private ROLE role;
+    private UserStatus status;
 
 
 }

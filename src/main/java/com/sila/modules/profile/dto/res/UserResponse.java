@@ -2,12 +2,12 @@ package com.sila.modules.profile.dto.res;
 
 import com.sila.modules.profile.model.User;
 import com.sila.share.enums.ROLE;
+import com.sila.share.enums.UserStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -28,6 +28,8 @@ public class UserResponse implements Serializable {
     private ROLE role;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String imageUrl;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private UserStatus status;
 
     public static UserResponseCustom toUserResponseCustom(User user) {
         return UserResponseCustom.builder()
@@ -37,6 +39,7 @@ public class UserResponse implements Serializable {
                 .lastName(user.getLastName())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
+                .status(user.getStatus())
                 .build();
     }
 
@@ -52,6 +55,7 @@ public class UserResponse implements Serializable {
         private ROLE role;
         private int orders;
         private Instant createdAt;
+        private UserStatus status;
     }
 }
 
