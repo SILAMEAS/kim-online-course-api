@@ -16,6 +16,8 @@ import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
 import java.util.List;
+import java.util.Map;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,11 +120,12 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
             .findById(courseId)
             .orElseThrow(() -> new NotFoundException(StaticMessage.COURSE_NOT_FOUND));
 
-    String publicId = videoServiceCloudinary.uploadVideo(file);
+    Map<String, String> result  = videoServiceCloudinary.uploadVideoCustom(file);
 
     Video video = new Video();
     video.setTitle(title);
-    video.setPublicId(publicId);
+    video.setPublicId(result.get("publicId"));
+    video.setDuration(Integer.valueOf(result.get("duration")));
     video.setCourse(course);
 
     super.save(video);

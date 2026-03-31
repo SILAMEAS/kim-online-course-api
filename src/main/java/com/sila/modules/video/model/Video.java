@@ -41,6 +41,9 @@ public class Video extends AbstractAuditable {
   @Column(name = "order_index")
   private Integer orderIndex;
 
+  @Column(name = "duration")
+  private Integer duration; // seconds
+
   /** Course this video belongs to. Cannot be null. */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
