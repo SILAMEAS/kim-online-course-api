@@ -3,6 +3,7 @@ package com.sila.modules.enrolment.controller;
 import com.sila.modules.enrolment.dto.EnrollmentResponse;
 import com.sila.modules.enrolment.service.EnrollmentService;
 import com.sila.share.annotation.PreAuthorization;
+import com.sila.share.core.pagination.EnrollmentsPageResponse;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
@@ -41,10 +42,10 @@ public class EnrollmentController {
         @ApiResponse(
             responseCode = "200",
             description = "Enrollments retrieved successfully",
-            content = @Content(schema = @Schema(implementation = EnrollmentResponse.class))),
+            content = @Content(schema = @Schema(implementation = EnrollmentsPageResponse.class))),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAll(
+  public ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAllEnrollments(
       @ParameterObject PaginationRequest paginationRequest) {
 
     return ResponseEntity.ok(enrollmentService.listAllEnrollment(null, paginationRequest));
@@ -62,11 +63,11 @@ public class EnrollmentController {
         @ApiResponse(
             responseCode = "200",
             description = "Enrollments retrieved successfully",
-            content = @Content(schema = @Schema(implementation = EnrollmentResponse.class))),
+            content = @Content(schema = @Schema(implementation = EnrollmentsPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Course not found"),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAllByCourse(
+  public ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAllEnrollmentsByCourse(
       @Parameter(description = "ID of the course", example = "1", required = true) @PathVariable
           Long courseId,
       @ParameterObject PaginationRequest paginationRequest) {

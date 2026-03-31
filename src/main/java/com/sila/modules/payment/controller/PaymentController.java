@@ -7,6 +7,7 @@ import com.sila.modules.payment.service.PaymentService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import com.sila.share.core.pagination.PaymentsPageResponse;
 import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,7 +45,7 @@ public class PaymentController {
         @ApiResponse(
             responseCode = "200",
             description = "Payments retrieved successfully",
-            content = @Content(schema = @Schema(implementation = ListPaymentResponse.class))),
+            content = @Content(schema = @Schema(implementation = PaymentsPageResponse.class))),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
   public ResponseEntity<EntityResponseHandler<ListPaymentResponse>> getAllPayments(
