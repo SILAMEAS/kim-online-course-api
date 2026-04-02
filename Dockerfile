@@ -1,3 +1,9 @@
+
+# Copy source code
+COPY src ./src
+
+# Build jar
+RUN mvn clean package -DskipTests
 #
 # Build stage
 #
