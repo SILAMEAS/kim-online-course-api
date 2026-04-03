@@ -10,6 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ImageListResponse {
+  private Long id;
+
   private String title;
 
   private String publicId;

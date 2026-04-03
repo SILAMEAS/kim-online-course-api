@@ -6,6 +6,8 @@ import com.sila.modules.image.dto.ImageListResponse;
 import com.sila.modules.image.model.Image;
 import com.sila.modules.image.repository.ImageRepository;
 import com.sila.modules.image.spec.ImageSpec;
+import com.sila.modules.video.dto.VideoListResponse;
+import com.sila.modules.video.spec.VideoSpec;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
@@ -28,6 +30,22 @@ public class ImageService extends AbstractCrudCommon<Image, Long, ImageRepositor
     super(baseRepository, mapper);
     this.imageServiceCloudinary = imageServiceCloudinary;
   }
+  /** Get URL of image */
+  @Transactional
+  public EntityResponseHandler<ImageListResponse> listAllImage( PaginationRequest paginationRequest) {
+    var pageable =
+            super.toPageable(
+                    paginationRequest.getPage(),
+                    paginationRequest.getLimit(),
+                    paginationRequest.getSortBy(),
+                    String.valueOf(paginationRequest.getSortOrder()));
+    var spec = ImageSpec.search(paginationRequest.getSearch());
+    final var imagePage = super.findAll(spec, pageable);
+    final var images = imagePage.map(im -> mapper.map(im, ImageListResponse.class));
+    return new EntityResponseHandler<>(images);
+  }
+
+
 
   /** Get URL of image */
   @Transactional
