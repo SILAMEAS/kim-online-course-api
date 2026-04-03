@@ -1,15 +1,17 @@
-
-# Copy source code
-COPY src ./src
-
-# Build jar
-RUN mvn clean package -DskipTests
 #
 # Build stage
 #
-FROM maven:3.8.3-openjdk-17 AS build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
-COPY . /app/
+
+# Copy only pom first (better caching)
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copy source
+COPY src ./src
+
+# Build jar
 RUN mvn clean package -DskipTests
 
 #
@@ -17,6 +19,14 @@ RUN mvn clean package -DskipTests
 #
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar /app/app.jar
+
+# Copy jar
+COPY --from=build /app/target/*.jar app.jar
+
+# Railway uses dynamic port
+ENV PORT=8080
+
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+
+# IMPORTANT: bind to 0.0.0.0 and dynamic port
+ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=${PORT}"]
