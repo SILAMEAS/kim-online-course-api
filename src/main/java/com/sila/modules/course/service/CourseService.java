@@ -101,7 +101,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     course.setCategory(request.getCategory());
     course.setImage(this.imageService.createImage(request.getFile(), CloudinaryFolder.COURSE));
     course.setReviewsCount(0L);
-    course.setDuration(0);
+    course.setDuration(0.0);
     course.setStudentsCount(0);
     var instructor = userService.getById(request.getInstructorId());
     course.setInstructor(instructor);
@@ -180,5 +180,18 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
 
     // Delete the course from the database
     super.deleteById(courseId);
+  }
+
+  @Transactional(readOnly = true)
+  public EntityResponseHandler<CourseResponse> listCourseStudentEnrollment(PaginationRequest request,Long studentId) {
+    final var pageable =
+        super.toPageable(
+            request.getPage(),
+            request.getLimit(),
+            request.getSortBy(),
+            String.valueOf(request.getSortOrder()));
+    final var spec = CourseSpec.search(request.getSearch()).and(CourseSpec.hasStudentEnrolled(studentId));
+    Page<Course> courses = super.findAll(spec, pageable);
+    return new EntityResponseHandler<>(courses.map(courseMapping::mapToCourseResponse));
   }
 }

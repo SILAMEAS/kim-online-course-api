@@ -1,6 +1,7 @@
 package com.sila.modules.enrolment.service;
 
 import com.sila.config.exception.NotFoundException;
+import com.sila.modules.course.model.Course;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.enrolment.Enum.EnrollmentStatus;
 import com.sila.modules.enrolment.dto.EnrollmentResponse;
@@ -12,6 +13,7 @@ import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +69,13 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
     enroll.setPayment(payment);
     enroll.setStatus(EnrollmentStatus.ACTIVE);
     super.save(enroll);
+
+    // Update studentsCount in Course (+1)
+    var course = payment.getCourse();
+    int currentCount = course.getStudentsCount() != null ? course.getStudentsCount() : 0;
+    course.setStudentsCount(currentCount + 1);
+    courseRepository.save(course);
+
     return this.mapper.map(enroll, EnrollmentResponse.class);
   }
 
@@ -112,12 +121,15 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
    */
   @Transactional
   public String bulkDeleteByCourseId(Long courseId) {
-
-    this.courseRepository
+    var course = this.courseRepository
         .findById(courseId)
         .orElseThrow(() -> new NotFoundException(StaticMessage.COURSE_NOT_FOUND));
 
     this.baseRepository.deleteAllByCourse_Id(courseId);
+
+    // After bulk delete, reset the count to 0
+    course.setStudentsCount(0);
+    this.courseRepository.save(course);
 
     return StaticMessage.DELETE_BULK_ENROLLMENT_BY_COURSE;
   }

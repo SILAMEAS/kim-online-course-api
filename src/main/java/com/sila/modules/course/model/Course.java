@@ -91,7 +91,7 @@ public class Course extends AbstractAuditable {
 
   /** Price of the course. Cannot be null. */
   @Column(name = "duration")
-  private Number duration;
+  private Double duration;
 
   /** Price of the course. Cannot be null. */
   @Column(name = "students_count")
@@ -124,6 +124,6 @@ public class Course extends AbstractAuditable {
     this.reviewsCount = 0L;
     this.rating = 0D;
     this.level = LevelStatus.BEGINNER;
-    this.duration = 0;
+    this.duration = 0.0;
   }
 }

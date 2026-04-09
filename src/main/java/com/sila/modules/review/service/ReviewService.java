@@ -80,6 +80,7 @@ public class ReviewService extends AbstractCrudCommon<Review, Long, ReviewReposi
 
     super.save(review);
 
+    //    update course
     course.setReviewsCount(super.baseRepository.count());
     var avg = super.baseRepository.getAverageRatingByCourseId(courseId);
     if (avg != null) {
@@ -99,8 +100,8 @@ public class ReviewService extends AbstractCrudCommon<Review, Long, ReviewReposi
     List<ReviewSummary> summaries = super.baseRepository.getReviewBreakdown(courseId);
     List<Object[]> statsList = super.baseRepository.getOverallStats(courseId);
 
-    Double average = 0.0;
-    Long totalReviews = 0L;
+    var average = 0.0;
+    var totalReviews = 0L;
 
     // 2. Extract stats safely (Handling the List<Object[]> return type)
     if (statsList != null && !statsList.isEmpty() && statsList.get(0)[1] != null) {

@@ -133,6 +133,6 @@ public class VideoController {
       @Parameter(description = "Public ID of the existing video in Cloudinary") @PathVariable
           String publicId,
       @Parameter(description = "New video file") @RequestParam MultipartFile file) {
-    return ResponseEntity.ok(videoService.updateVideo(publicId, file));
+    return ResponseEntity.ok(videoService.updateVideo(publicId, file,null));
   }
 }

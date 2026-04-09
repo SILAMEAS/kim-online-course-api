@@ -3,6 +3,7 @@ package com.sila.modules.video.service;
 import com.sila.config.context.UserContext;
 import com.sila.config.exception.AccessDeniedException;
 import com.sila.config.exception.NotFoundException;
+import com.sila.modules.course.model.Course;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.enrolment.service.EnrollmentService;
 import com.sila.modules.profile.model.User;
@@ -17,7 +18,6 @@ import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
 import java.util.List;
 import java.util.Map;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,7 +120,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
             .findById(courseId)
             .orElseThrow(() -> new NotFoundException(StaticMessage.COURSE_NOT_FOUND));
 
-    Map<String, String> result  = videoServiceCloudinary.uploadVideoCustom(file);
+    Map<String, String> result = videoServiceCloudinary.uploadVideoCustom(file);
 
     Video video = new Video();
     video.setTitle(title);
@@ -128,7 +128,10 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     video.setDuration(Integer.valueOf(result.get("duration")));
     video.setCourse(course);
 
+
     super.save(video);
+
+    updateCourseTotalDuration(courseId);
   }
 
   /**
@@ -183,7 +186,10 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
    * @return Public ID of the updated video
    */
   @Transactional
-  public String updateVideo(String oldPublicId, MultipartFile file) {
+  public String updateVideo(String oldPublicId, MultipartFile file, Long courseId) {
+    if (courseId != null) {
+      updateCourseTotalDuration(courseId);
+    }
     return videoServiceCloudinary.updateVideo(oldPublicId, file);
   }
 
@@ -200,5 +206,15 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
 
     videoServiceCloudinary.deleteVideos(publicIds);
     this.baseRepository.deleteAllInBatch(videos);
+    updateCourseTotalDuration(courseId);
+  }
+
+  private void updateCourseTotalDuration(Long courseId) {
+    // Sum durations of all videos for this course
+    var totalDuration = super.baseRepository.sumDurationByCourseId(courseId);
+
+    Course course = courseRepository.findById(courseId).orElseThrow();
+    course.setDuration(totalDuration != null ? totalDuration : 0.0);
+    courseRepository.save(course);
   }
 }

@@ -150,7 +150,7 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
     User user = UserContext.getUser();
 
     if (super.baseRepository.existsByUserIdAndCourseId(user.getId(), courseId)) {
-      throw new BadRequestException("Payment already submitted for this course");
+      throw new BadRequestException("Payment already submitted for this course waiting admin to confirmation");
     }
 
     Payment payment = new Payment();

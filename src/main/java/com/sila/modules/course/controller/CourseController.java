@@ -51,6 +51,24 @@ public class CourseController {
     return ResponseEntity.ok(courseService.lists(request));
   }
 
+  /** Get all courses that user enrollment */
+  @GetMapping("/student/{id}")
+  @Operation(
+      summary = "Get all courses",
+      description = "Retrieve a paginated list of courses. Supports pagination parameters.",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Courses retrieved successfully",
+            content = @Content(schema = @Schema(implementation = CoursePageResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid pagination parameters")
+      })
+  public ResponseEntity<EntityResponseHandler<CourseResponse>> listAllCoursesStudentEnrollment(
+      @PathVariable Long id, @ParameterObject PaginationRequest request) {
+
+    return ResponseEntity.ok(courseService.listCourseStudentEnrollment(request,id));
+  }
+
   /** Create a new course */
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @PreAuthorization({ROLE.ADMIN, ROLE.INSTRUCTOR})
