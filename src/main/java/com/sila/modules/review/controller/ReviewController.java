@@ -1,6 +1,6 @@
 package com.sila.modules.review.controller;
 
-import com.sila.modules.profile.dto.req.CreateUserRequest;
+import com.sila.modules.review.dto.CourseRatingDTO;
 import com.sila.modules.review.dto.ReviewRequest;
 import com.sila.modules.review.dto.ReviewResponse;
 import com.sila.modules.review.service.ReviewService;
@@ -48,7 +48,7 @@ public class ReviewController {
   }
 
   /** create review in course */
-  @PostMapping(value = "/course/{courseId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/course/{courseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(
       summary = "Get all course",
       responses = {
@@ -62,5 +62,21 @@ public class ReviewController {
       @PathVariable Long courseId, @Valid @ModelAttribute ReviewRequest request) {
 
     return ResponseEntity.ok(reviewService.createReview(request, courseId));
+  }
+
+  /** Get all review in course */
+  @GetMapping("/course/{courseId}/rating")
+  @Operation(
+      summary = "Get all course",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "course retrieved successfully",
+            content = @Content(schema = @Schema(implementation = CourseRatingDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Access denied")
+      })
+  public ResponseEntity<CourseRatingDTO> getRating(@PathVariable Long courseId) {
+
+    return ResponseEntity.ok(reviewService.getCourseRatingUI(courseId));
   }
 }

@@ -83,11 +83,11 @@ public class Course extends AbstractAuditable {
 
   /** Price of the course. Cannot be null. */
   @Column(name = "rating",length = 1)
-  private Integer rating;
+  private Double rating;
 
   /** Price of the course. Cannot be null. */
   @Column(name = "reviews_count")
-  private Integer reviewsCount;
+  private Long reviewsCount;
 
   /** Price of the course. Cannot be null. */
   @Column(name = "duration")
@@ -121,8 +121,8 @@ public class Course extends AbstractAuditable {
   @Override
   public void onPreCreated() {
     this.studentsCount = 0;
-    this.reviewsCount = 0;
-    this.rating = 0;
+    this.reviewsCount = 0L;
+    this.rating = 0D;
     this.level = LevelStatus.BEGINNER;
     this.duration = 0;
   }

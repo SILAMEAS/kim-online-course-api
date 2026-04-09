@@ -1,9 +1,9 @@
 package com.sila.modules.course.dto;
 
 import com.sila.modules.course.Enum.CategoryStatus;
-import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.course.Enum.CourseStatus;
 import com.sila.modules.course.Enum.LevelStatus;
+import com.sila.modules.profile.dto.res.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class CourseResponse {
   private LevelStatus level;
   private CourseStatus status;
   private CategoryStatus category;
-  private Integer rating;
+  private Double rating;
   private Number reviewsCount;
   private Number duration;
   private Number studentsCount;
