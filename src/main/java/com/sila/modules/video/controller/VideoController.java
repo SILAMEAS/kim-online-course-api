@@ -4,7 +4,7 @@ import com.sila.modules.video.dto.UploadVideoRequest;
 import com.sila.modules.video.dto.VideoListResponse;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.dto.GeneralResponse;
 import com.sila.share.enums.ROLE;
@@ -36,7 +36,7 @@ public class VideoController {
       responses = {
         @ApiResponse(responseCode = "200", description = "Videos retrieved successfully")
       })
-  public ResponseEntity<EntityResponseHandler<VideoListResponse>> getVideos(
+  public ResponseEntity<ResponsePaginationHandler<VideoListResponse>> getVideos(
       @ParameterObject PaginationRequest paginationRequest) {
     return ResponseEntity.ok(videoService.getAllVideos(paginationRequest));
   }
@@ -65,7 +65,7 @@ public class VideoController {
       responses = {
         @ApiResponse(responseCode = "200", description = "Videos retrieved successfully")
       })
-  public ResponseEntity<EntityResponseHandler<VideoListResponse>> getVideosByCourseId(
+  public ResponseEntity<ResponsePaginationHandler<VideoListResponse>> getVideosByCourseId(
       @Parameter(description = "Course ID", example = "1") @PathVariable Long courseId,
       @ParameterObject PaginationRequest paginationRequest) {
     return ResponseEntity.ok(videoService.getVideosInCourse(courseId, paginationRequest));

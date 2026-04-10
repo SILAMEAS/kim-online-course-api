@@ -14,7 +14,7 @@ import com.sila.modules.profile.repository.UserRepository;
 import com.sila.modules.profile.spec.UserSpec;
 import com.sila.share.Utils;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.dto.GeneralResponse;
 import jakarta.transaction.Transactional;
@@ -99,20 +99,20 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
      * @param request PaginationRequest containing page, limit, and search term
      * @return EntityResponseHandler containing paginated UserResponse DTOs
      */
-    public EntityResponseHandler<UserResponse> list(PaginationRequest request) {
+    public ResponsePaginationHandler<UserResponse> list(PaginationRequest request) {
         final var spec = UserSpec.search(request.getSearch());
         final var pageable = super.toPageable(request.getPage(), request.getLimit());
 
-        return new EntityResponseHandler<>(
+        return new ResponsePaginationHandler<>(
                 super.findAll(spec, pageable).map(re -> mapper.map(re, UserResponse.class)));
     }
 
-    public EntityResponseHandler<UserResponse> listTeachers(PaginationRequest request) {
+    public ResponsePaginationHandler<UserResponse> listTeachers(PaginationRequest request) {
         var spec = UserSpec.search(request.getSearch());
         spec = spec.and(UserSpec.byTeacher());
         final var pageable = super.toPageable(request.getPage(), request.getLimit());
 
-        return new EntityResponseHandler<>(
+        return new ResponsePaginationHandler<>(
                 super.findAll(spec, pageable).map(re -> mapper.map(re, UserResponse.class)));
     }
 

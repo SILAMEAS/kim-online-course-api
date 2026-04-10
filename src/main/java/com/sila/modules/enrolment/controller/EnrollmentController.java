@@ -4,7 +4,7 @@ import com.sila.modules.enrolment.dto.EnrollmentResponse;
 import com.sila.modules.enrolment.service.EnrollmentService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.EnrollmentsPageResponse;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,7 +45,7 @@ public class EnrollmentController {
             content = @Content(schema = @Schema(implementation = EnrollmentsPageResponse.class))),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAllEnrollments(
+  public ResponseEntity<ResponsePaginationHandler<EnrollmentResponse>> getAllEnrollments(
       @ParameterObject PaginationRequest paginationRequest) {
 
     return ResponseEntity.ok(enrollmentService.listAllEnrollment(null, paginationRequest));
@@ -67,7 +67,7 @@ public class EnrollmentController {
         @ApiResponse(responseCode = "404", description = "Course not found"),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<EntityResponseHandler<EnrollmentResponse>> getAllEnrollmentsByCourse(
+  public ResponseEntity<ResponsePaginationHandler<EnrollmentResponse>> getAllEnrollmentsByCourse(
       @Parameter(description = "ID of the course", example = "1", required = true) @PathVariable
           Long courseId,
       @ParameterObject PaginationRequest paginationRequest) {

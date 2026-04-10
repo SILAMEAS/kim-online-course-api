@@ -16,7 +16,7 @@ import org.springframework.data.domain.Page;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-public class EntityResponseHandler<T> {
+public class ResponsePaginationHandler<T> {
   private List<T> contents;
   private int page;
   private int limit;
@@ -29,7 +29,7 @@ public class EntityResponseHandler<T> {
    *
    * @param page the paginated data
    */
-  public EntityResponseHandler(Page<T> page) {
+  public ResponsePaginationHandler(Page<T> page) {
     this(
         page.getContent(),
         page.getNumber() + 1,
@@ -49,7 +49,7 @@ public class EntityResponseHandler<T> {
    * @param total the total number of elements
    * @param hasNext indicates if there is a next page
    */
-  public EntityResponseHandler(
+  public ResponsePaginationHandler(
       List<T> contents, int page, int pageSize, int totalPages, long total, boolean hasNext) {
     this.contents = new ArrayList<>(contents);
     this.page = page;
@@ -67,7 +67,7 @@ public class EntityResponseHandler<T> {
    * @param pageSize the size of the page
    * @param total the total number of elements
    */
-  public EntityResponseHandler(List<T> contents, int page, int pageSize, long total) {
+  public ResponsePaginationHandler(List<T> contents, int page, int pageSize, long total) {
     this.contents = new ArrayList<>(contents);
     this.page = page + 1;
     this.total = total;

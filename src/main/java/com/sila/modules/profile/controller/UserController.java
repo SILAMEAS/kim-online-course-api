@@ -7,7 +7,7 @@ import com.sila.modules.profile.service.AuthService;
 import com.sila.modules.profile.service.UserService;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.ListUserPageResponse;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.dto.GeneralResponse;
@@ -51,7 +51,7 @@ public class UserController {
                             content = @Content(schema = @Schema(implementation = ListUserPageResponse.class))),
                     @ApiResponse(responseCode = "403", description = "Access denied")
             })
-    public ResponseEntity<EntityResponseHandler<UserResponse>> listUsers(
+    public ResponseEntity<ResponsePaginationHandler<UserResponse>> listUsers(
             @ParameterObject PaginationRequest request) {
         return ResponseEntity.ok(userService.list(request));
     }
@@ -108,7 +108,7 @@ public class UserController {
     }
 
     @GetMapping("/teachers")
-    public ResponseEntity<EntityResponseHandler<UserResponse>> listTeachers(
+    public ResponseEntity<ResponsePaginationHandler<UserResponse>> listTeachers(
             @ParameterObject PaginationRequest request) {
         return ResponseEntity.ok(userService.listTeachers(request));
     }

@@ -13,14 +13,12 @@ import com.sila.modules.enrolment.service.EnrollmentService;
 import com.sila.modules.image.Enum.CloudinaryFolder;
 import com.sila.modules.image.service.ImageService;
 import com.sila.modules.profile.service.UserService;
-import com.sila.modules.review.model.Review;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.Utils;
 import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.EntityResponseHandler;
 import com.sila.share.core.pagination.PaginationRequest;
-import java.util.List;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -46,6 +44,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
   private final EnrollmentService enrollmentService;
   private final ImageService imageService;
   private final CourseMapping courseMapping;
+  private final CategoryService categoryService;
 
   protected CourseService(
       CourseRepository baseRepository,
@@ -54,13 +53,15 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
       VideoService videoService,
       EnrollmentService enrollmentService,
       ImageService imageService,
-      CourseMapping courseMapping) {
+      CourseMapping courseMapping,
+      CategoryService categoryService) {
     super(baseRepository, mapper);
     this.userService = userService;
     this.videoService = videoService;
     this.enrollmentService = enrollmentService;
     this.imageService = imageService;
     this.courseMapping = courseMapping;
+    this.categoryService = categoryService;
   }
 
   /**
@@ -71,7 +72,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
    * @return Paginated response of CourseResponse DTOs.
    */
   @Transactional(readOnly = true)
-  public EntityResponseHandler<CourseResponse> lists(PaginationRequest request) {
+  public ResponsePaginationHandler<CourseResponse> lists(PaginationRequest request) {
     final var pageable =
         super.toPageable(
             request.getPage(),
@@ -80,7 +81,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
             String.valueOf(request.getSortOrder()));
     final var spec = CourseSpec.search(request.getSearch());
     Page<Course> courses = super.findAll(spec, pageable);
-    return new EntityResponseHandler<>(courses.map(courseMapping::mapToCourseResponse));
+    return new ResponsePaginationHandler<>(courses.map(courseMapping::mapToCourseResponse));
   }
 
   /**
@@ -98,7 +99,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     course.setTitle(request.getTitle());
     course.setDescription(request.getDescription());
     course.setPrice(request.getPrice());
-    course.setCategory(request.getCategory());
+    course.setCategory(categoryService.findOne(request.getCategoryId()));
     course.setImage(this.imageService.createImage(request.getFile(), CloudinaryFolder.COURSE));
     course.setReviewsCount(0L);
     course.setDuration(0.0);
@@ -120,7 +121,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     Utils.setValueSafe(request.getDescription(), course::setDescription);
     Utils.setValueSafe(request.getPrice(), course::setPrice);
     Utils.setValueSafe(request.getStatus(), course::setStatus);
-    Utils.setValueSafe(request.getCategory(), course::setCategory);
+    Utils.setValueSafe(categoryService.findOne(request.getCategoryId()), course::setCategory);
     //    update instructor
     if (request.getInstructorId() != null) {
       var instructor = this.userService.getById(request.getInstructorId());
@@ -183,15 +184,17 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
   }
 
   @Transactional(readOnly = true)
-  public EntityResponseHandler<CourseResponse> listCourseStudentEnrollment(PaginationRequest request,Long studentId) {
+  public ResponsePaginationHandler<CourseResponse> listCourseStudentEnrollment(
+      PaginationRequest request, Long studentId) {
     final var pageable =
         super.toPageable(
             request.getPage(),
             request.getLimit(),
             request.getSortBy(),
             String.valueOf(request.getSortOrder()));
-    final var spec = CourseSpec.search(request.getSearch()).and(CourseSpec.hasStudentEnrolled(studentId));
+    final var spec =
+        CourseSpec.search(request.getSearch()).and(CourseSpec.hasStudentEnrolled(studentId));
     Page<Course> courses = super.findAll(spec, pageable);
-    return new EntityResponseHandler<>(courses.map(courseMapping::mapToCourseResponse));
+    return new ResponsePaginationHandler<>(courses.map(courseMapping::mapToCourseResponse));
   }
 }

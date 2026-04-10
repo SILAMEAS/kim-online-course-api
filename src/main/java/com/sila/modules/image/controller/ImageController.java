@@ -2,7 +2,7 @@ package com.sila.modules.image.controller;
 
 import com.sila.modules.image.dto.ImageListResponse;
 import com.sila.modules.image.service.ImageService;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.ImagesPageResponse;
 import com.sila.share.core.pagination.PaginationRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +39,7 @@ public class ImageController {
             content = @Content(schema = @Schema(implementation = ImagesPageResponse.class))),
         @ApiResponse(responseCode = "400", description = "Invalid pagination parameters")
       })
-  public ResponseEntity<EntityResponseHandler<ImageListResponse>> listImages(
+  public ResponseEntity<ResponsePaginationHandler<ImageListResponse>> listImages(
       @ParameterObject PaginationRequest request) {
 
     return ResponseEntity.ok(imageService.listAllImage(request));

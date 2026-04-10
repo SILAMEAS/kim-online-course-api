@@ -26,5 +26,5 @@ public class UpdateCourseRequest {
 
   private MultipartFile file;
 
-  private CategoryStatus category;
+  private Long categoryId;
 }

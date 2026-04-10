@@ -3,6 +3,7 @@ package com.sila.modules.course.mapping;
 import com.sila.modules.course.dto.CourseDetailResponse;
 import com.sila.modules.course.dto.CourseResponse;
 import com.sila.modules.course.model.Course;
+import com.sila.modules.course.service.CategoryService;
 import com.sila.modules.image.service.ImageService;
 import com.sila.modules.profile.dto.res.UserResponse;
 import org.springframework.stereotype.Component;
@@ -10,9 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class CourseMapping {
   private final ImageService imageService;
+  private final CategoryService categoryService;
 
-  public CourseMapping(ImageService imageService) {
+  public CourseMapping(ImageService imageService, CategoryService categoryService) {
     this.imageService = imageService;
+    this.categoryService = categoryService;
   }
 
   public CourseDetailResponse mapToCourseDetailResponse(Course course) {

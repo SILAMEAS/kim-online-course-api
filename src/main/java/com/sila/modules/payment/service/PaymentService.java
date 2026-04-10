@@ -15,7 +15,7 @@ import com.sila.modules.payment.repository.PaymentRepository;
 import com.sila.modules.payment.spec.PaymentSpec;
 import com.sila.modules.profile.model.User;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import java.time.Instant;
 import lombok.NonNull;
@@ -78,7 +78,7 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
    * @return EntityResponseHandler containing paginated ListPaymentResponse DTOs.
    */
   @Transactional(readOnly = true)
-  public EntityResponseHandler<ListPaymentResponse> listPayments(
+  public ResponsePaginationHandler<ListPaymentResponse> listPayments(
       PaginationRequest paginationRequest) {
 
     final var pageable =
@@ -91,7 +91,7 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
     var spec = PaymentSpec.search(paginationRequest.getSearch()).and(PaymentSpec.byOwnership());
 
     Page<Payment> pagePayments = super.findAll(spec, pageable);
-    return new EntityResponseHandler<>(
+    return new ResponsePaginationHandler<>(
         pagePayments.map(pt -> this.mapper.map(pt, ListPaymentResponse.class)));
   }
 

@@ -1,11 +1,10 @@
 package com.sila.modules.course.model;
 
-import com.sila.modules.course.Enum.CategoryStatus;
+import com.sila.modules.course.Enum.CourseStatus;
+import com.sila.modules.course.Enum.LevelStatus;
 import com.sila.modules.image.model.Image;
 import com.sila.modules.profile.model.User;
 import com.sila.share.core.entity.AbstractAuditable;
-import com.sila.modules.course.Enum.CourseStatus;
-import com.sila.modules.course.Enum.LevelStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -72,17 +71,12 @@ public class Course extends AbstractAuditable {
   private CourseStatus status;
 
   /** Price of the course. Cannot be null. */
-  @Column(name = "category")
-  @Enumerated(EnumType.STRING)
-  private CategoryStatus category;
-
-  /** Price of the course. Cannot be null. */
   @Column(name = "level")
   @Enumerated(EnumType.STRING)
   private LevelStatus level;
 
   /** Price of the course. Cannot be null. */
-  @Column(name = "rating",length = 1)
+  @Column(name = "rating", length = 1)
   private Double rating;
 
   /** Price of the course. Cannot be null. */
@@ -117,6 +111,13 @@ public class Course extends AbstractAuditable {
       nullable = true,
       foreignKey = @ForeignKey(name = "fk_course_images"))
   private Image image;
+
+  @ManyToOne(fetch = FetchType.EAGER) // Lazy is generally better for performance
+  @JoinColumn(
+      name = "category_id",
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(name = "fk_courses_categories"))
+  private Category category;
 
   @Override
   public void onPreCreated() {

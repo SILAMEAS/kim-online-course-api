@@ -11,7 +11,7 @@ import com.sila.modules.review.model.Review;
 import com.sila.modules.review.repository.ReviewRepository;
 import com.sila.modules.review.spec.ReviewSpec;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -46,7 +46,7 @@ public class ReviewService extends AbstractCrudCommon<Review, Long, ReviewReposi
   }
 
   @Transactional(readOnly = true)
-  public EntityResponseHandler<ReviewResponse> listReviews(
+  public ResponsePaginationHandler<ReviewResponse> listReviews(
       PaginationRequest paginationRequest, Long courseId) {
 
     final var pageable =
@@ -59,7 +59,7 @@ public class ReviewService extends AbstractCrudCommon<Review, Long, ReviewReposi
     var spec = ReviewSpec.search(paginationRequest.getSearch());
 
     Page<Review> pagePayments = super.findAll(spec, pageable);
-    return new EntityResponseHandler<>(
+    return new ResponsePaginationHandler<>(
         pagePayments.map(pt -> this.mapper.map(pt, ReviewResponse.class)));
   }
 

@@ -4,7 +4,7 @@ import com.sila.modules.review.dto.CourseRatingDTO;
 import com.sila.modules.review.dto.ReviewRequest;
 import com.sila.modules.review.dto.ReviewResponse;
 import com.sila.modules.review.service.ReviewService;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.core.pagination.ReviewsPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +41,7 @@ public class ReviewController {
             content = @Content(schema = @Schema(implementation = ReviewsPageResponse.class))),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<EntityResponseHandler<ReviewResponse>> listReviews(
+  public ResponseEntity<ResponsePaginationHandler<ReviewResponse>> listReviews(
       @PathVariable Long courseId, @ParameterObject @Validated PaginationRequest request) {
 
     return ResponseEntity.ok(reviewService.listReviews(request, courseId));

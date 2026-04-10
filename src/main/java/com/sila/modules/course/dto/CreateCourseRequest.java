@@ -37,6 +37,6 @@ public class CreateCourseRequest {
   @NotNull(message = "file is required")
   private MultipartFile file;
 
-  @NotNull(message = "category is required")
-  private CategoryStatus category;
+  @NotNull(message = "categoryId is required")
+  private Long categoryId;
 }

@@ -5,7 +5,7 @@ import com.sila.modules.payment.dto.ListPaymentResponse;
 import com.sila.modules.payment.dto.PaymentResponse;
 import com.sila.modules.payment.service.PaymentService;
 import com.sila.share.annotation.PreAuthorization;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.core.pagination.PaymentsPageResponse;
 import com.sila.share.enums.ROLE;
@@ -48,7 +48,7 @@ public class PaymentController {
             content = @Content(schema = @Schema(implementation = PaymentsPageResponse.class))),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<EntityResponseHandler<ListPaymentResponse>> getAllPayments(
+  public ResponseEntity<ResponsePaginationHandler<ListPaymentResponse>> getAllPayments(
       @ParameterObject @Validated PaginationRequest request) {
 
     return ResponseEntity.ok(paymentService.listPayments(request));

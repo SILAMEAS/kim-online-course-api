@@ -13,7 +13,7 @@ import com.sila.modules.video.repository.VideoRepository;
 import com.sila.modules.video.spec.VideoSpec;
 import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
 import java.util.List;
@@ -63,7 +63,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
    * @throws AccessDeniedException if the user is not enrolled and not ADMIN
    */
   @Transactional(readOnly = true)
-  public EntityResponseHandler<VideoListResponse> getVideosInCourse(
+  public ResponsePaginationHandler<VideoListResponse> getVideosInCourse(
       Long courseId, PaginationRequest paginationRequest) {
 
     if (!this.enrollmentService.canAccess(UserContext.getUserId(), courseId)
@@ -80,7 +80,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     var spec = VideoSpec.search(paginationRequest.getSearch()).and(VideoSpec.byCourseId(courseId));
     final var videoPage = this.baseRepository.findAll(spec, pageable);
     final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));
-    return new EntityResponseHandler<>(videos);
+    return new ResponsePaginationHandler<>(videos);
   }
 
   /**
@@ -90,7 +90,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
    * @return Paginated list of VideoListResponse
    */
   @Transactional(readOnly = true)
-  public EntityResponseHandler<VideoListResponse> getAllVideos(
+  public ResponsePaginationHandler<VideoListResponse> getAllVideos(
       PaginationRequest paginationRequest) {
     var pageable =
         super.toPageable(
@@ -101,7 +101,7 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     var spec = VideoSpec.search(paginationRequest.getSearch());
     final var videoPage = super.findAll(spec, pageable);
     final var videos = videoPage.map(vd -> mapper.map(vd, VideoListResponse.class));
-    return new EntityResponseHandler<>(videos);
+    return new ResponsePaginationHandler<>(videos);
   }
 
   /**

@@ -1,7 +1,6 @@
 package com.sila.modules.enrolment.service;
 
 import com.sila.config.exception.NotFoundException;
-import com.sila.modules.course.model.Course;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.enrolment.Enum.EnrollmentStatus;
 import com.sila.modules.enrolment.dto.EnrollmentResponse;
@@ -11,9 +10,8 @@ import com.sila.modules.enrolment.spec.EnrollmentSpec;
 import com.sila.modules.payment.model.Payment;
 import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.EntityResponseHandler;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
-import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,7 +93,7 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
    * @return EntityResponseHandler containing paginated EnrollmentResponse DTOs.
    */
   @Transactional(readOnly = true)
-  public EntityResponseHandler<EnrollmentResponse> listAllEnrollment(
+  public ResponsePaginationHandler<EnrollmentResponse> listAllEnrollment(
       Long courseId, PaginationRequest paginationRequest) {
 
     final var pageable = super.toPageable(paginationRequest);
@@ -107,7 +105,7 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
 
     var enrollPages = super.findAll(spec, pageable);
 
-    return new EntityResponseHandler<>(
+    return new ResponsePaginationHandler<>(
         enrollPages.map(en -> mapper.map(en, EnrollmentResponse.class)));
   }
 
