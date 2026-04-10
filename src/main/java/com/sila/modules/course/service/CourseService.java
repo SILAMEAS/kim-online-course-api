@@ -17,6 +17,7 @@ import com.sila.modules.video.service.VideoService;
 import com.sila.share.Utils;
 import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
+import com.sila.share.core.pagination.CoursePaginationRequest;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
 import org.modelmapper.ModelMapper;
@@ -72,14 +73,17 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
    * @return Paginated response of CourseResponse DTOs.
    */
   @Transactional(readOnly = true)
-  public ResponsePaginationHandler<CourseResponse> lists(PaginationRequest request) {
+  public ResponsePaginationHandler<CourseResponse> lists(CoursePaginationRequest request) {
     final var pageable =
         super.toPageable(
             request.getPage(),
             request.getLimit(),
             request.getSortBy(),
             String.valueOf(request.getSortOrder()));
-    final var spec = CourseSpec.search(request.getSearch());
+    final var spec =
+        CourseSpec.search(request.getSearch())
+            .and(CourseSpec.hasCategory(request.getCategoryId()))
+            .and(CourseSpec.priceBetween(request.getMinPrice(), request.getMaxPrice()));
     Page<Course> courses = super.findAll(spec, pageable);
     return new ResponsePaginationHandler<>(courses.map(courseMapping::mapToCourseResponse));
   }

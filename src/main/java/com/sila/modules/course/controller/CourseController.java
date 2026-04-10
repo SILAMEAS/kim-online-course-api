@@ -7,6 +7,7 @@ import com.sila.modules.course.dto.UpdateCourseRequest;
 import com.sila.modules.course.service.CourseService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.CoursePageResponse;
+import com.sila.share.core.pagination.CoursePaginationRequest;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;
@@ -46,7 +47,7 @@ public class CourseController {
         @ApiResponse(responseCode = "400", description = "Invalid pagination parameters")
       })
   public ResponseEntity<ResponsePaginationHandler<CourseResponse>> listAllCourses(
-      @ParameterObject PaginationRequest request) {
+      @ParameterObject CoursePaginationRequest request) {
 
     return ResponseEntity.ok(courseService.lists(request));
   }

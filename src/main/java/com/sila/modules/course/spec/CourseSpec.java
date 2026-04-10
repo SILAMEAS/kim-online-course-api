@@ -1,5 +1,7 @@
 package com.sila.modules.course.spec;
 
+import com.sila.modules.course.Enum.LevelStatus;
+import com.sila.modules.course.model.Category_;
 import com.sila.modules.course.model.Course;
 import com.sila.modules.course.model.Course_;
 import com.sila.modules.enrolment.model.Enrollment;
@@ -57,6 +59,39 @@ public class CourseSpec {
 
       // 4. The Course is included if its ID exists in that subquery result
       return cb.exists(subquery);
+    };
+  }
+
+  /** Filter by Course Level (e.g., BEGINNER, INTERMEDIATE) */
+  public static Specification<Course> hasLevel(LevelStatus level) {
+    return (root, query, cb) -> level == null ? null : cb.equal(root.get(Course_.LEVEL), level);
+  }
+
+  /** Filter by Category ID */
+  public static Specification<Course> hasCategory(Long categoryId) {
+    return (root, query, cb) ->
+        categoryId == null
+            ? null
+            : cb.equal(root.get(Course_.CATEGORY).get(Category_.ID), categoryId);
+  }
+
+  /** Filter by Minimum Rating (e.g., courses with 4.0 stars and up) */
+  public static Specification<Course> hasMinRating(Double minRating) {
+    return (root, query, cb) ->
+        minRating == null ? null : cb.greaterThanOrEqualTo(root.get(Course_.RATING), minRating);
+  }
+
+  /** Filter by Price Range */
+  public static Specification<Course> priceBetween(Double minPrice, Double maxPrice) {
+    return (root, query, cb) -> {
+      if (minPrice != null && maxPrice != null) {
+        return cb.between(root.get(Course_.PRICE), minPrice, maxPrice);
+      } else if (minPrice != null) {
+        return cb.greaterThanOrEqualTo(root.get(Course_.PRICE), minPrice);
+      } else if (maxPrice != null) {
+        return cb.lessThanOrEqualTo(root.get(Course_.PRICE), maxPrice);
+      }
+      return null;
     };
   }
 }

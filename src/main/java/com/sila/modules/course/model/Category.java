@@ -1,6 +1,7 @@
 package com.sila.modules.course.model;
 
 import com.sila.share.core.entity.AbstractAuditable;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,8 +15,10 @@ public class Category extends AbstractAuditable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   private Long id;
 
   @Column(nullable = false, unique = true)
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   private String name;
 }
