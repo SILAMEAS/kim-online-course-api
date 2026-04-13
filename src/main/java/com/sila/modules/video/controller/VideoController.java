@@ -1,22 +1,23 @@
 package com.sila.modules.video.controller;
 
+import com.sila.modules.video.dto.UpdateVideoRequest;
 import com.sila.modules.video.dto.UploadVideoRequest;
 import com.sila.modules.video.dto.VideoListResponse;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
-import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.dto.GeneralResponse;
 import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Video Management", description = "APIs for managing course videos")
 @RestController
@@ -52,7 +53,7 @@ public class VideoController {
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
   public ResponseEntity<GeneralResponse> uploadVideo(
-      @PathVariable Long courseId, @ModelAttribute UploadVideoRequest request) {
+      @PathVariable Long courseId, @Valid @ModelAttribute UploadVideoRequest request) {
     videoService.uploadVideo(courseId, request.getTitle(), request.getFile());
     return ResponseEntity.ok(
         GeneralResponse.builder().status(200).message("Video uploaded successfully").build());
@@ -119,7 +120,7 @@ public class VideoController {
         GeneralResponse.builder().status(200).message("Video deleted successfully").build());
   }
 
-  @PutMapping("/{publicId}")
+  @PutMapping("/{id}")
   @PreAuthorization({ROLE.ADMIN})
   @Operation(
       summary = "Update video",
@@ -129,10 +130,12 @@ public class VideoController {
         @ApiResponse(responseCode = "200", description = "Video updated successfully"),
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
-  public ResponseEntity<String> updateVideo(
-      @Parameter(description = "Public ID of the existing video in Cloudinary") @PathVariable
-          String publicId,
-      @Parameter(description = "New video file") @RequestParam MultipartFile file) {
-    return ResponseEntity.ok(videoService.updateVideo(publicId, file,null));
+  public ResponseEntity<GeneralResponse> updateVideo(
+      @PathVariable Long id, @Valid @ModelAttribute UpdateVideoRequest request) {
+    return ResponseEntity.ok(
+        GeneralResponse.builder()
+            .message(videoService.updateVideo(request, id))
+            .status(200)
+            .build());
   }
 }

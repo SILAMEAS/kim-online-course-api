@@ -7,14 +7,16 @@ import com.sila.modules.course.model.Course;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.enrolment.service.EnrollmentService;
 import com.sila.modules.profile.model.User;
+import com.sila.modules.video.dto.UpdateVideoRequest;
 import com.sila.modules.video.dto.VideoListResponse;
 import com.sila.modules.video.model.Video;
 import com.sila.modules.video.repository.VideoRepository;
 import com.sila.modules.video.spec.VideoSpec;
+import com.sila.share.Utils;
 import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.enums.ROLE;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +130,6 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     video.setDuration(Integer.valueOf(result.get("duration")));
     video.setCourse(course);
 
-
     super.save(video);
 
     updateCourseTotalDuration(courseId);
@@ -181,16 +182,20 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
   /**
    * Updates a video file by replacing it with a new file.
    *
-   * @param oldPublicId Public ID of the video to update
-   * @param file New MultipartFile video
    * @return Public ID of the updated video
    */
   @Transactional
-  public String updateVideo(String oldPublicId, MultipartFile file, Long courseId) {
-    if (courseId != null) {
-      updateCourseTotalDuration(courseId);
+  public String updateVideo(UpdateVideoRequest request,Long videoId) {
+    var video = super.findById(videoId);
+    Utils.setValueSafe(request.getTitle(), video::setTitle);
+    if (request.getCourseId() != null) {
+      updateCourseTotalDuration(request.getCourseId());
     }
-    return videoServiceCloudinary.updateVideo(oldPublicId, file);
+    if(request.getFile()!=null){
+      videoServiceCloudinary.updateVideo(request.getPublicId(), request.getFile());
+    }
+    super.save(video);
+    return "Update video successfully";
   }
 
   /**
