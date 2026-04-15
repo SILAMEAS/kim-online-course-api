@@ -15,7 +15,7 @@ public class CoursePaginationRequest extends PaginationRequest {
       example = "4",
       type = "integer",
       format = "int64")
-  private Long rating;
+  private Double rating;
 
   @Schema(
       description = "Filter by course difficulty level",
