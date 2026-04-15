@@ -14,7 +14,6 @@ public class UpdateVideoRequest {
   @Schema(type = "string", format = "binary")
   private MultipartFile file;
 
-  private String publicId;
+  private Long duration;
 
-  private Long courseId;
 }

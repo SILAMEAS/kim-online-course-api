@@ -42,7 +42,7 @@ public class Video extends AbstractAuditable {
   private Integer orderIndex;
 
   @Column(name = "duration")
-  private Integer duration; // seconds
+  private Long duration; // seconds
 
   /** Course this video belongs to. Cannot be null. */
   @ManyToOne(fetch = FetchType.LAZY)
