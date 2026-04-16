@@ -128,6 +128,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
         Utils.setValueSafe(request.getDescription(), course::setDescription);
         Utils.setValueSafe(request.getPrice(), course::setPrice);
         Utils.setValueSafe(request.getStatus(), course::setStatus);
+        Utils.setValueSafe(request.getLevel(), course::setLevel);
         Utils.setValueSafe(categoryService.findOne(request.getCategoryId()), course::setCategory);
         //    update instructor
         if (request.getInstructorId() != null) {
