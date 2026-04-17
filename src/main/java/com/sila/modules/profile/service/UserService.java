@@ -106,7 +106,10 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
     if (request.getRole() != null) {
       spec = spec.and(UserSpec.byRole(request.getRole()));
     }
-    final var pageable = super.toPageable(request.getPage(), request.getLimit());
+    final var pageable =
+        super.toPageable(
+            request.getPage(), request.getLimit(), request.getSortBy(),
+            String.valueOf(request.getSortOrder()));
 
     return new ResponsePaginationHandler<>(
         super.findAll(spec, pageable).map(re -> mapper.map(re, UserResponse.class)));

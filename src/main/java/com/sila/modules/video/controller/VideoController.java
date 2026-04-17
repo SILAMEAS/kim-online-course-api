@@ -3,6 +3,7 @@ package com.sila.modules.video.controller;
 import com.sila.modules.video.dto.UpdateVideoRequest;
 import com.sila.modules.video.dto.UploadVideoRequest;
 import com.sila.modules.video.dto.VideoListResponse;
+import com.sila.modules.video.dto.VideoPaginationRequest;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.PaginationRequest;
@@ -38,8 +39,8 @@ public class VideoController {
                     @ApiResponse(responseCode = "200", description = "Videos retrieved successfully")
             })
     public ResponseEntity<ResponsePaginationHandler<VideoListResponse>> getVideos(
-            @ParameterObject PaginationRequest paginationRequest) {
-        return ResponseEntity.ok(videoService.getAllVideos(paginationRequest));
+            @ParameterObject VideoPaginationRequest request) {
+        return ResponseEntity.ok(videoService.getAllVideos(request));
     }
 
     @PostMapping(value = "/upload/{courseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
