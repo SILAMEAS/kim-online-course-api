@@ -1,9 +1,8 @@
-package com.sila.share.core.pagination;
+package com.sila.modules.profile.dto.res;
 
-import com.sila.modules.course.model.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,22 +11,17 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryPageResponse {
+@Builder
+public class DashboardUserResponse {
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private List<Category> contents;
+  private Long enrolled;
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private int page;
+  private Long certificates;
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private int limit;
+  private Long timeComplete;
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private long total;
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private int totalPage;
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private boolean hasNext;
+  private Long learningStreak;
 }

@@ -1,8 +1,9 @@
-package com.sila.modules.profile.dto.res;
+package com.sila.modules.course.dto;
 
+import com.sila.modules.course.model.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,32 +12,22 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class DashboardResponse {
+public class CategoryPageResponse {
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private Long totalUsers;
+  private List<Category> contents;
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private Long totalStudents;
+  private int page;
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private Long totalTeachers;
+  private int limit;
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private Long totalCourses;
+  private long total;
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private Long totalVideos;
+  private int totalPage;
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private String totalRevenues;
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private Long totalEnrollments;
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private Long totalImages;
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  private Long totalCategories;
+  private boolean hasNext;
 }

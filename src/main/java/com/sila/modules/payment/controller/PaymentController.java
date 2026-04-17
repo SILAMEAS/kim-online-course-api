@@ -7,7 +7,7 @@ import com.sila.modules.payment.service.PaymentService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
-import com.sila.share.core.pagination.PaymentsPageResponse;
+import com.sila.modules.payment.dto.PaymentsPageResponse;
 import com.sila.share.enums.ROLE;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

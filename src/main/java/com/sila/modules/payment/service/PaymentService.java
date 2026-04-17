@@ -15,8 +15,8 @@ import com.sila.modules.payment.repository.PaymentRepository;
 import com.sila.modules.payment.spec.PaymentSpec;
 import com.sila.modules.profile.model.User;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import java.time.Instant;
 import lombok.NonNull;
 import org.modelmapper.ModelMapper;
@@ -150,7 +150,8 @@ public class PaymentService extends AbstractCrudCommon<Payment, Long, PaymentRep
     User user = UserContext.getUser();
 
     if (super.baseRepository.existsByUserIdAndCourseId(user.getId(), courseId)) {
-      throw new BadRequestException("Payment already submitted for this course waiting admin to confirmation");
+      throw new BadRequestException(
+          "Payment already submitted for this course waiting admin to confirmation");
     }
 
     Payment payment = new Payment();

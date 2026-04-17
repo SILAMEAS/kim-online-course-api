@@ -1,4 +1,4 @@
-package com.sila.modules.payment.spec;
+package com.sila.modules.payment.repository;
 
 import com.sila.modules.payment.model.Payment;
 import jakarta.persistence.EntityManager;
@@ -6,18 +6,21 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
-public class PaymentSumUtil {
+@Repository
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+public class PaymentRepositoryCustomImpl implements PaymentRepositoryCustom {
 
   @PersistenceContext private EntityManager entityManager;
 
   /**
    * Calculate the total amount of payments matching the given specification.
    *
-   * @param spec Dynamic filtering spec (can be search, byOwnership, byUserId, etc.)
+   * @param spec Dynamic filtering spec (can be searched, byOwnership, byUserId, etc.)
    * @return Total sum of payment amounts (0 if none)
    */
   public Double sumAmount(Specification<Payment> spec) {

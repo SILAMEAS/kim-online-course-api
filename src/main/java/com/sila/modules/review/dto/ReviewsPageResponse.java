@@ -1,6 +1,5 @@
-package com.sila.share.core.pagination;
+package com.sila.modules.review.dto;
 
-import com.sila.modules.image.dto.ImageListResponse;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +10,8 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImagesPageResponse {
-  private List<ImageListResponse> contents;
+public class ReviewsPageResponse {
+  private List<ReviewResponse> contents;
   private int page;
   private int limit;
   private long total;

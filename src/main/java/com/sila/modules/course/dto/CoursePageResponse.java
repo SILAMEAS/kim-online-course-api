@@ -1,6 +1,5 @@
-package com.sila.share.core.pagination;
+package com.sila.modules.course.dto;
 
-import com.sila.modules.course.dto.CourseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

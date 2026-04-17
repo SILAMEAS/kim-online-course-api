@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 public interface PaymentRepository
-    extends JpaRepository<Payment, Long>, JpaSpecificationExecutor<Payment> {
+    extends JpaRepository<Payment, Long>, JpaSpecificationExecutor<Payment>,PaymentRepositoryCustom {
   boolean existsByUserIdAndCourseId(Long userId, Long courseId);
 
   @Query(

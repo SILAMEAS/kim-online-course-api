@@ -2,13 +2,14 @@ package com.sila.modules.profile.controller;
 
 import com.sila.modules.profile.dto.req.CreateUserRequest;
 import com.sila.modules.profile.dto.req.UpdateUserRequest;
+import com.sila.modules.profile.dto.req.UserPaginationRequest;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.service.AuthService;
 import com.sila.modules.profile.service.UserService;
 import com.sila.modules.video.service.VideoService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
-import com.sila.share.core.pagination.ListUserPageResponse;
+import com.sila.modules.profile.dto.res.ListUserPageResponse;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.dto.GeneralResponse;
 import com.sila.share.enums.ROLE;
@@ -52,7 +53,7 @@ public class UserController {
                     @ApiResponse(responseCode = "403", description = "Access denied")
             })
     public ResponseEntity<ResponsePaginationHandler<UserResponse>> listUsers(
-            @ParameterObject PaginationRequest request) {
+            @ParameterObject UserPaginationRequest request) {
         return ResponseEntity.ok(userService.list(request));
     }
 

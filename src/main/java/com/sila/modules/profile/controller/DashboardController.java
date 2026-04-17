@@ -1,6 +1,7 @@
 package com.sila.modules.profile.controller;
 
 import com.sila.modules.profile.dto.res.DashboardResponse;
+import com.sila.modules.profile.dto.res.DashboardUserResponse;
 import com.sila.modules.profile.service.DashboardService;
 import com.sila.share.annotation.PreAuthorization;
 import com.sila.share.enums.ROLE;
@@ -16,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/dashboard")
 public class DashboardController {
-  final private DashboardService dashboardService;
+  private final DashboardService dashboardService;
 
-    public DashboardController(DashboardService dashboardService) {
-        this.dashboardService = dashboardService;
-    }
+  public DashboardController(DashboardService dashboardService) {
+    this.dashboardService = dashboardService;
+  }
 
-    @GetMapping
+  @GetMapping
   @PreAuthorization({ROLE.ADMIN})
   @Operation(
       summary = "DashboardResponse",
@@ -35,5 +36,20 @@ public class DashboardController {
       })
   public ResponseEntity<DashboardResponse> dashboard() {
     return ResponseEntity.ok(dashboardService.getDashboard());
+  }
+
+  @GetMapping("/students")
+  @PreAuthorization({ROLE.STUDENT})
+  @Operation(
+      summary = "DashboardResponse",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "Users retrieved successfully",
+              content = @Content(schema = @Schema(implementation = DashboardUserResponse.class))),
+          @ApiResponse(responseCode = "403", description = "Access denied")
+      })
+  public ResponseEntity<DashboardUserResponse> dashboardStudent() {
+    return ResponseEntity.ok(dashboardService.getDashboardUser());
   }
 }

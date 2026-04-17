@@ -1,6 +1,7 @@
-package com.sila.share.core.pagination;
+package com.sila.modules.course.dto;
 
 import com.sila.modules.course.Enum.LevelStatus;
+import com.sila.share.core.pagination.PaginationRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 

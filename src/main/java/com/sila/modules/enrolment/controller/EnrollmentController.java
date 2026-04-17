@@ -3,7 +3,7 @@ package com.sila.modules.enrolment.controller;
 import com.sila.modules.enrolment.dto.EnrollmentResponse;
 import com.sila.modules.enrolment.service.EnrollmentService;
 import com.sila.share.annotation.PreAuthorization;
-import com.sila.share.core.pagination.EnrollmentsPageResponse;
+import com.sila.modules.enrolment.dto.EnrollmentsPageResponse;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.enums.ROLE;

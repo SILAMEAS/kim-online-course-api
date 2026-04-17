@@ -3,7 +3,7 @@ package com.sila.modules.course.controller;
 import com.sila.modules.course.dto.CreateCategoryRequest;
 import com.sila.modules.course.model.Category;
 import com.sila.modules.course.service.CategoryService;
-import com.sila.share.core.pagination.CategoryPageResponse;
+import com.sila.modules.course.dto.CategoryPageResponse;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.dto.GeneralResponse;

@@ -3,7 +3,7 @@ package com.sila.modules.image.controller;
 import com.sila.modules.image.dto.ImageListResponse;
 import com.sila.modules.image.service.ImageService;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
-import com.sila.share.core.pagination.ImagesPageResponse;
+import com.sila.modules.image.dto.ImagesPageResponse;
 import com.sila.share.core.pagination.PaginationRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

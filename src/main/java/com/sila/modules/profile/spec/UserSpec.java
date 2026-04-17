@@ -38,7 +38,7 @@ public class UserSpec {
             cb.like(cb.lower(root.get(User_.EMAIL)), like));
   }
 
-  public static Specification<User> byTeacher() {
-    return (var root, var query, var cb) -> cb.equal(root.get(User_.ROLE), ROLE.INSTRUCTOR);
+  public static Specification<User> byRole(ROLE role) {
+    return (var root, var query, var cb) -> cb.equal(root.get(User_.ROLE), role);
   }
 }

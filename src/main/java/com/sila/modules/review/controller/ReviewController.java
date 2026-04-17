@@ -6,7 +6,7 @@ import com.sila.modules.review.dto.ReviewResponse;
 import com.sila.modules.review.service.ReviewService;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
-import com.sila.share.core.pagination.ReviewsPageResponse;
+import com.sila.modules.review.dto.ReviewsPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

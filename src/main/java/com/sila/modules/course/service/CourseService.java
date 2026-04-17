@@ -17,7 +17,7 @@ import com.sila.modules.video.service.VideoService;
 import com.sila.share.Utils;
 import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.CoursePaginationRequest;
+import com.sila.modules.course.dto.CoursePaginationRequest;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
 import org.modelmapper.ModelMapper;

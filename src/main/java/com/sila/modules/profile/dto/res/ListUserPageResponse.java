@@ -1,7 +1,5 @@
-package com.sila.share.core.pagination;
+package com.sila.modules.profile.dto.res;
 
-import com.sila.modules.course.dto.CourseResponse;
-import com.sila.modules.profile.dto.res.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

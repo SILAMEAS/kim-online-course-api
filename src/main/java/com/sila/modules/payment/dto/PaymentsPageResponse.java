@@ -1,6 +1,5 @@
-package com.sila.share.core.pagination;
+package com.sila.modules.payment.dto;
 
-import com.sila.modules.enrolment.dto.EnrollmentResponse;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +10,8 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EnrollmentsPageResponse {
-  private List<EnrollmentResponse> contents;
+public class PaymentsPageResponse {
+  private List<ListPaymentResponse> contents;
   private int page;
   private int limit;
   private long total;
