@@ -68,13 +68,6 @@ public class DashboardService {
 
   @Transactional
   public DashboardUserResponse getDashboardUser() {
-    // Build dynamic spec: DONE payments + ownership filter (or other filters)
-    var spec =
-        Specification.where(PaymentSpec.byOwnership())
-            .and((root, query, cb) -> cb.equal(root.get("status"), PaymentStatus.DONE));
-
-    Double totalRevenue = this.paymentRepository.sumAmount(spec);
-
-    return DashboardUserResponse.builder().build();
+    return DashboardUserResponse.builder().enrolled(12L).certificates(12L).learningStreak(123L).timeComplete(123L).build();
   }
 }

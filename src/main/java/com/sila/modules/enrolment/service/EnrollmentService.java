@@ -8,10 +8,11 @@ import com.sila.modules.enrolment.model.Enrollment;
 import com.sila.modules.enrolment.repository.EnrollmentRepository;
 import com.sila.modules.enrolment.spec.EnrollmentSpec;
 import com.sila.modules.payment.model.Payment;
+import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,9 +120,10 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
    */
   @Transactional
   public String bulkDeleteByCourseId(Long courseId) {
-    var course = this.courseRepository
-        .findById(courseId)
-        .orElseThrow(() -> new NotFoundException(StaticMessage.COURSE_NOT_FOUND));
+    var course =
+        this.courseRepository
+            .findById(courseId)
+            .orElseThrow(() -> new NotFoundException(StaticMessage.COURSE_NOT_FOUND));
 
     this.baseRepository.deleteAllByCourse_Id(courseId);
 
@@ -143,5 +145,23 @@ public class EnrollmentService extends AbstractCrudCommon<Enrollment, Long, Enro
   @Transactional(readOnly = true)
   public boolean existByCourseId(Long courseId) {
     return this.baseRepository.existsByCourse_Id(courseId);
+  }
+  @Transactional(readOnly = true)
+  public ResponsePaginationHandler<UserResponse> listUsersByCourse(
+      Long courseId,
+      PaginationRequest paginationRequest
+  ) {
+
+    final var pageable = super.toPageable(paginationRequest);
+
+    var spec =
+        EnrollmentSpec.search(paginationRequest.getSearch())
+            .and(EnrollmentSpec.byCourse(courseId));
+
+    var enrollPages = super.findAll(spec, pageable);
+
+    return new ResponsePaginationHandler<>(
+        enrollPages.map(en -> mapper.map(en.getUser(), UserResponse.class))
+    );
   }
 }

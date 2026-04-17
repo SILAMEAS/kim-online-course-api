@@ -6,6 +6,7 @@ import com.sila.modules.course.model.Course;
 import com.sila.modules.course.model.Course_;
 import com.sila.modules.enrolment.model.Enrollment;
 import com.sila.modules.enrolment.model.Enrollment_;
+import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.model.User_;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
@@ -93,5 +94,13 @@ public class CourseSpec {
       }
       return null;
     };
+  }
+
+  /** Filter by Course Level (e.g., BEGINNER, INTERMEDIATE) */
+  public static Specification<Course> byTeacherId(Long teacherId) {
+    return (root, query, cb) ->
+        teacherId == null
+            ? null
+            : cb.equal(root.get(Course_.INSTRUCTOR).get(User_.ID), teacherId);
   }
 }

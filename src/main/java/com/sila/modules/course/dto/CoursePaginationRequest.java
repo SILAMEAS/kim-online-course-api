@@ -44,4 +44,11 @@ public class CoursePaginationRequest extends PaginationRequest {
       type = "number",
       format = "double")
   private Double maxPrice;
+
+  @Schema(
+      description = "The unique ID of the instructorId",
+      example = "1",
+      type = "integer",
+      format = "int64")
+  private Long instructorId;
 }

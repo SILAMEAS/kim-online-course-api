@@ -39,7 +39,7 @@ public class DashboardController {
   }
 
   @GetMapping("/students")
-  @PreAuthorization({ROLE.STUDENT})
+  @PreAuthorization({ROLE.STUDENT,ROLE.ADMIN,ROLE.INSTRUCTOR})
   @Operation(
       summary = "DashboardResponse",
       responses = {
