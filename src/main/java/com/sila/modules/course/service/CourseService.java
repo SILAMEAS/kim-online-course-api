@@ -208,4 +208,9 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
     Page<Course> courses = super.findAll(spec, pageable);
     return new ResponsePaginationHandler<>(courses.map(courseMapping::mapToCourseResponse));
   }
+
+  @Transactional(readOnly = true)
+  public Course findByIdService(Long courseId) {
+    return super.findById(courseId);
+  }
 }

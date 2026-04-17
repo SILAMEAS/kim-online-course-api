@@ -96,7 +96,7 @@ public class Course extends AbstractAuditable {
    *
    * <p>References the {@link User} entity. Cannot be null. Uses lazy loading for performance.
    */
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "instructor_id",
       referencedColumnName = "id",
@@ -104,7 +104,7 @@ public class Course extends AbstractAuditable {
       nullable = false)
   private User instructor;
 
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(
       name = "image_id",
       referencedColumnName = "id",
