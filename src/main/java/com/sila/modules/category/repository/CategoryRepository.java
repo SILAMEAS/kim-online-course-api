@@ -1,6 +1,6 @@
-package com.sila.modules.course.repository;
+package com.sila.modules.category.repository;
 
-import com.sila.modules.course.model.Category;
+import com.sila.modules.category.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

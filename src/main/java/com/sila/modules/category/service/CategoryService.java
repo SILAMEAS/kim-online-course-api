@@ -1,11 +1,11 @@
-package com.sila.modules.course.service;
+package com.sila.modules.category.service;
 
 import com.sila.config.exception.BadRequestException;
-import com.sila.modules.course.dto.CreateCategoryRequest;
-import com.sila.modules.course.model.Category;
-import com.sila.modules.course.repository.CategoryRepository;
+import com.sila.modules.category.dto.CreateCategoryRequest;
+import com.sila.modules.category.model.Category;
+import com.sila.modules.category.repository.CategoryRepository;
 import com.sila.modules.course.repository.CourseRepository;
-import com.sila.modules.course.spec.CategorySpec;
+import com.sila.modules.category.spec.CategorySpec;
 import com.sila.share.Utils;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.PaginationRequest;

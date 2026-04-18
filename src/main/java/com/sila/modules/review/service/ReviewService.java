@@ -6,20 +6,19 @@ import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.review.dto.CourseRatingDTO;
 import com.sila.modules.review.dto.ReviewRequest;
 import com.sila.modules.review.dto.ReviewResponse;
-import com.sila.modules.review.dto.ReviewSummary;
 import com.sila.modules.review.model.Review;
 import com.sila.modules.review.repository.ReviewRepository;
 import com.sila.modules.review.spec.ReviewSpec;
 import com.sila.share.core.crud.AbstractCrudCommon;
-import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.core.pagination.PaginationRequest;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Service for managing course enrollments.
@@ -37,94 +36,89 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReviewService extends AbstractCrudCommon<Review, Long, ReviewRepository> {
 
-  private final CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
 
-  protected ReviewService(
-      ReviewRepository baseRepository, ModelMapper mapper, CourseRepository courseRepository) {
-    super(baseRepository, mapper);
-    this.courseRepository = courseRepository;
-  }
-
-  @Transactional(readOnly = true)
-  public ResponsePaginationHandler<ReviewResponse> listReviews(
-      PaginationRequest paginationRequest, Long courseId) {
-
-    final var pageable =
-        super.toPageable(
-            paginationRequest.getPage(),
-            paginationRequest.getLimit(),
-            paginationRequest.getSortBy(),
-            String.valueOf(paginationRequest.getSortOrder()));
-
-    var spec = ReviewSpec.search(paginationRequest.getSearch());
-
-    Page<Review> pagePayments = super.findAll(spec, pageable);
-    return new ResponsePaginationHandler<>(
-        pagePayments.map(pt -> this.mapper.map(pt, ReviewResponse.class)));
-  }
-
-  @Transactional
-  public ReviewResponse createReview(ReviewRequest request, Long courseId) {
-
-    final var course =
-        courseRepository
-            .findById(courseId)
-            .orElseThrow(() -> new NotFoundException("Course not found"));
-
-    var review = new Review();
-    review.setTitle(request.getTitle());
-    review.setComment(request.getComment());
-    review.setRating(request.getRating());
-    review.setCourse(course);
-    review.setUser(UserContext.getUser());
-
-    super.save(review);
-
-    //    update course
-    course.setReviewsCount(super.baseRepository.count());
-    var avg = super.baseRepository.getAverageRatingByCourseId(courseId);
-    if (avg != null) {
-      // Correct Java logic for 1 decimal place (e.g., 3.76 -> 3.8)
-      double roundedAvg = Math.round(avg * 10.0) / 10.0;
-      course.setRating(roundedAvg);
-    } else {
-      course.setRating(0.0);
-    }
-    courseRepository.save(course);
-
-    return mapper.map(review, ReviewResponse.class);
-  }
-
-  public CourseRatingDTO getCourseRatingUI(Long courseId) {
-    // 1. Fetch data from Repository
-    List<ReviewSummary> summaries = super.baseRepository.getReviewBreakdown(courseId);
-    List<Object[]> statsList = super.baseRepository.getOverallStats(courseId);
-
-    var average = 0.0;
-    var totalReviews = 0L;
-
-    // 2. Extract stats safely (Handling the List<Object[]> return type)
-    if (statsList != null && !statsList.isEmpty() && statsList.get(0)[1] != null) {
-      Object[] stats = statsList.get(0);
-      average = (stats[0] != null) ? (Double) stats[0] : 0.0;
-      totalReviews = (Long) stats[1];
+    protected ReviewService(
+            ReviewRepository baseRepository, ModelMapper mapper, CourseRepository courseRepository) {
+        super(baseRepository, mapper);
+        this.courseRepository = courseRepository;
     }
 
-    // 3. Initialize breakdown with 0s (ensures UI shows 4-stars: 0 even if empty)
-    Map<Integer, Long> breakdown = new LinkedHashMap<>();
-    for (int i = 5; i >= 1; i--) {
-      breakdown.put(i, 0L);
+    @Transactional(readOnly = true)
+    public ResponsePaginationHandler<ReviewResponse> listReviews(
+            PaginationRequest paginationRequest, Long courseId) {
+
+        final var pageable =
+                super.toPageable(
+                        paginationRequest.getPage(),
+                        paginationRequest.getLimit(),
+                        paginationRequest.getSortBy(),
+                        String.valueOf(paginationRequest.getSortOrder()));
+
+        var spec = ReviewSpec.search(paginationRequest.getSearch());
+
+        Page<Review> pagePayments = super.findAll(spec, pageable);
+        return new ResponsePaginationHandler<>(
+                pagePayments.map(pt -> this.mapper.map(pt, ReviewResponse.class)));
     }
 
-    // 4. Merge database counts into the breakdown map
-    if (summaries != null) {
-      summaries.forEach(s -> breakdown.put(s.starLevel(), s.count()));
+    @Transactional
+    public ReviewResponse createReview(ReviewRequest request, Long courseId) {
+
+        final var course =
+                courseRepository
+                        .findById(courseId)
+                        .orElseThrow(() -> new NotFoundException("Course not found"));
+
+        var review = new Review();
+        review.setTitle(request.getTitle());
+        review.setComment(request.getComment());
+        review.setRating(request.getRating());
+        review.setCourse(course);
+        review.setUser(UserContext.getUser());
+
+        super.save(review);
+
+        //    update course
+        course.setReviewsCount(super.baseRepository.count());
+        var avg = super.baseRepository.findAll(ReviewSpec.hasCourseId(courseId)).size();
+        if (avg != 0) {
+            // Correct Java logic for 1 decimal place (e.g., 3.76 -> 3.8)
+            double roundedAvg = Math.round(avg * 10.0) / 10.0;
+            course.setRating(roundedAvg);
+        } else {
+            course.setRating(0.0);
+        }
+        courseRepository.save(course);
+
+        return mapper.map(review, ReviewResponse.class);
     }
 
-    return CourseRatingDTO.builder()
-        .average(Math.round(average * 10.0) / 10.0)
-        .total(totalReviews)
-        .breakdown(breakdown)
-        .build();
-  }
+    @Transactional(readOnly = true)
+    public CourseRatingDTO getCourseRatingUI(Long courseId) {
+
+        var spec = ReviewSpec.hasCourseId(courseId);
+
+        var stats = super.baseRepository.getOverallStats(spec);
+        var summaries = super.baseRepository.getReviewBreakdown(spec);
+
+        // Initialize 5 → 1 with 0
+        Map<Integer, Long> breakdown = new LinkedHashMap<>();
+        for (int i = 5; i >= 1; i--) {
+            breakdown.put(i, 0L);
+        }
+
+        // Fill actual values
+        summaries.forEach(s -> breakdown.put(s.starLevel(), s.count()));
+
+        return CourseRatingDTO.builder()
+                .average(round(stats.average()))
+                .total(stats.total()) // ✅ THIS should be 6
+                .breakdown(breakdown)
+                .build();
+    }
+
+    private double round(double value) {
+        return Math.round(value * 10.0) / 10.0;
+    }
 }

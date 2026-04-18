@@ -1,6 +1,7 @@
-package com.sila.modules.profile.dto.res;
+package com.sila.modules.wishlist.dto;
 
 import com.sila.modules.course.dto.CourseResponse;
+import com.sila.modules.profile.dto.res.UserResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,7 @@
 package com.sila.modules.course.service;
 
 import com.sila.config.exception.BadRequestException;
+import com.sila.modules.category.service.CategoryService;
 import com.sila.modules.course.dto.CourseDetailResponse;
 import com.sila.modules.course.dto.CoursePaginationRequest;
 import com.sila.modules.course.dto.CourseResponse;

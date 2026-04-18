@@ -1,7 +1,7 @@
 package com.sila.modules.course.spec;
 
+import com.sila.modules.category.model.Category_;
 import com.sila.modules.course.Enum.LevelStatus;
-import com.sila.modules.course.model.Category_;
 import com.sila.modules.course.model.Course;
 import com.sila.modules.course.model.Course_;
 import com.sila.modules.enrolment.model.Enrollment;

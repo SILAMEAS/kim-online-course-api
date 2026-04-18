@@ -1,8 +1,8 @@
-package com.sila.modules.profile.controller;
+package com.sila.modules.wishlist.controller;
 
-import com.sila.modules.profile.dto.res.ListWishlistPageResponse;
-import com.sila.modules.profile.dto.res.WishlistResponse;
-import com.sila.modules.profile.service.WishlistService;
+import com.sila.modules.wishlist.dto.ListWishlistPageResponse;
+import com.sila.modules.wishlist.dto.WishlistResponse;
+import com.sila.modules.wishlist.service.WishlistService;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
 import com.sila.share.dto.GeneralResponse;

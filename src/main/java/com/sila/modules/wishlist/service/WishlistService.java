@@ -1,14 +1,14 @@
-package com.sila.modules.profile.service;
+package com.sila.modules.wishlist.service;
 
 import com.sila.config.context.UserContext;
 import com.sila.config.exception.BadRequestException;
 import com.sila.modules.course.mapping.CourseMapping;
 import com.sila.modules.course.service.CourseService;
 import com.sila.modules.profile.dto.res.UserResponse;
-import com.sila.modules.profile.dto.res.WishlistResponse;
-import com.sila.modules.profile.model.Wishlist;
-import com.sila.modules.profile.repository.WishlistRepository;
-import com.sila.modules.profile.spec.WishlistSpec;
+import com.sila.modules.wishlist.dto.WishlistResponse;
+import com.sila.modules.wishlist.model.Wishlist;
+import com.sila.modules.wishlist.repository.WishlistRepository;
+import com.sila.modules.wishlist.spec.WishlistSpec;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.core.pagination.ResponsePaginationHandler;

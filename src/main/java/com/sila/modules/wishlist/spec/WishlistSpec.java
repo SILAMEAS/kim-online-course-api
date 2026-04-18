@@ -1,7 +1,7 @@
-package com.sila.modules.profile.spec;
+package com.sila.modules.wishlist.spec;
 
 import com.sila.modules.enrolment.model.Enrollment;
-import com.sila.modules.profile.model.Wishlist;
+import com.sila.modules.wishlist.model.Wishlist;
 import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.sila.modules.course.dto;
+package com.sila.modules.category.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

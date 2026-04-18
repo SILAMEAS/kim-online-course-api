@@ -1,6 +1,6 @@
-package com.sila.modules.course.dto;
+package com.sila.modules.category.dto;
 
-import com.sila.modules.course.model.Category;
+import com.sila.modules.category.model.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.AllArgsConstructor;

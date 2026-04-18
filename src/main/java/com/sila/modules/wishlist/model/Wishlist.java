@@ -1,6 +1,7 @@
-package com.sila.modules.profile.model;
+package com.sila.modules.wishlist.model;
 
 import com.sila.modules.course.model.Course;
+import com.sila.modules.profile.model.User;
 import com.sila.share.core.entity.AbstractAuditable;
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,4 +1,4 @@
-package com.sila.modules.profile.service;
+package com.sila.modules.profile.service.ImpI;
 
 import com.sila.config.custom.CustomUserDetails;
 import com.sila.config.custom.CustomerUserDetailsService;
@@ -14,6 +14,8 @@ import com.sila.modules.profile.dto.req.SignUpRequest;
 import com.sila.modules.profile.dto.res.LoginResponse;
 import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.repository.UserRepository;
+import com.sila.modules.profile.service.AuthService;
+import com.sila.modules.profile.service.UserService;
 import com.sila.share.enums.ROLE;
 import java.util.Collection;
 import java.util.Collections;

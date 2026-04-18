@@ -1,4 +1,4 @@
-package com.sila.modules.course.model;
+package com.sila.modules.category.model;
 
 import com.sila.share.core.entity.AbstractAuditable;
 import io.swagger.v3.oas.annotations.media.Schema;

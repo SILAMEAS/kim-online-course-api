@@ -1,4 +1,4 @@
-package com.sila.modules.course.Enum;
+package com.sila.modules.category.Enum;
 
 public enum CategoryStatus {
     WEB_DEVELOPMENT,

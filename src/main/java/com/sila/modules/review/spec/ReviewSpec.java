@@ -28,4 +28,11 @@ public class ReviewSpec {
           cb.like(cb.lower(root.get(Video_.TITLE)), like));
     };
   }
+  public static Specification<Review> hasCourseId(Long courseId) {
+    return (root, query, cb) -> {
+      query.distinct(false); // 🔥 prevent losing rows
+      return cb.equal(root.get("course").get("id"), courseId);
+    };
+  }
+
 }

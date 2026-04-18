@@ -1,6 +1,6 @@
 package com.sila.modules.profile.service;
 
-import com.sila.modules.course.repository.CategoryRepository;
+import com.sila.modules.category.repository.CategoryRepository;
 import com.sila.modules.course.repository.CourseRepository;
 import com.sila.modules.enrolment.repository.EnrollmentRepository;
 import com.sila.modules.image.repository.ImageRepository;

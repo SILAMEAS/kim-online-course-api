@@ -2,7 +2,7 @@ package com.sila.modules.course.dto;
 
 import com.sila.modules.course.Enum.CourseStatus;
 import com.sila.modules.course.Enum.LevelStatus;
-import com.sila.modules.course.model.Category;
+import com.sila.modules.category.model.Category;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.video.dto.VideoListResponse;
 import lombok.AllArgsConstructor;

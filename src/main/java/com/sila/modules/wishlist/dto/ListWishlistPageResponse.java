@@ -1,4 +1,4 @@
-package com.sila.modules.profile.dto.res;
+package com.sila.modules.wishlist.dto;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
