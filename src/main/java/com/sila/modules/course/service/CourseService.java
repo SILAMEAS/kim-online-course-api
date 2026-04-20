@@ -1,5 +1,6 @@
 package com.sila.modules.course.service;
 
+import com.sila.config.context.UserContext;
 import com.sila.config.exception.BadRequestException;
 import com.sila.modules.category.service.CategoryService;
 import com.sila.modules.course.dto.CourseDetailResponse;
@@ -21,6 +22,7 @@ import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
+import com.sila.share.enums.ROLE;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -87,7 +89,8 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
             .and(CourseSpec.priceBetween(request.getMinPrice(), request.getMaxPrice()))
             .and(CourseSpec.hasLevel(request.getLevelStatus()))
             .and(CourseSpec.hasMinRating(request.getRating()))
-            .and(CourseSpec.fetchRelationsDetailOptimized());
+            .and(CourseSpec.fetchRelationsDetailOptimized())
+            .and(CourseSpec.visibleByRole());
 
     if (request.getInstructorId() != null) {
       spec = spec.and(CourseSpec.byTeacherId(request.getInstructorId()));
@@ -206,7 +209,7 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
             request.getSortBy(),
             String.valueOf(request.getSortOrder()));
     final var spec =
-        CourseSpec.search(request.getSearch()).and(CourseSpec.hasStudentEnrolled(studentId));
+        CourseSpec.search(request.getSearch()).and(CourseSpec.hasStudentEnrolled(studentId)).and(CourseSpec.visibleByRole());
     Page<Course> courses = super.findAll(spec, pageable);
     return new ResponsePaginationHandler<>(courses.map(courseMapping::mapToCourseResponse));
   }

@@ -4,6 +4,7 @@ import com.sila.config.context.UserContext;
 import com.sila.config.exception.BadRequestException;
 import com.sila.modules.course.mapping.CourseMapping;
 import com.sila.modules.course.service.CourseService;
+import com.sila.modules.payment.repository.PaymentRepository;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.wishlist.dto.WishlistResponse;
 import com.sila.modules.wishlist.model.Wishlist;
@@ -21,15 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class WishlistService extends AbstractCrudCommon<Wishlist, Long, WishlistRepository> {
   private final CourseService courseService;
   private final CourseMapping courseMapping;
+  private final PaymentRepository paymentRepository;
 
   protected WishlistService(
       WishlistRepository baseRepository,
       ModelMapper mapper,
       CourseService courseService,
-      CourseMapping courseMapping) {
+      CourseMapping courseMapping,
+      PaymentRepository paymentRepository) {
     super(baseRepository, mapper);
     this.courseService = courseService;
     this.courseMapping = courseMapping;
+    this.paymentRepository = paymentRepository;
   }
 
   @Transactional
@@ -38,6 +42,9 @@ public class WishlistService extends AbstractCrudCommon<Wishlist, Long, Wishlist
 
     if (super.baseRepository.existsByUserIdAndCourseId(UserContext.getUserId(), course.getId())) {
       throw new BadRequestException("Already in wishlist");
+    }
+    if (this.paymentRepository.existsByCourse_Id(courseId)) {
+      throw new BadRequestException("Course ready payment or wait confirm payment from admin");
     }
 
     Wishlist wishlist = Wishlist.builder().user(UserContext.getUser()).course(course).build();
@@ -56,7 +63,10 @@ public class WishlistService extends AbstractCrudCommon<Wishlist, Long, Wishlist
 
     final var pageable = super.toPageable(request);
 
-    var spec = WishlistSpec.byUserId(userId).and(WishlistSpec.fetchRelationsDetailOptimized());
+    var spec =
+        WishlistSpec.byUserId(userId)
+            .and(WishlistSpec.fetchRelationsDetailOptimized())
+            .and(WishlistSpec.visibleByRole());
 
     Page<Wishlist> page = baseRepository.findAll(spec, pageable);
 

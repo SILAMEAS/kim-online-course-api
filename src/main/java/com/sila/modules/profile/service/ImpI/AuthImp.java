@@ -2,6 +2,7 @@ package com.sila.modules.profile.service.ImpI;
 
 import com.sila.config.custom.CustomUserDetails;
 import com.sila.config.custom.CustomerUserDetailsService;
+import com.sila.config.exception.AccessDeniedException;
 import com.sila.config.exception.BadRequestException;
 import com.sila.config.exception.NotFoundException;
 import com.sila.config.jwt.JwtConstant;
@@ -17,6 +18,7 @@ import com.sila.modules.profile.repository.UserRepository;
 import com.sila.modules.profile.service.AuthService;
 import com.sila.modules.profile.service.UserService;
 import com.sila.share.enums.ROLE;
+import com.sila.share.enums.UserStatus;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -115,6 +117,10 @@ public class AuthImp implements AuthService {
     User user = userService.getByEmail(req.getEmail());
     Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
     String role = authorities.isEmpty() ? null : authorities.iterator().next().getAuthority();
+
+    if(user.getStatus()== UserStatus.INACTIVE){
+      throw new AccessDeniedException("User is inactive");
+    }
 
     LoginResponse response =
         LoginResponse.builder()

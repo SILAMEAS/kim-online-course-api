@@ -1,5 +1,6 @@
 package com.sila.modules.wishlist.repository;
 
+import com.sila.modules.profile.model.User;
 import com.sila.modules.wishlist.model.Wishlist;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -17,4 +18,6 @@ public interface WishlistRepository
   void deleteByUserIdAndCourseId(Long userId, Long courseId);
 
   boolean existsByUserIdAndCourseId(Long userId, Long courseId);
+
+  boolean existsByUser_IdAndCourse_Id(Long userId, Long courseId);
 }

@@ -1,12 +1,15 @@
 package com.sila.modules.course.spec;
 
+import com.sila.config.context.UserContext;
 import com.sila.modules.category.model.Category_;
+import com.sila.modules.course.Enum.CourseStatus;
 import com.sila.modules.course.Enum.LevelStatus;
 import com.sila.modules.course.model.Course;
 import com.sila.modules.course.model.Course_;
 import com.sila.modules.enrolment.model.Enrollment;
 import com.sila.modules.enrolment.model.Enrollment_;
 import com.sila.modules.profile.model.User_;
+import com.sila.share.enums.ROLE;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
@@ -108,6 +111,17 @@ public class CourseSpec {
         root.fetch(Course_.CATEGORY, JoinType.LEFT);
       }
       return cb.conjunction();
+    };
+  }
+
+  public static Specification<Course> visibleByRole() {
+    return (root, query, cb) -> {
+      if (UserContext.getUserRole() == ROLE.ADMIN) {
+        return cb.conjunction(); // no filter → see all
+      }
+
+      // STUDENT or TEACHER → only published
+      return cb.equal(root.get(Course_.STATUS), CourseStatus.PUBLISHED);
     };
   }
 }
