@@ -52,3 +52,4 @@ app:
       - http://localhost:5000
       - https://lacy-restaurant.vercel.app
       - https://kim-online-course.vercel.app
+      - https://online-course.meassila.site
