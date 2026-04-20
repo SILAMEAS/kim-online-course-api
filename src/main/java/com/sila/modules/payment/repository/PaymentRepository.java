@@ -18,6 +18,4 @@ JOIN FETCH p.user
 WHERE p.id = :id
 """)
   Optional<Payment> findWithUser(Long id);
-
-  boolean existsByCourse_Id(Long courseId);
 }

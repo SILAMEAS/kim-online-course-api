@@ -4,6 +4,7 @@ import com.sila.config.context.UserContext;
 import com.sila.config.exception.BadRequestException;
 import com.sila.modules.course.mapping.CourseMapping;
 import com.sila.modules.course.service.CourseService;
+import com.sila.modules.enrolment.repository.EnrollmentRepository;
 import com.sila.modules.payment.repository.PaymentRepository;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.wishlist.dto.WishlistResponse;
@@ -23,17 +24,19 @@ public class WishlistService extends AbstractCrudCommon<Wishlist, Long, Wishlist
   private final CourseService courseService;
   private final CourseMapping courseMapping;
   private final PaymentRepository paymentRepository;
+  private final EnrollmentRepository enrollmentRepository;
 
   protected WishlistService(
       WishlistRepository baseRepository,
       ModelMapper mapper,
       CourseService courseService,
       CourseMapping courseMapping,
-      PaymentRepository paymentRepository) {
+      PaymentRepository paymentRepository, EnrollmentRepository enrollmentRepository) {
     super(baseRepository, mapper);
     this.courseService = courseService;
     this.courseMapping = courseMapping;
     this.paymentRepository = paymentRepository;
+    this.enrollmentRepository = enrollmentRepository;
   }
 
   @Transactional
@@ -43,8 +46,8 @@ public class WishlistService extends AbstractCrudCommon<Wishlist, Long, Wishlist
     if (super.baseRepository.existsByUserIdAndCourseId(UserContext.getUserId(), course.getId())) {
       throw new BadRequestException("Already in wishlist");
     }
-    if (this.paymentRepository.existsByCourse_Id(courseId)) {
-      throw new BadRequestException("Course ready payment or wait confirm payment from admin");
+    if (this.enrollmentRepository.existsByUser_IdAndCourse_Id(UserContext.getUserId(),courseId)) {
+      throw new BadRequestException("Course ready enrollment");
     }
 
     Wishlist wishlist = Wishlist.builder().user(UserContext.getUser()).course(course).build();
