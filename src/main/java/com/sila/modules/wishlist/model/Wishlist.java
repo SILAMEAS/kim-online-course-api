@@ -34,7 +34,7 @@ public class Wishlist extends AbstractAuditable {
   private User user;
 
   // 🔥 Many wishlist items belong to one course
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "course_id",
       nullable = false,

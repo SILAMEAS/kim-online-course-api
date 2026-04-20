@@ -86,7 +86,8 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
             .and(CourseSpec.hasCategory(request.getCategoryId()))
             .and(CourseSpec.priceBetween(request.getMinPrice(), request.getMaxPrice()))
             .and(CourseSpec.hasLevel(request.getLevelStatus()))
-            .and(CourseSpec.hasMinRating(request.getRating()));
+            .and(CourseSpec.hasMinRating(request.getRating()))
+            .and(CourseSpec.fetchRelationsDetailOptimized());
 
     if (request.getInstructorId() != null) {
       spec = spec.and(CourseSpec.byTeacherId(request.getInstructorId()));

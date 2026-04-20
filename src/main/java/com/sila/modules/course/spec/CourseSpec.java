@@ -6,8 +6,8 @@ import com.sila.modules.course.model.Course;
 import com.sila.modules.course.model.Course_;
 import com.sila.modules.enrolment.model.Enrollment;
 import com.sila.modules.enrolment.model.Enrollment_;
-import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.model.User_;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import java.util.Locale;
@@ -99,8 +99,15 @@ public class CourseSpec {
   /** Filter by Course Level (e.g., BEGINNER, INTERMEDIATE) */
   public static Specification<Course> byTeacherId(Long teacherId) {
     return (root, query, cb) ->
-        teacherId == null
-            ? null
-            : cb.equal(root.get(Course_.INSTRUCTOR).get(User_.ID), teacherId);
+        teacherId == null ? null : cb.equal(root.get(Course_.INSTRUCTOR).get(User_.ID), teacherId);
+  }
+
+  public static Specification<Course> fetchRelationsDetailOptimized() {
+    return (var root, var query, var cb) -> {
+      if (Course.class.equals(query.getResultType())) {
+        root.fetch(Course_.CATEGORY, JoinType.LEFT);
+      }
+      return cb.conjunction();
+    };
   }
 }

@@ -56,7 +56,7 @@ public class WishlistService extends AbstractCrudCommon<Wishlist, Long, Wishlist
 
     final var pageable = super.toPageable(request);
 
-    var spec = WishlistSpec.byUserId(userId);
+    var spec = WishlistSpec.byUserId(userId).and(WishlistSpec.fetchRelationsDetailOptimized());
 
     Page<Wishlist> page = baseRepository.findAll(spec, pageable);
 

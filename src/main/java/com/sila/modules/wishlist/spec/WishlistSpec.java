@@ -2,6 +2,7 @@ package com.sila.modules.wishlist.spec;
 
 import com.sila.modules.enrolment.model.Enrollment;
 import com.sila.modules.wishlist.model.Wishlist;
+import com.sila.modules.wishlist.model.Wishlist_;
 import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,15 @@ public class WishlistSpec {
       }
 
       return cb.equal(root.get("user").get("id"), userId);
+    };
+  }
+
+  public static Specification<Wishlist> fetchRelationsDetailOptimized() {
+    return (var root, var query, var cb) -> {
+      if (Wishlist.class.equals(query.getResultType())) {
+        root.fetch(Wishlist_.COURSE, JoinType.LEFT);
+      }
+      return cb.conjunction();
     };
   }
 }

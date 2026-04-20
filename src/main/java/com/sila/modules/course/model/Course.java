@@ -113,7 +113,7 @@ public class Course extends AbstractAuditable {
       foreignKey = @ForeignKey(name = "fk_course_images"))
   private Image image;
 
-  @ManyToOne(fetch = FetchType.EAGER) // Lazy is generally better for performance
+  @ManyToOne(fetch = FetchType.LAZY) // Lazy is generally better for performance
   @JoinColumn(
       name = "category_id",
       referencedColumnName = "id",
