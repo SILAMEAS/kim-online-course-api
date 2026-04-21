@@ -2,11 +2,13 @@ package com.sila.modules.profile.controller;
 
 import com.sila.modules.profile.dto.req.LoginRequest;
 import com.sila.modules.profile.dto.req.SignUpRequest;
+import com.sila.modules.profile.dto.req.UpdatePasswordReq;
 import com.sila.modules.profile.dto.req.UserRequest;
 import com.sila.modules.profile.dto.res.LoginResponse;
 import com.sila.modules.profile.dto.res.UserResponse;
 import com.sila.modules.profile.service.AuthService;
 import com.sila.modules.profile.service.UserService;
+import com.sila.share.dto.GeneralResponse;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -135,5 +137,28 @@ public class AuthController {
   public ResponseEntity<UserResponse> updateProfile(@ModelAttribute UserRequest userReq) {
 
     return ResponseEntity.ok(userService.update(userReq));
+  }
+
+  /** Update password of logged-in user */
+  @PutMapping(value = "/update-password", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Operation(
+      summary = "Update Password",
+      description = "Change the password for the currently authenticated user.",
+      responses = {
+        @ApiResponse(responseCode = "200", description = "Password updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Current password is incorrect"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+      })
+  public ResponseEntity<GeneralResponse> updatePassword(
+      @RequestBody(
+              description = "update password",
+              required = true,
+              content = @Content(schema = @Schema(implementation = UpdatePasswordReq.class)))
+          @ModelAttribute
+          UpdatePasswordReq updatePasswordReq) {
+    authService.updatePassword(updatePasswordReq);
+
+    return ResponseEntity.ok(
+        GeneralResponse.builder().message("Update password is successfully").status(200).build());
   }
 }

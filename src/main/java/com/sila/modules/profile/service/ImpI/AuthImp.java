@@ -12,6 +12,7 @@ import com.sila.modules.image.service.ImageService;
 import com.sila.modules.profile.dto.req.CreateUserRequest;
 import com.sila.modules.profile.dto.req.LoginRequest;
 import com.sila.modules.profile.dto.req.SignUpRequest;
+import com.sila.modules.profile.dto.req.UpdatePasswordReq;
 import com.sila.modules.profile.dto.res.LoginResponse;
 import com.sila.modules.profile.model.User;
 import com.sila.modules.profile.repository.UserRepository;
@@ -118,7 +119,7 @@ public class AuthImp implements AuthService {
     Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
     String role = authorities.isEmpty() ? null : authorities.iterator().next().getAuthority();
 
-    if(user.getStatus()== UserStatus.INACTIVE){
+    if (user.getStatus() == UserStatus.INACTIVE) {
       throw new AccessDeniedException("User is inactive");
     }
 
@@ -205,5 +206,29 @@ public class AuthImp implements AuthService {
     // Explicit Map<String, String> type
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(Collections.singletonMap("message", "Create user successfully"));
+  }
+
+  @Override
+  public ResponseEntity<Map<String, String>> updatePassword(UpdatePasswordReq updatePasswordReq) {
+    // 1. Get the current authenticated user's email
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+
+    // 2. Fetch user from DB
+    User user = userRepository.findByEmail(email);
+    if (user == null) {
+      throw new NotFoundException("User not found");
+    }
+
+    // 3. Verify current password
+    if (!passwordEncoder.matches(updatePasswordReq.getCurrentPassword(), user.getPassword())) {
+      throw new BadRequestException("Current password does not match");
+    }
+
+    // 4. Encode and save new password
+    user.setPassword(passwordEncoder.encode(updatePasswordReq.getNewPassword()));
+    userRepository.save(user);
+
+    return ResponseEntity.ok(Collections.singletonMap("message", "Password updated successfully"));
   }
 }
