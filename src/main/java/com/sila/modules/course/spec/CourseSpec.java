@@ -116,12 +116,19 @@ public class CourseSpec {
 
   public static Specification<Course> visibleByRole() {
     return (root, query, cb) -> {
-      if (UserContext.getUserRole() == ROLE.ADMIN) {
-        return cb.conjunction(); // no filter → see all
-      }
+      return UserContext.findUserLogin()
+          .map(
+              user -> {
+                if (user.getRole() == ROLE.ADMIN) {
+                  return cb.conjunction(); // admin → all
+                }
 
-      // STUDENT or TEACHER → only published
-      return cb.equal(root.get(Course_.STATUS), CourseStatus.PUBLISHED);
+                // student or teacher → published only
+                return cb.equal(root.get(Course_.STATUS), CourseStatus.PUBLISHED);
+              })
+          .orElse(
+              // not logged in → published only
+              cb.equal(root.get(Course_.STATUS), CourseStatus.PUBLISHED));
     };
   }
 }

@@ -22,7 +22,6 @@ import com.sila.share.constant.StaticMessage;
 import com.sila.share.core.crud.AbstractCrudCommon;
 import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.share.core.pagination.ResponsePaginationHandler;
-import com.sila.share.enums.ROLE;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -209,7 +208,9 @@ public class CourseService extends AbstractCrudCommon<Course, Long, CourseReposi
             request.getSortBy(),
             String.valueOf(request.getSortOrder()));
     final var spec =
-        CourseSpec.search(request.getSearch()).and(CourseSpec.hasStudentEnrolled(studentId)).and(CourseSpec.visibleByRole());
+        CourseSpec.search(request.getSearch())
+            .and(CourseSpec.hasStudentEnrolled(studentId))
+            .and(CourseSpec.visibleByRole());
     Page<Course> courses = super.findAll(spec, pageable);
     return new ResponsePaginationHandler<>(courses.map(courseMapping::mapToCourseResponse));
   }

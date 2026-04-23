@@ -31,7 +31,7 @@ public class IpLoggingFilter implements Filter {
     if (isAnonymous) {
       log.info("=====> Login As [ROLE_ANONYMOUS] Request IP: " + ip + " - " + path);
     } else {
-      UserContext.findUser()
+      UserContext.findUserLogin()
           .ifPresentOrElse(
               user ->
                   log.info(

@@ -1,6 +1,5 @@
 package com.sila.config.context;
 
-import com.sila.config.exception.BadRequestException;
 import com.sila.config.exception.UnauthorizedException;
 import com.sila.modules.profile.model.User;
 import com.sila.share.enums.ROLE;
@@ -24,7 +23,7 @@ public class UserContext {
     currentUser.set(user);
   }
 
-  public static Optional<User> findUser() {
+  public static Optional<User> findUserLogin() {
     return Optional.ofNullable(currentUser.get());
   }
 
