@@ -178,9 +178,14 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
    */
   @Transactional
   public void deleteVideo(String publicId, Long videoId) {
-    super.findById(videoId);
+    final var video = super.findById(videoId);
+
+    final var courseId = video.getCourse().getId();
+
     super.deleteById(videoId);
     videoServiceCloudinary.deleteVideo(publicId);
+
+    updateCourseTotalDuration(courseId);
   }
 
   /**
@@ -193,15 +198,15 @@ public class VideoService extends AbstractCrudCommon<Video, Long, VideoRepositor
     var video = super.findById(videoId);
     Utils.setValueSafe(request.getTitle(), video::setTitle);
 
-    if (courseId != null) {
-      updateCourseTotalDuration(courseId);
-    }
     if (request.getFile() != null) {
       var newPublicId = videoServiceCloudinary.updateVideo(video.getPublicId(), request.getFile());
       video.setPublicId(newPublicId);
       video.setDuration(request.getDuration());
     }
     super.update(video);
+    if (courseId != null) {
+      updateCourseTotalDuration(courseId);
+    }
     return "Update video successfully";
   }
 
