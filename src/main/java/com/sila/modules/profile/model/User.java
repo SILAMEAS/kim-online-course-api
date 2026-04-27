@@ -56,7 +56,7 @@ public class User extends AbstractAuditable {
   @Column(name = "status", nullable = false, length = 20)
   private UserStatus status = UserStatus.ACTIVE;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(
       name = "image_id",
       referencedColumnName = "id",

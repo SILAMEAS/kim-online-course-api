@@ -160,26 +160,34 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
   /** Updates the current logged-in user's profile. */
   @Transactional
   public UserResponse update(UserRequest userReq) {
-    // 1️⃣ Get current logged-in user
     var user = super.findById(UserContext.getUserId());
+
     Utils.setValueSafe(userReq.getFirstName(), user::setFirstName);
     Utils.setValueSafe(userReq.getLastName(), user::setLastName);
 
     var oldImage = user.getImage();
-    var newImage = oldImage;
 
-    if (newImage == null) {
-      newImage = this.imageService.createImage(userReq.getFile(), CloudinaryFolder.PROFILE);
-    } else {
-      newImage =
-          this.imageService.updateImage(oldImage, userReq.getFile(), CloudinaryFolder.PROFILE);
+    // Only update image if file is provided
+    if (userReq.getFile() != null && !userReq.getFile().isEmpty()) {
+      var newImage = oldImage == null
+          ? imageService.createImage(
+          userReq.getFile(),
+          CloudinaryFolder.PROFILE)
+          : imageService.updateImage(
+              oldImage,
+              userReq.getFile(),
+              CloudinaryFolder.PROFILE);
+
+      user.setImage(newImage);
     }
-
-    user.setImage(newImage);
 
     super.update(user);
 
-    return mapToResponse(user, imageService.getUrlImage(newImage.getPublicId()));
+    String imageUrl = user.getImage() != null
+        ? imageService.getUrlImage(user.getImage().getPublicId())
+        : null;
+
+    return mapToResponse(user, imageUrl);
   }
 
   private UserResponse mapToResponse(User user, String publicId) {
@@ -190,6 +198,8 @@ public class UserService extends AbstractCrudCommon<User, Long, UserRepository> 
         .role(user.getRole())
         .email(user.getEmail())
         .imageUrl(publicId)
+        .createdAt(user.getCreatedAt())
+        .updatedAt(user.getUpdatedAt())
         .build();
   }
 
