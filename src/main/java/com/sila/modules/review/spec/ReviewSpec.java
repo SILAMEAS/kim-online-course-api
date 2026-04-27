@@ -1,7 +1,12 @@
 package com.sila.modules.review.spec;
 
+import com.sila.config.context.UserContext;
+import com.sila.modules.course.model.Course_;
+import com.sila.modules.profile.model.User_;
 import com.sila.modules.review.model.Review;
+import com.sila.modules.review.model.Review_;
 import com.sila.modules.video.model.Video_;
+import com.sila.share.enums.ROLE;
 import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -28,11 +33,23 @@ public class ReviewSpec {
           cb.like(cb.lower(root.get(Video_.TITLE)), like));
     };
   }
+
   public static Specification<Review> hasCourseId(Long courseId) {
     return (root, query, cb) -> {
       query.distinct(false); // 🔥 prevent losing rows
-      return cb.equal(root.get("course").get("id"), courseId);
+      return cb.equal(root.get(Review_.COURSE).get(Course_.ID), courseId);
     };
   }
 
+  public static Specification<Review> visibleByRole() {
+    return (root, query, cb) -> {
+      query.distinct(false);
+
+      if (UserContext.getUserRole() == ROLE.ADMIN) {
+        return cb.conjunction(); // no filter
+      }
+
+      return cb.equal(root.get(Review_.USER).get(User_.ID), UserContext.getUserId());
+    };
+  }
 }

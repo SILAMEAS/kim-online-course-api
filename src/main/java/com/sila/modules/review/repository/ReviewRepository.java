@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface ReviewRepository
         extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review>, ReviewRepositoryCustom {
+
+  Long countAllByCourseId(Long courseId);
 }

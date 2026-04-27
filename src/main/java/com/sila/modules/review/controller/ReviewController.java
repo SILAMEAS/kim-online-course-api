@@ -3,10 +3,11 @@ package com.sila.modules.review.controller;
 import com.sila.modules.review.dto.CourseRatingDTO;
 import com.sila.modules.review.dto.ReviewRequest;
 import com.sila.modules.review.dto.ReviewResponse;
-import com.sila.modules.review.service.ReviewService;
-import com.sila.share.core.pagination.ResponsePaginationHandler;
-import com.sila.share.core.pagination.PaginationRequest;
 import com.sila.modules.review.dto.ReviewsPageResponse;
+import com.sila.modules.review.service.ReviewService;
+import com.sila.share.core.pagination.PaginationRequest;
+import com.sila.share.core.pagination.ResponsePaginationHandler;
+import com.sila.share.dto.GeneralResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -62,6 +63,37 @@ public class ReviewController {
       @PathVariable Long courseId, @Valid @ModelAttribute ReviewRequest request) {
 
     return ResponseEntity.ok(reviewService.createReview(request, courseId));
+  }
+
+  @PutMapping(value = "/{reviewId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Operation(
+      summary = "update review",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "course retrieved successfully",
+            content = @Content(schema = @Schema(implementation = ReviewResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Access denied")
+      })
+  public ResponseEntity<ReviewResponse> updateReviews(
+      @PathVariable Long reviewId, @Valid @ModelAttribute ReviewRequest request) {
+    return ResponseEntity.ok(reviewService.updateReviewService(reviewId, request));
+  }
+
+  /** create review in course */
+  @DeleteMapping(value = "{courseId}/{reviewId}")
+  @Operation(
+      summary = "Delete review",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "course deleted successfully",
+            content = @Content(schema = @Schema(implementation = GeneralResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Access denied")
+      })
+  public ResponseEntity<GeneralResponse> deleteReviews(@PathVariable Long reviewId,@PathVariable Long courseId) {
+
+    return ResponseEntity.ok(reviewService.deletedReviewService(courseId,reviewId));
   }
 
   /** Get all review in course */
