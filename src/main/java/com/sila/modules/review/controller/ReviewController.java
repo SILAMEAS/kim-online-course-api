@@ -65,7 +65,7 @@ public class ReviewController {
     return ResponseEntity.ok(reviewService.createReview(request, courseId));
   }
 
-  @PutMapping(value = "/{reviewId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PutMapping(value = "{courseId}/{reviewId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(
       summary = "update review",
       responses = {
@@ -76,8 +76,8 @@ public class ReviewController {
         @ApiResponse(responseCode = "403", description = "Access denied")
       })
   public ResponseEntity<ReviewResponse> updateReviews(
-      @PathVariable Long reviewId, @Valid @ModelAttribute ReviewRequest request) {
-    return ResponseEntity.ok(reviewService.updateReviewService(reviewId, request));
+      @PathVariable Long courseId,@PathVariable Long reviewId, @Valid @ModelAttribute ReviewRequest request) {
+    return ResponseEntity.ok(reviewService.updateReviewService(courseId,reviewId, request));
   }
 
   /** create review in course */

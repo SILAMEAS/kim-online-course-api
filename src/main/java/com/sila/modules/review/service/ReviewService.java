@@ -91,12 +91,23 @@ public class ReviewService extends AbstractCrudCommon<Review, Long, ReviewReposi
   }
 
   @Transactional
-  public ReviewResponse updateReviewService(Long reviewId, ReviewRequest request) {
+  public ReviewResponse updateReviewService(Long courseId, Long reviewId, ReviewRequest request) {
+    final var course =
+        courseRepository
+            .findById(courseId)
+            .orElseThrow(() -> new NotFoundException("Course not found"));
+
     var review = super.findById(reviewId);
     Utils.setValueSafe(request.getRating(), review::setRating);
     Utils.setValueSafe(request.getComment(), review::setComment);
     Utils.setValueSafe(request.getTitle(), review::setTitle);
     super.update(review);
+
+    //    update course
+    course.setRating(this.getRatingUI(courseId).average());
+    course.setReviewsCount(this.getRatingUI(courseId).total());
+    courseRepository.save(course);
+
     return mapper.map(review, ReviewResponse.class);
   }
 
